@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="August Pirraglia">
+  <rect width="64" height="64" rx="12" fill="#141416"/>
+  <path d="M16 49 28.5 15h7L48 49h-7.2l-2.5-7.4H25.7L23.2 49H16Zm12-13.7h8l-4-12.1-4 12.1Z" fill="#c77a3c"/>
+  <path d="M13 53h38" stroke="#e8e6e1" stroke-width="3" stroke-linecap="round" opacity=".82"/>
+</svg>

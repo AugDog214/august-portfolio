@@ -1,0 +1,143 @@
+import { astroSequence, portfolioContent, siteMeta } from './content'
+import { resolvePublicUrl } from './urls'
+
+export function renderSite() {
+  const { navigation, hero, reveal, horizontalFlow, iris, build, meta, contact } = portfolioContent
+
+  return `
+    <a class="skip-link" href="#${horizontalFlow.id}">Skip to work</a>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="site-nav" data-nav>
+      <a class="nav-brand" href="#${hero.id}" aria-label="${siteMeta.name} home">${navigation.brandLabel}</a>
+      <nav class="nav-links" aria-label="Primary">
+        ${navigation.links.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero scene" id="${hero.id}" aria-label="${hero.ariaLabel}" data-scene="hero" data-hero>
+        <div class="hero-media" aria-hidden="true">
+          <img class="hero-poster" src="${resolvePublicUrl(astroSequence.poster)}" alt="" loading="eager" decoding="async" data-hero-poster />
+          <canvas class="hero-canvas" data-hero-canvas></canvas>
+          <div class="hero-fade hero-fade--top"></div>
+          <div class="hero-fade hero-fade--bottom"></div>
+          <div class="hero-grade"></div>
+        </div>
+
+        <div class="hero-identity" data-hero-identity>
+          <h1>${hero.nameLines.join('<br />')}</h1>
+          <span class="copper-rule"></span>
+          <p class="hero-role">${hero.role}</p>
+          <p class="hero-range">${hero.range}</p>
+        </div>
+
+        <div class="hero-progress" aria-hidden="true">
+          <span data-hero-progress></span>
+        </div>
+      </section>
+
+      <section class="reveal scene" aria-label="${reveal.ariaLabel}" data-scene="reveal" data-reveal>
+        <div class="reveal-copy">
+          <p class="reveal-number" data-reveal-number>${reveal.number}</p>
+          <p class="reveal-line" data-reveal-line>${reveal.line}</p>
+        </div>
+      </section>
+
+      <section class="horiz-flow" id="${horizontalFlow.id}" aria-label="${horizontalFlow.ariaLabel}" data-scene="horizontal-flow" data-horizontal-section>
+        <div class="horiz-track" data-horizontal-track>
+          <article class="horiz-panel brand-panel" data-horizontal-panel="brand" data-brand-panel>
+            <div class="brand-art">
+              <div class="can-study" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+            <div class="brand-copy">
+              <p class="kicker">${horizontalFlow.brand.kicker}</p>
+              <h2>${horizontalFlow.brand.headline}</h2>
+              <span class="copper-rule"></span>
+              <dl class="metric-stack">
+                ${horizontalFlow.brand.metrics.map((metric) => `<div><dt>${metric.value}</dt><dd>${metric.label}</dd></div>`).join('')}
+              </dl>
+              <p class="credit">${horizontalFlow.brand.credit}</p>
+            </div>
+          </article>
+
+          <article class="horiz-panel film-panel" data-horizontal-panel="film" data-film-panel>
+            <div class="film-inner" data-film-inner>
+              <div class="video-stage">
+                <div class="video-ph">
+                  <span>${horizontalFlow.film.title}</span>
+                </div>
+              </div>
+              <div class="film-copy">
+                <p class="kicker">${horizontalFlow.film.kicker}</p>
+                <h2>${horizontalFlow.film.headline}</h2>
+                <p>${horizontalFlow.film.body}</p>
+                <p class="credit">${horizontalFlow.film.credit}</p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="iris-section scene" aria-label="${iris.ariaLabel}" data-scene="iris" data-iris>
+        <div class="iris-content">
+          <p class="kicker">${iris.kicker}</p>
+          <h2>${iris.headline}</h2>
+        </div>
+        <div class="iris-bars" aria-hidden="true">
+          <span class="iris-bar iris-bar--top"></span>
+          <span class="iris-bar iris-bar--right"></span>
+          <span class="iris-bar iris-bar--bottom"></span>
+          <span class="iris-bar iris-bar--left"></span>
+          <span class="iris-glow" data-iris-glow></span>
+        </div>
+      </section>
+
+      <section class="build scene" id="${build.id}" aria-label="${build.ariaLabel}" data-scene="build" data-build>
+        <div class="build-copy" data-build-copy>
+          <p class="kicker">${build.kicker}</p>
+          <h2>${build.headline}</h2>
+          <span class="copper-rule"></span>
+          <p class="credit">${build.credit}</p>
+          <p class="build-note">${build.note}</p>
+        </div>
+
+        <div class="device-stack" data-device-stack aria-hidden="true">
+          <div class="device device--secondary">
+            <div class="device-screen">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="device device--primary">
+            <div class="device-screen">
+              <span></span><span></span><span></span><span class="screen-cta"></span>
+            </div>
+            <span class="home-indicator"></span>
+          </div>
+        </div>
+      </section>
+
+      <section class="meta scene" aria-label="${meta.ariaLabel}" data-scene="meta" data-meta>
+        <div class="meta-copy" data-meta-copy>
+          <h2>${meta.headline}</h2>
+          <p>${meta.body}</p>
+        </div>
+      </section>
+
+      <footer class="contact scene" id="${contact.id}" aria-label="${contact.ariaLabel}" data-scene="contact" data-contact>
+        <div class="contact-content">
+          <a class="contact-email" href="mailto:${siteMeta.email}">${siteMeta.email}</a>
+          <p class="social-row">
+            ${siteMeta.socials.map((social) => `<a href="${social.href}" target="_blank" rel="noreferrer">${social.label}</a>`).join(' / ')}
+          </p>
+          <a class="resume-link" href="${resolvePublicUrl(siteMeta.resumeLink)}" target="_blank" rel="noreferrer">${contact.resumeLabel}</a>
+        </div>
+        <div class="horizon-glow" aria-hidden="true"></div>
+      </footer>
+    </main>
+  `
+}

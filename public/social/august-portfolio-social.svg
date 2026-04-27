@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">August Pirraglia Portfolio</title>
+  <desc id="desc">Charcoal and copper social preview for August Pirraglia.</desc>
+  <defs>
+    <radialGradient id="horizon" cx="50%" cy="86%" r="62%">
+      <stop offset="0%" stop-color="#f0ece6" stop-opacity="0.72"/>
+      <stop offset="18%" stop-color="#e8923a" stop-opacity="0.72"/>
+      <stop offset="48%" stop-color="#c77a3c" stop-opacity="0.28"/>
+      <stop offset="100%" stop-color="#141416" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0%" stop-color="#2b2b30"/>
+      <stop offset="100%" stop-color="#1d1d21"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="#141416"/>
+  <rect width="1200" height="630" fill="url(#horizon)"/>
+  <g opacity="0.24">
+    <path d="M752 0v64h-70" fill="none" stroke="#c77a3c" stroke-width="5"/>
+    <path d="M864 0v64h-70" fill="none" stroke="#c77a3c" stroke-width="5"/>
+    <path d="M976 0v64h-70" fill="none" stroke="#c77a3c" stroke-width="5"/>
+  </g>
+  <rect x="72" y="94" width="454" height="348" rx="28" fill="url(#card)" stroke="#c77a3c" stroke-opacity="0.42" filter="url(#glow)"/>
+  <rect x="600" y="140" width="414" height="302" rx="28" fill="url(#card)" stroke="#c77a3c" stroke-opacity="0.36"/>
+  <text x="72" y="522" fill="#f0ece6" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="900" letter-spacing="-4">August Pirraglia</text>
+  <text x="76" y="568" fill="#8a857e" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" letter-spacing="4">CREATIVE DIRECTOR / GRAPHIC DESIGNER / VIDEO / AI</text>
+</svg>

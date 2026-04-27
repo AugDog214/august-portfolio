@@ -2,7 +2,7 @@ export const siteMeta = {
   name: 'August Pirraglia',
   role: 'Creative Director',
   email: 'apirr4@gmail.com',
-  siteUrl: 'https://augustpirraglia.com',
+  siteUrl: 'https://augdog214.github.io/august-portfolio/',
   ogImage: 'social/august-portfolio-social.svg',
   description:
     'Single-page scroll film portfolio for August Pirraglia, a creative director working across brand, film, production, AI, and software.',

@@ -3,15 +3,23 @@ import { resolvePublicUrl } from './urls'
 
 export function renderSite() {
   const { navigation, hero, reveal, horizontalFlow, iris, build, meta, contact } = portfolioContent
+  const revealTickerSeparator = '&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;'
+  const revealTickerText = `${reveal.subheadline.split(' • ').join(revealTickerSeparator)}${revealTickerSeparator}`
+  const revealTicker = Array.from({ length: 4 }, () => `<span class="reveal-subheadline-group">${revealTickerText}</span>`).join('')
 
   return `
     <a class="skip-link" href="#${horizontalFlow.id}">Skip to work</a>
     <div class="grain" aria-hidden="true"></div>
 
     <header class="site-nav" data-nav>
-      <a class="nav-brand" href="#${hero.id}" aria-label="${siteMeta.name} home">${navigation.brandLabel}</a>
+      <a class="nav-brand" href="#${hero.id}" aria-label="${siteMeta.name} home" data-nav-brand>
+        <span class="nav-brand-inner" data-nav-brand-inner>
+          <span class="nav-brand-face nav-brand-face--front">${navigation.brandLabel}</span>
+          <span class="nav-brand-face nav-brand-face--back">${navigation.brandNextLabel}</span>
+        </span>
+      </a>
       <nav class="nav-links" aria-label="Primary">
-        ${navigation.links.map((link) => `<a href="${link.href}">${link.label}</a>`).join('')}
+        ${navigation.links.map((link, index) => `${index > 0 ? '<span class="nav-separator" aria-hidden="true">|</span>' : ''}<a href="${link.href}">${link.label}</a>`).join('')}
       </nav>
     </header>
 
@@ -26,7 +34,8 @@ export function renderSite() {
         </div>
 
         <div class="hero-identity" data-hero-identity>
-          <h1>${hero.nameLines.join('<br />')}</h1>
+          <h1>${hero.nameLines.join(' ')}</h1>
+          <p class="hero-tagline">${hero.tagline}</p>
           <span class="copper-rule"></span>
           <p class="hero-role">${hero.role}</p>
           <p class="hero-range">${hero.range}</p>
@@ -38,9 +47,35 @@ export function renderSite() {
       </section>
 
       <section class="reveal scene" aria-label="${reveal.ariaLabel}" data-scene="reveal" data-reveal>
-        <div class="reveal-copy">
-          <p class="reveal-number" data-reveal-number>${reveal.number}</p>
-          <p class="reveal-line" data-reveal-line>${reveal.line}</p>
+        <div class="reveal-inner">
+          <p class="reveal-subheadline" aria-label="${reveal.subheadline}" data-reveal-banner>
+            <span class="reveal-subheadline-track" aria-hidden="true">
+              ${revealTicker}
+            </span>
+          </p>
+          <figure class="reveal-artwork" data-reveal-artwork>
+            <div class="reveal-video-frame">
+              <video
+                aria-label="${reveal.artwork.ariaLabel}"
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="metadata"
+                poster="${resolvePublicUrl(reveal.artwork.poster)}"
+                data-reveal-video
+              >
+                <source src="${resolvePublicUrl(reveal.artwork.video)}" type="video/mp4" />
+              </video>
+            </div>
+          </figure>
+          <div class="reveal-copy" data-reveal-copy>
+            <p class="reveal-number">${reveal.number}</p>
+            <p class="reveal-line">${reveal.line}</p>
+          </div>
+          <div class="reveal-editorial" data-reveal-editorial>
+            <h2 class="reveal-headline">${reveal.headline}</h2>
+          </div>
         </div>
       </section>
 

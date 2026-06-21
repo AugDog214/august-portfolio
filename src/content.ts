@@ -20,7 +20,8 @@ export const astroSequence = {
 
 export const portfolioContent = {
   navigation: {
-    brandLabel: 'AUGUST PIRRAGLIA',
+    brandLabel: 'PORTFOLIO',
+    brandNextLabel: 'BRANDS',
     links: [
       { label: 'Work', href: '#work' },
       { label: 'About', href: '#about' },
@@ -31,6 +32,7 @@ export const portfolioContent = {
     id: 'hero',
     ariaLabel: 'Portfolio hero',
     nameLines: ['AUGUST', 'PIRRAGLIA'],
+    tagline: 'Building Brands through Designing Identity & AI Film Advertising',
     role: siteMeta.role,
     range: 'Brand / Film / Build',
   },
@@ -38,6 +40,13 @@ export const portfolioContent = {
     ariaLabel: 'Brand impact',
     number: '$39K',
     line: 'of signage. The brand made it inevitable.',
+    headline: 'Managing Creative Art Direction',
+    subheadline: 'Brand Identity Design • AI Film Ads • Marketing • Signage',
+    artwork: {
+      video: 'media/signage-artwork/artwork.mp4',
+      poster: 'media/signage-artwork/poster.webp',
+      ariaLabel: 'Twin Dragon Games exterior signage',
+    },
   },
   horizontalFlow: {
     id: 'work',

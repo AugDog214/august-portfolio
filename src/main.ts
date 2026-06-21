@@ -83,6 +83,7 @@ function initNav() {
 function initHero() {
   const hero = document.querySelector<HTMLElement>('[data-hero]')
   const identity = document.querySelector<HTMLElement>('[data-hero-identity]')
+  const navBrand = document.querySelector<HTMLElement>('[data-nav-brand]')
   const progress = document.querySelector<HTMLElement>('[data-hero-progress]')
   const frameController = initHeroFrames()
 
@@ -91,6 +92,10 @@ function initHero() {
   }
 
   gsap.set(progress, { scaleX: 0, transformOrigin: 'left center' })
+  gsap.set(navBrand, {
+    x: () => getPortfolioIntroX(),
+    transformOrigin: 'left center',
+  })
 
   ScrollTrigger.create({
     trigger: hero,
@@ -101,11 +106,16 @@ function initHero() {
     onUpdate: (self) => {
       const fade = smoothstep(mapProgress(self.progress, 0.12, 0.76))
       const imageProgress = smoothstep(self.progress)
+      const portfolioSettle = smoothstep(mapProgress(self.progress, 0.02, 0.42))
+      const portfolioLift = 1 - portfolioSettle
 
       gsap.set(progress, { scaleX: self.progress })
+      gsap.set(navBrand, {
+        x: getPortfolioIntroX() * portfolioLift,
+      })
       gsap.set(identity, {
         autoAlpha: 1 - fade,
-        y: -44 * fade,
+        y: -34 * fade,
       })
 
       frameController?.sync(imageProgress)
@@ -158,13 +168,13 @@ function initHeroFrames(): HeroFrameController | null {
     let drawY = 0
 
     if (imageRatio > canvasRatio) {
-      drawWidth = canvas.width
-      drawHeight = drawWidth / imageRatio
-      drawY = (canvas.height - drawHeight) / 2
-    } else {
       drawHeight = canvas.height
       drawWidth = drawHeight * imageRatio
       drawX = (canvas.width - drawWidth) / 2
+    } else {
+      drawWidth = canvas.width
+      drawHeight = drawWidth / imageRatio
+      drawY = (canvas.height - drawHeight) / 2
     }
 
     context.drawImage(image, drawX, drawY, drawWidth, drawHeight)
@@ -266,7 +276,7 @@ function initReducedMotionFallback() {
 
   poster?.classList.remove('is-hidden')
   gsap.set(heroProgress, { scaleX: 1, transformOrigin: 'left center' })
-  gsap.set('[data-reveal-number], [data-reveal-line], [data-build-copy], .device--secondary, .device--primary, [data-meta-copy]', {
+  gsap.set('[data-reveal-banner], [data-reveal-artwork], [data-reveal-copy], [data-reveal-editorial], [data-build-copy], .device--secondary, .device--primary, [data-meta-copy]', {
     autoAlpha: 1,
     y: 0,
     scale: 1,
@@ -277,12 +287,18 @@ function initReducedMotionFallback() {
 
 function initReveal() {
   const reveal = document.querySelector<HTMLElement>('[data-reveal]')
-  const number = document.querySelector<HTMLElement>('[data-reveal-number]')
-  const line = document.querySelector<HTMLElement>('[data-reveal-line]')
+  const banner = document.querySelector<HTMLElement>('[data-reveal-banner]')
+  const artwork = document.querySelector<HTMLElement>('[data-reveal-artwork]')
+  const copy = document.querySelector<HTMLElement>('[data-reveal-copy]')
+  const editorial = document.querySelector<HTMLElement>('[data-reveal-editorial]')
+  const video = document.querySelector<HTMLVideoElement>('[data-reveal-video]')
+  const brandInner = document.querySelector<HTMLElement>('[data-nav-brand-inner]')
 
-  if (!reveal || !number || !line) {
+  if (!reveal || !banner || !artwork || !copy || !editorial) {
     return
   }
+
+  const playVideo = () => void video?.play().catch(() => undefined)
 
   ScrollTrigger.create({
     trigger: reveal,
@@ -290,19 +306,36 @@ function initReveal() {
     end: pinDistance(2.8),
     pin: true,
     invalidateOnRefresh: true,
+    onEnter: playVideo,
+    onEnterBack: playVideo,
+    onLeave: () => video?.pause(),
     onUpdate: (self) => {
-      const numberIn = smoothstep(mapProgress(self.progress, 0.06, 0.28))
-      const lineIn = smoothstep(mapProgress(self.progress, 0.22, 0.48))
-      const out = smoothstep(mapProgress(self.progress, 0.72, 0.94))
+      const artworkIn = smoothstep(mapProgress(self.progress, 0.04, 0.3))
+      const copyIn = smoothstep(mapProgress(self.progress, 0.08, 0.34))
+      const editorialIn = smoothstep(mapProgress(self.progress, 0.3, 0.48))
+      const out = smoothstep(mapProgress(self.progress, 0.68, 0.94))
+      const brandFlip = smoothstep(mapProgress(self.progress, 0.78, 0.96))
+      const viewportHeight = window.innerHeight
 
-      gsap.set(number, {
-        autoAlpha: numberIn * (1 - out),
-        y: 50 * (1 - numberIn) - 34 * out,
+      gsap.set(banner, {
+        autoAlpha: artworkIn * (1 - out),
+        x: getRevealBannerIntroX(banner) * (1 - artworkIn),
+        y: -viewportHeight * out,
       })
-      gsap.set(line, {
-        autoAlpha: lineIn * (1 - out),
-        y: 42 * (1 - lineIn) - 26 * out,
+      gsap.set(artwork, {
+        autoAlpha: artworkIn * (1 - out),
+        y: viewportHeight * 1.08 * (1 - artworkIn) - viewportHeight * 1.12 * out,
+        scale: 0.96 + 0.04 * artworkIn - 0.04 * out,
       })
+      gsap.set(copy, {
+        autoAlpha: copyIn * (1 - out),
+        y: -viewportHeight * 0.92 * (1 - copyIn) - viewportHeight * out,
+      })
+      gsap.set(editorial, {
+        autoAlpha: editorialIn * (1 - out),
+        y: 72 * (1 - editorialIn) - viewportHeight * out,
+      })
+      gsap.set(brandInner, { rotateX: 180 * brandFlip })
     },
   })
 }
@@ -432,4 +465,14 @@ function mapProgress(progress: number, start: number, end: number) {
 
 function smoothstep(value: number) {
   return value * value * (3 - 2 * value)
+}
+
+function getPortfolioIntroX() {
+  return window.innerWidth + 24
+}
+
+function getRevealBannerIntroX(element?: HTMLElement) {
+  const bannerWidth = element?.getBoundingClientRect().width ?? window.innerWidth
+
+  return window.innerWidth * 0.5 + bannerWidth * 0.5 + 32
 }

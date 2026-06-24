@@ -21,7 +21,7 @@ export const astroSequence = {
 export const portfolioContent = {
   navigation: {
     brandLabel: 'PORTFOLIO',
-    brandNextLabel: 'BRANDS',
+    brandNextLabel: 'PROJECT',
     links: [
       { label: 'Work', href: '#work' },
       { label: 'Leveraging AI', href: './leveraging-ai.html' },
@@ -48,6 +48,74 @@ export const portfolioContent = {
       poster: 'media/signage-artwork/poster.webp',
       ariaLabel: 'Twin Dragon Games exterior signage',
     },
+  },
+  // SECTION 3 — Projects carousel (light theme). Placeholder content:
+  // swap `blurb` for real copy, set `accent` per project, and the full-screen
+  // viewer renders `gallery` placeholder panels (replace with real artwork later).
+  projects: {
+    id: 'projects',
+    ariaLabel: 'Selected art projects',
+    eyebrow: 'Selected Work',
+    viewLabel: 'View Project',
+    closeLabel: 'Close',
+    items: [
+      {
+        name: 'Signage',
+        tag: 'Environmental / Large Format',
+        blurb:
+          'Placeholder: large-format environmental signage built brand-first — exterior identity, wayfinding, and print-ready production.',
+        accent: '#c77a3c',
+        gallery: 6,
+      },
+      {
+        name: "Astro Fool's Hopper",
+        tag: 'AI Film / Art Direction',
+        blurb:
+          'Placeholder: an AI-assisted product film — world-building, art direction, and edit rhythm authored as one system.',
+        accent: '#d8552f',
+        gallery: 7,
+      },
+      {
+        name: 'Gap City Media',
+        tag: 'Brand Identity',
+        blurb:
+          'Placeholder: a full brand identity system — logo, type, color, and the rules that keep it consistent everywhere.',
+        accent: '#3c7ac7',
+        gallery: 5,
+      },
+      {
+        name: 'Kababz: Menu',
+        tag: 'Menu / Print Design',
+        blurb:
+          'Placeholder: menu and print design — appetite-first hierarchy, photography direction, and clean press files.',
+        accent: '#b8923c',
+        gallery: 5,
+      },
+      {
+        name: 'Art Posters',
+        tag: 'Poster Series',
+        blurb:
+          'Placeholder: an original poster series — bold type, composition, and experimental layout systems.',
+        accent: '#8a5cc7',
+        gallery: 8,
+      },
+      {
+        name: 'Faded Jays',
+        tag: 'Brand / Apparel',
+        blurb:
+          'Placeholder: brand and apparel direction — identity, garment graphics, and the lookbook around it.',
+        accent: '#3cb38a',
+        gallery: 6,
+      },
+      {
+        name: 'Rage Energy Drink',
+        tag: 'Packaging / Brand',
+        blurb:
+          'Placeholder: packaging and brand for an energy drink — can design, shelf presence, and campaign assets.',
+        accent: '#d83c5e',
+        gallery: 6,
+      },
+    ],
   },
   horizontalFlow: {
     id: 'work',

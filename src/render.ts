@@ -2,7 +2,8 @@ import { astroSequence, portfolioContent, siteMeta } from './content'
 import { resolvePublicUrl } from './urls'
 
 export function renderSite() {
-  const { navigation, hero, reveal, horizontalFlow, iris, build, meta, contact } = portfolioContent
+  const { navigation, hero, reveal, projects, horizontalFlow, iris, build, meta, contact } = portfolioContent
+  const firstProject = projects.items[0]
   const revealTickerSeparator = '&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;'
   const revealTickerText = `${reveal.subheadline.split(' • ').join(revealTickerSeparator)}${revealTickerSeparator}`
   const revealTicker = Array.from({ length: 4 }, () => `<span class="reveal-subheadline-group">${revealTickerText}</span>`).join('')
@@ -78,6 +79,53 @@ export function renderSite() {
             <h2 class="reveal-headline">${reveal.headline}</h2>
           </div>
         </div>
+      </section>
+
+      <section class="projects scene" id="${projects.id}" aria-label="${projects.ariaLabel}" data-scene="projects" data-projects>
+        <div class="projects-grain" aria-hidden="true"></div>
+        <div class="projects-inner">
+          <header class="projects-head">
+            <p class="projects-eyebrow">${projects.eyebrow}</p>
+            <h2 class="projects-title" data-projects-title>${firstProject.name}</h2>
+          </header>
+
+          <div class="projects-stage" data-projects-stage>
+            <div class="projects-track" data-projects-track>
+              ${projects.items
+                .map(
+                  (project, index) => `
+                <article class="project-card" data-project-card data-index="${index}" style="--accent: ${project.accent}" tabindex="0" role="button" aria-label="${project.name}">
+                  <div class="project-card-art" aria-hidden="true">
+                    <span class="project-card-num">${String(index + 1).padStart(2, '0')}</span>
+                  </div>
+                  <div class="project-card-meta">
+                    <p class="project-card-name">${project.name}</p>
+                    <p class="project-card-tag">${project.tag}</p>
+                  </div>
+                </article>`,
+                )
+                .join('')}
+            </div>
+
+          </div>
+
+          <p class="projects-hint" aria-hidden="true">Scroll to browse &middot; click a card to select</p>
+        </div>
+
+        <aside class="project-glass" data-project-glass>
+          <div class="project-glass-inner">
+            <div class="project-glass-preview" data-glass-preview style="--accent: ${firstProject.accent}">
+              <span class="project-glass-preview-num" data-glass-preview-num>01</span>
+            </div>
+            <h3 class="project-glass-name" data-glass-name>${firstProject.name}</h3>
+            <p class="project-glass-tag" data-glass-tag>${firstProject.tag}</p>
+            <p class="project-glass-blurb" data-glass-blurb>${firstProject.blurb}</p>
+            <button class="project-view" type="button" data-view-project>
+              <span>${projects.viewLabel}</span>
+              <span class="project-view-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+          </div>
+        </aside>
       </section>
 
       <section class="horiz-flow" id="${horizontalFlow.id}" aria-label="${horizontalFlow.ariaLabel}" data-scene="horizontal-flow" data-horizontal-section>
@@ -175,5 +223,15 @@ export function renderSite() {
         <div class="horizon-glow" aria-hidden="true"></div>
       </footer>
     </main>
+
+    <div class="project-viewer" data-project-viewer aria-hidden="true">
+      <div class="project-viewer-bar">
+        <span class="project-viewer-title" data-viewer-title></span>
+        <button class="project-viewer-close" type="button" data-viewer-close aria-label="${projects.closeLabel}">
+          <span>${projects.closeLabel}</span>
+        </button>
+      </div>
+      <div class="project-viewer-scroll" data-viewer-scroll></div>
+    </div>
   `
 }

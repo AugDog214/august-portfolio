@@ -1,6 +1,6 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { astroSequence, siteMeta } from './content'
+import { astroSequence, portfolioContent, siteMeta } from './content'
 import { renderSite } from './render'
 import { resolvePublicUrl } from './urls'
 import './styles.css'
@@ -28,14 +28,18 @@ initNav()
 
 if (prefersReducedMotion) {
   initReducedMotionFallback()
+  initProjects()
 } else {
   initHero()
   initReveal()
+  initProjects()
   initHorizontalFlow()
   initIris()
   initBuild()
   initMeta()
 }
+
+initProjectViewer()
 
 window.addEventListener('load', () => ScrollTrigger.refresh())
 document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => undefined)
@@ -453,6 +457,230 @@ function initMeta() {
     })
     .fromTo(copy, { autoAlpha: 0, y: 42, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.26 }, 0.08)
     .to(copy, { autoAlpha: 0, y: -28, duration: 0.16 }, 0.78)
+}
+
+function initProjects() {
+  const section = document.querySelector<HTMLElement>('[data-projects]')
+  const stage = document.querySelector<HTMLElement>('[data-projects-stage]')
+  const track = document.querySelector<HTMLElement>('[data-projects-track]')
+  const cards = gsap.utils.toArray<HTMLElement>('[data-project-card]')
+  const titleEl = document.querySelector<HTMLElement>('[data-projects-title]')
+  const glass = document.querySelector<HTMLElement>('[data-project-glass]')
+  const glassTag = document.querySelector<HTMLElement>('[data-glass-tag]')
+  const glassName = document.querySelector<HTMLElement>('[data-glass-name]')
+  const glassBlurb = document.querySelector<HTMLElement>('[data-glass-blurb]')
+  const glassPreview = document.querySelector<HTMLElement>('[data-glass-preview]')
+  const glassPreviewNum = document.querySelector<HTMLElement>('[data-glass-preview-num]')
+
+  if (!section || !stage || !track || cards.length === 0 || !glass) {
+    return
+  }
+
+  const items = portfolioContent.projects.items
+  const count = cards.length
+  const loops = 1.25
+  let spacing = 1
+  let cardWidth = 0
+  let stageCenter = 0
+  let activeIndex = 0
+  let swapTimer = 0
+
+  const wrapDelta = (value: number) => {
+    const m = ((value % count) + count) % count
+    return m > count / 2 ? m - count : m
+  }
+
+  const measure = () => {
+    cardWidth = cards[0].offsetWidth
+    spacing = cardWidth * 1.12
+    const glassWidth = window.innerWidth > 820 ? glass.offsetWidth : 0
+    stageCenter = (stage.clientWidth - glassWidth) / 2
+  }
+
+  const updateFeatured = (index: number, immediate = false) => {
+    const item = items[index]
+    glass.dataset.activeIndex = String(index)
+
+    const apply = () => {
+      if (titleEl) titleEl.textContent = item.name
+      if (glassTag) glassTag.textContent = item.tag
+      if (glassName) glassName.textContent = item.name
+      if (glassBlurb) glassBlurb.textContent = item.blurb
+      if (glassPreview) glassPreview.style.setProperty('--accent', item.accent)
+      if (glassPreviewNum) glassPreviewNum.textContent = String(index + 1).padStart(2, '0')
+      titleEl?.classList.remove('is-swapping')
+      glass.classList.remove('is-swapping')
+    }
+
+    if (immediate) {
+      apply()
+      return
+    }
+
+    titleEl?.classList.add('is-swapping')
+    glass.classList.add('is-swapping')
+    window.clearTimeout(swapTimer)
+    swapTimer = window.setTimeout(apply, 200)
+  }
+
+  const layout = (pos: number) => {
+    for (let i = 0; i < count; i += 1) {
+      const dist = wrapDelta(i - pos)
+      const ad = Math.abs(dist)
+      gsap.set(cards[i], {
+        x: stageCenter + dist * spacing - cardWidth / 2,
+        scale: gsap.utils.clamp(0.5, 1.26, 1.26 - ad * 0.26),
+        autoAlpha: gsap.utils.clamp(0, 1, 1.12 - ad * 0.36),
+        rotateY: gsap.utils.clamp(-38, 38, -dist * 13),
+        z: -ad * 90,
+        zIndex: Math.round(200 - ad * 12),
+        transformPerspective: 1200,
+        transformOrigin: 'center center',
+      })
+    }
+    const centered = ((Math.round(pos) % count) + count) % count
+    cards.forEach((card, i) => card.classList.toggle('is-featured', i === centered))
+    if (centered !== activeIndex) {
+      activeIndex = centered
+      updateFeatured(centered)
+    }
+  }
+
+  measure()
+  layout(0)
+  updateFeatured(0, true)
+  track.classList.add('is-ready')
+
+  if (prefersReducedMotion) {
+    return
+  }
+
+  const trigger = ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: pinDistance(4),
+    pin: true,
+    invalidateOnRefresh: true,
+    onRefreshInit: measure,
+    onUpdate: (self) => layout(self.progress * loops * count),
+  })
+
+  const centerOn = (index: number) => {
+    const currentPos = trigger.progress * loops * count
+    const targetPos = index + Math.round((currentPos - index) / count) * count
+    const targetProgress = gsap.utils.clamp(0, 1, targetPos / (loops * count))
+    const target = trigger.start + targetProgress * (trigger.end - trigger.start)
+    window.scrollTo({ top: target, behavior: 'smooth' })
+  }
+
+  cards.forEach((card, index) => {
+    card.addEventListener('click', () => {
+      if (index !== activeIndex) {
+        centerOn(index)
+      }
+    })
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        centerOn(index)
+      }
+    })
+  })
+
+  window.addEventListener('resize', () => {
+    measure()
+    layout(trigger.progress * loops * count)
+  })
+}
+
+function initProjectViewer() {
+  const viewer = document.querySelector<HTMLElement>('[data-project-viewer]')
+  const scroll = document.querySelector<HTMLElement>('[data-viewer-scroll]')
+  const titleEl = document.querySelector<HTMLElement>('[data-viewer-title]')
+  const openButton = document.querySelector<HTMLElement>('[data-view-project]')
+  const closeButton = document.querySelector<HTMLElement>('[data-viewer-close]')
+  const glass = document.querySelector<HTMLElement>('[data-project-glass]')
+  const cards = gsap.utils.toArray<HTMLElement>('[data-project-card]')
+
+  if (!viewer || !scroll || !openButton || !closeButton || !glass) {
+    return
+  }
+
+  const items = portfolioContent.projects.items
+  let lastFocused: HTMLElement | null = null
+  let isOpen = false
+
+  const open = () => {
+    if (isOpen) {
+      return
+    }
+
+    const index = Number(glass.dataset.activeIndex ?? '0')
+    const item = items[index]
+
+    scroll.innerHTML = Array.from(
+      { length: item.gallery },
+      (_, n) =>
+        `<div class="viewer-panel" style="--accent: ${item.accent}">${item.name} &mdash; Frame ${String(n + 1).padStart(2, '0')}</div>`,
+    ).join('')
+    if (titleEl) {
+      titleEl.textContent = item.name
+    }
+    scroll.scrollTop = 0
+
+    lastFocused = document.activeElement as HTMLElement | null
+    document.body.style.overflow = 'hidden'
+    viewer.setAttribute('aria-hidden', 'false')
+    viewer.classList.add('is-open')
+    isOpen = true
+
+    const card = cards.find((entry) => entry.classList.contains('is-featured')) ?? cards[index]
+
+    if (prefersReducedMotion || !card) {
+      gsap.set(viewer, { clipPath: 'inset(0px round 0px)' })
+    } else {
+      const rect = card.getBoundingClientRect()
+      const clip = {
+        t: Math.max(0, rect.top),
+        r: Math.max(0, window.innerWidth - rect.right),
+        b: Math.max(0, window.innerHeight - rect.bottom),
+        l: Math.max(0, rect.left),
+        radius: 14,
+      }
+      const setClip = () => {
+        gsap.set(viewer, {
+          clipPath: `inset(${clip.t}px ${clip.r}px ${clip.b}px ${clip.l}px round ${clip.radius}px)`,
+        })
+      }
+      setClip()
+      gsap
+        .timeline()
+        .to(clip, { t: 0, b: 0, radius: 6, duration: 0.4, ease: 'power3.inOut', onUpdate: setClip })
+        .to(clip, { l: 0, r: 0, radius: 0, duration: 0.46, ease: 'power3.inOut', onUpdate: setClip })
+    }
+
+    window.setTimeout(() => closeButton.focus(), 60)
+  }
+
+  const close = () => {
+    if (!isOpen) {
+      return
+    }
+    isOpen = false
+    viewer.classList.remove('is-open')
+    viewer.setAttribute('aria-hidden', 'true')
+    document.body.style.overflow = ''
+    gsap.set(viewer, { clearProps: 'clipPath' })
+    lastFocused?.focus?.()
+  }
+
+  openButton.addEventListener('click', open)
+  closeButton.addEventListener('click', close)
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isOpen) {
+      close()
+    }
+  })
 }
 
 function mapProgress(progress: number, start: number, end: number) {

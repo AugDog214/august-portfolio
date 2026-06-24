@@ -24,6 +24,7 @@ export const portfolioContent = {
     brandNextLabel: 'BRANDS',
     links: [
       { label: 'Work', href: '#work' },
+      { label: 'Leveraging AI', href: './leveraging-ai.html' },
       { label: 'About', href: '#about' },
       { label: 'Contact', href: '#contact' },
     ],

@@ -74,6 +74,7 @@ export function renderSite() {
             <p class="reveal-line">${reveal.line}</p>
           </div>
           <div class="reveal-editorial" data-reveal-editorial>
+            <span class="copper-rule reveal-rule"></span>
             <h2 class="reveal-headline">${reveal.headline}</h2>
           </div>
         </div>

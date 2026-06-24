@@ -406,11 +406,12 @@ video {
 .reveal-inner {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.92fr);
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
   column-gap: clamp(2rem, 5vw, 7rem);
-  row-gap: clamp(1.4rem, 2.7vh, 2.4rem);
+  row-gap: clamp(2rem, 4.4vh, 4rem);
   align-items: center;
-  width: min(100% - clamp(3rem, 8vw, 10rem), 110rem);
+  align-content: center;
+  width: min(100% - clamp(3rem, 8vw, 10rem), 104rem);
   height: 100%;
   margin: 0 auto;
   padding-top: calc(var(--nav-h) + clamp(5rem, 9vh, 7rem));
@@ -418,7 +419,7 @@ video {
 
 .reveal-artwork {
   position: relative;
-  width: min(100%, 54rem);
+  width: min(100%, 62rem);
   aspect-ratio: 16 / 10;
   margin: 0;
   border: 1px solid rgba(232, 230, 225, 0.22);
@@ -481,13 +482,17 @@ video {
 
 .reveal-editorial {
   grid-column: 1 / -1;
-  align-self: end;
+  align-self: center;
   justify-self: center;
   width: min(100%, 88rem);
-  padding-bottom: clamp(1.8rem, 4.5vh, 4rem);
+  padding-bottom: 0;
   opacity: 0;
   text-align: center;
   will-change: transform, opacity;
+}
+
+.reveal-rule {
+  margin: 0 auto clamp(0.9rem, 2vh, 1.5rem);
 }
 
 .reveal-headline {
@@ -1140,17 +1145,18 @@ video {
 
   .reveal-inner {
     grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 38%) minmax(0, 25%) minmax(0, 31%);
+    grid-template-rows: minmax(0, 40%) minmax(0, 36%) minmax(0, 22%);
+    align-content: start;
     gap: 0.5rem;
     width: min(100% - 1.8rem, 42rem);
-    padding-top: calc(var(--nav-h) + 5.4rem);
+    padding-top: calc(var(--nav-h) + 6.8rem);
     padding-bottom: 1.2rem;
   }
 
   .reveal-artwork {
     align-self: center;
     width: 100%;
-    max-height: 34svh;
+    max-height: 30svh;
   }
 
   .reveal-copy {

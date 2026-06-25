@@ -1448,11 +1448,14 @@ video {
   opacity: 0;
 }
 
-/* Stage: holds the rolling cards + the glass panel */
+/* Stage: holds the rolling cards. Full-bleed so the filmstrip spans the
+   whole screen width (breaks out of the centered max-width inner). */
 .projects-stage {
   position: relative;
   flex: 1 1 auto;
+  width: 100vw;
   margin-top: clamp(1.4rem, 3vh, 2.6rem);
+  margin-left: calc(50% - 50vw);
   overflow: hidden;
 }
 

@@ -1386,6 +1386,8 @@ video {
   --p-fg: #1b1714;
   --p-dim: #6f655a;
   --p-line: rgba(27, 23, 20, 0.16);
+  /* darker copper for AA contrast on the light/cream background (4.8:1) */
+  --p-cop: #9a5520;
   height: 100svh;
   color: var(--p-fg);
   background:
@@ -1425,7 +1427,7 @@ video {
 
 .projects-eyebrow {
   margin: 0 0 0.7rem;
-  color: var(--cop);
+  color: var(--p-cop);
   font-family: var(--font-mono);
   font-size: 0.66rem;
   font-weight: 500;
@@ -1490,7 +1492,7 @@ video {
 }
 
 .project-card:focus-visible {
-  outline: 2px solid var(--cop);
+  outline: 2px solid var(--p-cop);
   outline-offset: 4px;
 }
 
@@ -1591,7 +1593,7 @@ video {
 
 .project-glass-tag {
   margin: 0 0 0.6rem;
-  color: var(--cop);
+  color: var(--p-cop);
   font-family: var(--font-mono);
   font-size: 0.62rem;
   font-weight: 500;
@@ -1655,7 +1657,7 @@ video {
 
 .project-view:hover,
 .project-view:focus-visible {
-  background: var(--cop);
+  background: var(--p-cop);
   transform: translateY(-2px);
 }
 

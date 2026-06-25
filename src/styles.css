@@ -1546,13 +1546,14 @@ video {
   bottom: 0;
   z-index: 6;
   width: max(20rem, 33vw);
-  border-left: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(28px) saturate(180%) brightness(1.06);
-  -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.06);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.06) 100%);
+  backdrop-filter: blur(20px) saturate(150%) brightness(1.04);
+  -webkit-backdrop-filter: blur(20px) saturate(150%) brightness(1.04);
   box-shadow:
-    -26px 0 60px rgba(27, 23, 20, 0.16),
-    inset 1px 0 0 rgba(255, 255, 255, 0.6);
+    -26px 0 60px rgba(27, 23, 20, 0.14),
+    inset 1px 0 0 rgba(255, 255, 255, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .project-glass-inner {

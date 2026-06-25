@@ -492,7 +492,7 @@ function initProjects() {
 
   const measure = () => {
     cardWidth = cards[0].offsetWidth
-    spacing = cardWidth * 1.12
+    spacing = cardWidth * 1.1
     const glassWidth = window.innerWidth > 820 ? glass.offsetWidth : 0
     stageCenter = (stage.clientWidth - glassWidth) / 2
   }
@@ -529,12 +529,11 @@ function initProjects() {
       const ad = Math.abs(dist)
       gsap.set(cards[i], {
         x: stageCenter + dist * spacing - cardWidth / 2,
-        scale: gsap.utils.clamp(0.5, 1.26, 1.26 - ad * 0.26),
-        autoAlpha: gsap.utils.clamp(0, 1, 1.12 - ad * 0.36),
-        rotateY: gsap.utils.clamp(-38, 38, -dist * 13),
-        z: -ad * 90,
+        scale: gsap.utils.clamp(0.82, 1.16, 1.16 - ad * 0.32),
+        autoAlpha: gsap.utils.clamp(0.42, 1, 1.1 - ad * 0.2),
+        rotateY: 0,
+        z: 0,
         zIndex: Math.round(200 - ad * 12),
-        transformPerspective: 1200,
         transformOrigin: 'center center',
       })
     }

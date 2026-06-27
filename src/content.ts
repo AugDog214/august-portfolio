@@ -1,7 +1,7 @@
 export const siteMeta = {
   name: 'August Pirraglia',
   role: 'Creative Director',
-  email: 'apirr4@gmail.com',
+  email: 'apirr47@gmail.com',
   siteUrl: 'https://augdog214.github.io/august-portfolio/',
   ogImage: 'social/august-portfolio-social.svg',
   description:

@@ -49,71 +49,77 @@ export const portfolioContent = {
       ariaLabel: 'Twin Dragon Games exterior signage',
     },
   },
-  // SECTION 3 — Projects carousel (light theme). Placeholder content:
-  // swap `blurb` for real copy, set `accent` per project, and the full-screen
-  // viewer renders `gallery` placeholder panels (replace with real artwork later).
+  // SECTION 3 — Projects (fixed-frame carousel, light theme).
+  // Each item has one `cover` (the media that plays in the stationary frame)
+  // and a `gallery` of extra media shown in the full-screen View Project viewer.
+  // cover/gallery media: { kind: 'video' | 'image', src, poster?, pan? }
   projects: {
     id: 'projects',
     ariaLabel: 'Selected art projects',
     eyebrow: 'Selected Work',
     viewLabel: 'View Project',
     closeLabel: 'Close',
+    autoMs: 6500,
     items: [
       {
         name: 'Signage',
         tag: 'Environmental / Large Format',
         blurb:
-          'Placeholder: large-format environmental signage built brand-first — exterior identity, wayfinding, and print-ready production.',
-        accent: '#c77a3c',
-        gallery: 6,
+          'Brand-first environmental signage and wayfinding — exterior identity built for the street and produced print-ready.',
+        accent: '#2f5f8f',
+        cover: { kind: 'video', src: 'media/projects/signage/cover.mp4', poster: 'media/projects/signage/poster.webp' },
+        gallery: [
+          { kind: 'image', src: 'media/projects/signage/belamo.webp' },
+          { kind: 'image', src: 'media/projects/signage/wayfinding.webp' },
+        ],
       },
       {
         name: "Astro Fool's Hopper",
         tag: 'AI Film / Art Direction',
         blurb:
-          'Placeholder: an AI-assisted product film — world-building, art direction, and edit rhythm authored as one system.',
+          'An AI-assisted product film for an IPA concept — world-building, character, and edit rhythm authored as one system.',
         accent: '#d8552f',
-        gallery: 7,
+        cover: { kind: 'video', src: 'media/projects/astro/cover.mp4', poster: 'media/projects/astro/poster.webp' },
+        gallery: [{ kind: 'image', src: 'media/projects/astro/can.webp' }],
       },
       {
         name: 'Gap City Media',
-        tag: 'Brand Identity',
+        tag: 'Brand / Social / Video',
         blurb:
-          'Placeholder: a full brand identity system — logo, type, color, and the rules that keep it consistent everywhere.',
-        accent: '#3c7ac7',
-        gallery: 5,
+          'Brand, social, and short-form video for Gap City Media — identity through motion, built to perform on feed.',
+        accent: '#e0398f',
+        cover: { kind: 'video', src: 'media/projects/gapcity/cover.mp4', poster: 'media/projects/gapcity/poster.webp' },
+        gallery: [
+          { kind: 'image', src: 'media/projects/gapcity/logo.webp' },
+          { kind: 'image', src: 'media/projects/gapcity/banner.webp', pan: true },
+        ],
       },
       {
         name: 'Kababz: Menu',
         tag: 'Menu / Print Design',
         blurb:
-          'Placeholder: menu and print design — appetite-first hierarchy, photography direction, and clean press files.',
-        accent: '#b8923c',
-        gallery: 5,
+          'Menu and print design for Kababz Heaven — appetite-first hierarchy and clean, press-ready artwork.',
+        accent: '#c08a3c',
+        cover: { kind: 'image', src: 'media/projects/kababz/cover.webp' },
+        gallery: [{ kind: 'image', src: 'media/projects/kababz/menu-2.webp' }],
       },
       {
         name: 'Art Posters',
-        tag: 'Poster Series',
+        tag: 'Poster Series / Motion',
         blurb:
-          'Placeholder: an original poster series — bold type, composition, and experimental layout systems.',
-        accent: '#8a5cc7',
-        gallery: 8,
-      },
-      {
-        name: 'Faded Jays',
-        tag: 'Brand / Apparel',
-        blurb:
-          'Placeholder: brand and apparel direction — identity, garment graphics, and the lookbook around it.',
-        accent: '#3cb38a',
-        gallery: 6,
+          'An original poster series and motion piece — bold type, composition, and experimental layout.',
+        accent: '#c2354a',
+        cover: { kind: 'video', src: 'media/projects/posters/cover.mp4', poster: 'media/projects/posters/poster.webp' },
+        gallery: [{ kind: 'image', src: 'media/projects/posters/antidesign.webp' }],
       },
       {
         name: 'Rage Energy Drink',
-        tag: 'Packaging / Brand',
+        tag: 'Packaging / 3D Render',
         blurb:
-          'Placeholder: packaging and brand for an energy drink — can design, shelf presence, and campaign assets.',
-        accent: '#d83c5e',
-        gallery: 6,
+          'Packaging and 3D product rendering for an energy drink concept — can design, finish, and shelf presence.',
+        accent: '#6a4bd0',
+        cover: { kind: 'image', src: 'media/projects/rage/cover.webp' },
+        gallery: [],
       },
     ],
   },

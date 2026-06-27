@@ -4,6 +4,8 @@ import { resolvePublicUrl } from './urls'
 export function renderSite() {
   const { navigation, hero, reveal, projects, horizontalFlow, iris, build, meta, contact } = portfolioContent
   const firstProject = projects.items[0]
+  const coverThumb = (cover: { kind: string; src: string; poster?: string }) =>
+    cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
   const revealTickerSeparator = '&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;'
   const revealTickerText = `${reveal.subheadline.split(' • ').join(revealTickerSeparator)}${revealTickerSeparator}`
   const revealTicker = Array.from({ length: 4 }, () => `<span class="reveal-subheadline-group">${revealTickerText}</span>`).join('')
@@ -89,36 +91,34 @@ export function renderSite() {
             <h2 class="projects-title" data-projects-title>${firstProject.name}</h2>
           </header>
 
-          <div class="projects-stage" data-projects-stage>
-            <div class="projects-track" data-projects-track>
-              ${projects.items
-                .map(
-                  (project, index) => `
-                <article class="project-card" data-project-card data-index="${index}" style="--accent: ${project.accent}" tabindex="0" role="button" aria-label="${project.name}">
-                  <div class="project-card-art" aria-hidden="true">
-                    <span class="project-card-num">${String(index + 1).padStart(2, '0')}</span>
-                  </div>
-                  <div class="project-card-meta">
-                    <p class="project-card-name">${project.name}</p>
-                    <p class="project-card-tag">${project.tag}</p>
-                  </div>
-                </article>`,
-                )
-                .join('')}
-            </div>
-
+          <div class="pf-stage" data-pf-stage>
+          <div class="pf-strip" data-pf-strip>
+            ${projects.items
+              .map(
+                (project, index) => `
+              <button class="pf-thumb" type="button" data-pf-thumb data-index="${index}" style="--accent: ${project.accent}" aria-label="${project.name}">
+                <img class="pf-thumb-img" src="${resolvePublicUrl(coverThumb(project.cover))}" alt="" loading="lazy" decoding="async" />
+              </button>`,
+              )
+              .join('')}
           </div>
 
-          <p class="projects-hint" aria-hidden="true">Scroll to browse &middot; click a card to select</p>
+          <div class="pf-frame" data-pf-frame style="--accent: ${firstProject.accent}">
+            <div class="pf-backdrop" data-pf-backdrop aria-hidden="true"></div>
+            <div class="pf-media" data-pf-media></div>
+            <span class="pf-frameline" aria-hidden="true"></span>
+            <span class="pf-progress" data-pf-progress aria-hidden="true"></span>
+            <button class="pf-mute" type="button" data-pf-mute aria-label="Unmute" hidden>
+              <span class="pf-mute-icon" data-pf-mute-icon aria-hidden="true">&#128263;</span>
+            </button>
+          </div>
+        </div>
         </div>
 
         <aside class="project-glass" data-project-glass>
           <div class="project-glass-inner">
-            <div class="project-glass-preview" data-glass-preview style="--accent: ${firstProject.accent}">
-              <span class="project-glass-preview-num" data-glass-preview-num>01</span>
-            </div>
-            <h3 class="project-glass-name" data-glass-name>${firstProject.name}</h3>
             <p class="project-glass-tag" data-glass-tag>${firstProject.tag}</p>
+            <h3 class="project-glass-name" data-glass-name>${firstProject.name}</h3>
             <p class="project-glass-blurb" data-glass-blurb>${firstProject.blurb}</p>
             <button class="project-view" type="button" data-view-project>
               <span>${projects.viewLabel}</span>

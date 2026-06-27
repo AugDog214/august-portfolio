@@ -461,134 +461,232 @@ function initMeta() {
 
 function initProjects() {
   const section = document.querySelector<HTMLElement>('[data-projects]')
-  const stage = document.querySelector<HTMLElement>('[data-projects-stage]')
-  const track = document.querySelector<HTMLElement>('[data-projects-track]')
-  const cards = gsap.utils.toArray<HTMLElement>('[data-project-card]')
+  const stage = document.querySelector<HTMLElement>('[data-pf-stage]')
+  const strip = document.querySelector<HTMLElement>('[data-pf-strip]')
+  const thumbs = gsap.utils.toArray<HTMLElement>('[data-pf-thumb]')
+  const frame = document.querySelector<HTMLElement>('[data-pf-frame]')
+  const backdrop = document.querySelector<HTMLElement>('[data-pf-backdrop]')
+  const mediaBox = document.querySelector<HTMLElement>('[data-pf-media]')
+  const progress = document.querySelector<HTMLElement>('[data-pf-progress]')
+  const muteBtn = document.querySelector<HTMLButtonElement>('[data-pf-mute]')
+  const muteIcon = document.querySelector<HTMLElement>('[data-pf-mute-icon]')
   const titleEl = document.querySelector<HTMLElement>('[data-projects-title]')
   const glass = document.querySelector<HTMLElement>('[data-project-glass]')
   const glassTag = document.querySelector<HTMLElement>('[data-glass-tag]')
   const glassName = document.querySelector<HTMLElement>('[data-glass-name]')
   const glassBlurb = document.querySelector<HTMLElement>('[data-glass-blurb]')
-  const glassPreview = document.querySelector<HTMLElement>('[data-glass-preview]')
-  const glassPreviewNum = document.querySelector<HTMLElement>('[data-glass-preview-num]')
 
-  if (!section || !stage || !track || cards.length === 0 || !glass) {
+  if (!section || !stage || !strip || thumbs.length === 0 || !frame || !backdrop || !mediaBox || !glass) {
     return
   }
 
   const items = portfolioContent.projects.items
-  const count = cards.length
-  const loops = 1.25
+  const count = items.length
+  const autoMs = portfolioContent.projects.autoMs
   let spacing = 1
-  let cardWidth = 0
+  let thumbW = 0
   let stageCenter = 0
-  let activeIndex = 0
-  let swapTimer = 0
+  let activeIndex = -1
+  let currentVideo: HTMLVideoElement | null = null
+  let soundOn = false
+  let autoTween: gsap.core.Tween | null = null
+  let autoScrolling = false
+  let userIdleTimer = 0
+  let trigger: ScrollTrigger | undefined
 
   const wrapDelta = (value: number) => {
     const m = ((value % count) + count) % count
     return m > count / 2 ? m - count : m
   }
 
+  const viewerOpen = () => document.body.dataset.viewerOpen === 'true'
+
   const measure = () => {
-    cardWidth = cards[0].offsetWidth
-    spacing = cardWidth * 0.78
+    thumbW = thumbs[0].offsetWidth || 1
+    spacing = thumbW * 1.18
     const glassWidth = window.innerWidth > 820 ? glass.offsetWidth : 0
     stageCenter = (stage.clientWidth - glassWidth) / 2
+    frame.style.left = `${stageCenter}px`
   }
 
-  const updateFeatured = (index: number, immediate = false) => {
-    const item = items[index]
-    glass.dataset.activeIndex = String(index)
+  const positionStrip = (pos: number) => {
+    for (let i = 0; i < count; i += 1) {
+      const dist = wrapDelta(i - pos)
+      const ad = Math.abs(dist)
+      gsap.set(thumbs[i], {
+        x: stageCenter + dist * spacing - thumbW / 2,
+        scale: gsap.utils.clamp(0.8, 1, 1 - ad * 0.05),
+        autoAlpha: gsap.utils.clamp(0, 1, (count / 2 - ad) / 0.9),
+        zIndex: Math.round(40 - ad),
+      })
+    }
+  }
 
-    const apply = () => {
+  const updateMuteUI = () => {
+    if (!muteBtn || !muteIcon) return
+    muteIcon.innerHTML = soundOn ? '&#128266;' : '&#128263;'
+    muteBtn.setAttribute('aria-label', soundOn ? 'Mute' : 'Unmute')
+    muteBtn.classList.toggle('is-on', soundOn)
+  }
+
+  const coverPoster = (cover: { kind: string; src: string; poster?: string }) =>
+    cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
+
+  const setActive = (index: number, immediate = false) => {
+    if (index === activeIndex) return
+    activeIndex = index
+    const item = items[index]
+    const cover = item.cover as { kind: string; src: string; poster?: string }
+    glass.dataset.activeIndex = String(index)
+    frame.style.setProperty('--accent', item.accent)
+    backdrop.style.backgroundImage = `url("${resolvePublicUrl(coverPoster(cover))}")`
+
+    mediaBox.innerHTML = ''
+    if (cover.kind === 'video' && !prefersReducedMotion) {
+      const video = document.createElement('video')
+      video.className = 'pf-video'
+      video.muted = !soundOn
+      video.loop = true
+      video.playsInline = true
+      video.preload = 'auto'
+      if (cover.poster) video.poster = resolvePublicUrl(cover.poster)
+      const src = document.createElement('source')
+      src.src = resolvePublicUrl(cover.src)
+      src.type = 'video/mp4'
+      video.appendChild(src)
+      mediaBox.appendChild(video)
+      currentVideo = video
+      if (!viewerOpen()) video.play().catch(() => {})
+      if (muteBtn) muteBtn.hidden = false
+      updateMuteUI()
+    } else {
+      const img = document.createElement('img')
+      img.className = 'pf-img'
+      img.src = resolvePublicUrl(coverPoster(cover))
+      img.alt = item.name
+      mediaBox.appendChild(img)
+      currentVideo = null
+      if (muteBtn) muteBtn.hidden = true
+    }
+
+    thumbs.forEach((thumb, i) => {
+      thumb.classList.toggle('is-active', i === index)
+      if (i === index) thumb.setAttribute('aria-current', 'true')
+      else thumb.removeAttribute('aria-current')
+    })
+
+    const applyText = () => {
       if (titleEl) titleEl.textContent = item.name
       if (glassTag) glassTag.textContent = item.tag
       if (glassName) glassName.textContent = item.name
       if (glassBlurb) glassBlurb.textContent = item.blurb
-      if (glassPreview) glassPreview.style.setProperty('--accent', item.accent)
-      if (glassPreviewNum) glassPreviewNum.textContent = String(index + 1).padStart(2, '0')
       titleEl?.classList.remove('is-swapping')
       glass.classList.remove('is-swapping')
     }
-
     if (immediate) {
-      apply()
-      return
+      applyText()
+    } else {
+      titleEl?.classList.add('is-swapping')
+      glass.classList.add('is-swapping')
+      window.setTimeout(applyText, 180)
     }
-
-    titleEl?.classList.add('is-swapping')
-    glass.classList.add('is-swapping')
-    window.clearTimeout(swapTimer)
-    swapTimer = window.setTimeout(apply, 200)
   }
 
-  const layout = (pos: number) => {
-    for (let i = 0; i < count; i += 1) {
-      const dist = wrapDelta(i - pos)
-      const ad = Math.abs(dist)
-      gsap.set(cards[i], {
-        x: stageCenter + dist * spacing - cardWidth / 2,
-        scale: gsap.utils.clamp(0.46, 1, 1 - ad * 0.54),
-        autoAlpha: gsap.utils.clamp(0.42, 1, 1.1 - ad * 0.2),
-        rotateY: 0,
-        z: 0,
-        zIndex: Math.round(200 - ad * 12),
-        transformOrigin: 'center center',
-      })
-    }
-    const centered = ((Math.round(pos) % count) + count) % count
-    cards.forEach((card, i) => card.classList.toggle('is-featured', i === centered))
-    if (centered !== activeIndex) {
-      activeIndex = centered
-      updateFeatured(centered)
-    }
+  const clearAuto = () => {
+    autoTween?.kill()
+    autoTween = null
+    if (progress) gsap.set(progress, { scaleX: 0 })
+  }
+
+  const startAuto = () => {
+    if (prefersReducedMotion || !progress || viewerOpen()) return
+    clearAuto()
+    gsap.set(progress, { scaleX: 0, transformOrigin: 'left center' })
+    autoTween = gsap.to(progress, {
+      scaleX: 1,
+      duration: autoMs / 1000,
+      ease: 'none',
+      onComplete: () => advanceTo((activeIndex + 1) % count),
+    })
+  }
+
+  const advanceTo = (index: number) => {
+    if (viewerOpen() || !trigger) return
+    const target = trigger.start + (count > 1 ? index / (count - 1) : 0) * (trigger.end - trigger.start)
+    autoScrolling = true
+    clearAuto()
+    const obj = { y: window.scrollY }
+    gsap.to(obj, {
+      y: target,
+      duration: 0.7,
+      ease: 'power2.inOut',
+      onUpdate: () => window.scrollTo(0, obj.y),
+      onComplete: () => {
+        autoScrolling = false
+        startAuto()
+      },
+    })
   }
 
   measure()
-  layout(0)
-  updateFeatured(0, true)
-  track.classList.add('is-ready')
+  setActive(0, true)
+  positionStrip(0)
+  strip.classList.add('is-ready')
+
+  thumbs.forEach((thumb, index) => {
+    thumb.addEventListener('click', () => advanceTo(index))
+  })
+  muteBtn?.addEventListener('click', () => {
+    soundOn = !soundOn
+    if (currentVideo) currentVideo.muted = !soundOn
+    updateMuteUI()
+  })
+  stage.addEventListener('pointerenter', () => autoTween?.pause())
+  stage.addEventListener('pointerleave', () => autoTween?.resume())
+  section.addEventListener('pf:pause', () => {
+    clearAuto()
+    currentVideo?.pause()
+  })
+  section.addEventListener('pf:resume', () => {
+    startAuto()
+    if (!prefersReducedMotion) currentVideo?.play().catch(() => {})
+  })
 
   if (prefersReducedMotion) {
     return
   }
 
-  const trigger = ScrollTrigger.create({
+  trigger = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
     end: pinDistance(4),
     pin: true,
     invalidateOnRefresh: true,
     onRefreshInit: measure,
-    onUpdate: (self) => layout(self.progress * loops * count),
-  })
-
-  const centerOn = (index: number) => {
-    const currentPos = trigger.progress * loops * count
-    const targetPos = index + Math.round((currentPos - index) / count) * count
-    const targetProgress = gsap.utils.clamp(0, 1, targetPos / (loops * count))
-    const target = trigger.start + targetProgress * (trigger.end - trigger.start)
-    window.scrollTo({ top: target, behavior: 'smooth' })
-  }
-
-  cards.forEach((card, index) => {
-    card.addEventListener('click', () => {
-      if (index !== activeIndex) {
-        centerOn(index)
+    onUpdate: (self) => {
+      const pos = self.progress * (count - 1)
+      positionStrip(pos)
+      setActive(Math.round(pos))
+      if (!autoScrolling) {
+        clearAuto()
+        window.clearTimeout(userIdleTimer)
+        userIdleTimer = window.setTimeout(startAuto, 900)
       }
-    })
-    card.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        centerOn(index)
+    },
+    onToggle: (self) => {
+      if (self.isActive) {
+        startAuto()
+        if (!viewerOpen()) currentVideo?.play().catch(() => {})
+      } else {
+        clearAuto()
+        currentVideo?.pause()
       }
-    })
+    },
   })
 
   window.addEventListener('resize', () => {
     measure()
-    layout(trigger.progress * loops * count)
+    positionStrip((trigger?.progress ?? 0) * (count - 1))
   })
 }
 
@@ -599,7 +697,8 @@ function initProjectViewer() {
   const openButton = document.querySelector<HTMLElement>('[data-view-project]')
   const closeButton = document.querySelector<HTMLElement>('[data-viewer-close]')
   const glass = document.querySelector<HTMLElement>('[data-project-glass]')
-  const cards = gsap.utils.toArray<HTMLElement>('[data-project-card]')
+  const frame = document.querySelector<HTMLElement>('[data-pf-frame]')
+  const section = document.querySelector<HTMLElement>('[data-projects]')
 
   if (!viewer || !scroll || !openButton || !closeButton || !glass) {
     return
@@ -609,6 +708,21 @@ function initProjectViewer() {
   let lastFocused: HTMLElement | null = null
   let isOpen = false
 
+  const panelHtml = (
+    media: { kind: string; src: string; poster?: string; pan?: boolean },
+    accent: string,
+    name: string,
+  ) => {
+    if (media.kind === 'video') {
+      return `<div class="viewer-panel viewer-panel--video" style="--accent: ${accent}">
+        <video src="${resolvePublicUrl(media.src)}"${media.poster ? ` poster="${resolvePublicUrl(media.poster)}"` : ''} controls playsinline preload="metadata"></video>
+      </div>`
+    }
+    return `<div class="viewer-panel${media.pan ? ' viewer-panel--pan' : ''}" style="--accent: ${accent}">
+      <img src="${resolvePublicUrl(media.src)}" alt="${name}" loading="lazy" decoding="async" />
+    </div>`
+  }
+
   const open = () => {
     if (isOpen) {
       return
@@ -616,12 +730,9 @@ function initProjectViewer() {
 
     const index = Number(glass.dataset.activeIndex ?? '0')
     const item = items[index]
+    const media = [item.cover, ...item.gallery]
 
-    scroll.innerHTML = Array.from(
-      { length: item.gallery },
-      (_, n) =>
-        `<div class="viewer-panel" style="--accent: ${item.accent}">${item.name} &mdash; Frame ${String(n + 1).padStart(2, '0')}</div>`,
-    ).join('')
+    scroll.innerHTML = media.map((m) => panelHtml(m, item.accent, item.name)).join('')
     if (titleEl) {
       titleEl.textContent = item.name
     }
@@ -629,16 +740,16 @@ function initProjectViewer() {
 
     lastFocused = document.activeElement as HTMLElement | null
     document.body.style.overflow = 'hidden'
+    document.body.dataset.viewerOpen = 'true'
+    section?.dispatchEvent(new CustomEvent('pf:pause'))
     viewer.setAttribute('aria-hidden', 'false')
     viewer.classList.add('is-open')
     isOpen = true
 
-    const card = cards.find((entry) => entry.classList.contains('is-featured')) ?? cards[index]
-
-    if (prefersReducedMotion || !card) {
+    if (prefersReducedMotion || !frame) {
       gsap.set(viewer, { clipPath: 'inset(0px round 0px)' })
     } else {
-      const rect = card.getBoundingClientRect()
+      const rect = frame.getBoundingClientRect()
       const clip = {
         t: Math.max(0, rect.top),
         r: Math.max(0, window.innerWidth - rect.right),
@@ -669,7 +780,10 @@ function initProjectViewer() {
     viewer.classList.remove('is-open')
     viewer.setAttribute('aria-hidden', 'true')
     document.body.style.overflow = ''
+    delete document.body.dataset.viewerOpen
+    viewer.querySelectorAll('video').forEach((video) => video.pause())
     gsap.set(viewer, { clearProps: 'clipPath' })
+    section?.dispatchEvent(new CustomEvent('pf:resume'))
     lastFocused?.focus?.()
   }
 

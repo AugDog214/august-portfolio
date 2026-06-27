@@ -100,13 +100,13 @@ export const portfolioContent = {
         blurb:
           'Menu and print design for Kababz Heaven — appetite-first hierarchy and clean, press-ready artwork.',
         accent: '#c08a3c',
-        cover: { kind: 'image', src: 'media/projects/kababz/cover.webp' },
-        // both menu pages cycle in the frame while this card is active
+        cover: { kind: 'image', src: 'media/projects/kababz/menu-2.webp' },
+        // both menu pages cycle in the frame; page 2 plays first
         slides: [
-          { kind: 'image', src: 'media/projects/kababz/cover.webp' },
           { kind: 'image', src: 'media/projects/kababz/menu-2.webp' },
+          { kind: 'image', src: 'media/projects/kababz/cover.webp' },
         ],
-        gallery: [{ kind: 'image', src: 'media/projects/kababz/menu-2.webp' }],
+        gallery: [{ kind: 'image', src: 'media/projects/kababz/cover.webp' }],
       },
       {
         name: 'Art Posters',

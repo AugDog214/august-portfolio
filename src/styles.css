@@ -1395,15 +1395,23 @@ video {
     linear-gradient(180deg, var(--p-bg) 0%, var(--p-bg-2) 100%);
 }
 
-/* dark -> light transition band at the top */
-.projects::before {
-  content: '';
+/* dark -> beige cross-fade as the section scrolls in (scrubbed in JS).
+   Matches the previous (dark) section so the colors never collide. */
+.projects-veil {
   position: absolute;
-  inset: 0 0 auto 0;
-  height: 18vh;
-  z-index: 3;
+  inset: 0;
+  z-index: 60;
+  opacity: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, var(--bg) 0%, rgba(20, 20, 22, 0.4) 32%, transparent 100%);
+  /* dark at the top edge (seamless with the previous dark section),
+     clearing over the beige below; overall opacity is scrubbed in JS */
+  background: linear-gradient(
+    180deg,
+    var(--bg) 0%,
+    var(--bg) 24%,
+    rgba(20, 20, 22, 0.55) 48%,
+    rgba(20, 20, 22, 0) 78%
+  );
 }
 
 .projects-inner {

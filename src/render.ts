@@ -85,6 +85,7 @@ export function renderSite() {
 
       <section class="projects scene" id="${projects.id}" aria-label="${projects.ariaLabel}" data-scene="projects" data-projects>
         <div class="projects-grain" aria-hidden="true"></div>
+        <div class="projects-veil" data-projects-veil aria-hidden="true"></div>
         <div class="projects-inner">
           <header class="projects-head">
             <p class="projects-eyebrow">${projects.eyebrow}</p>

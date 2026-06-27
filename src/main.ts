@@ -307,7 +307,7 @@ function initReveal() {
   ScrollTrigger.create({
     trigger: reveal,
     start: 'top top',
-    end: pinDistance(2.8),
+    end: pinDistance(2.2),
     pin: true,
     invalidateOnRefresh: true,
     onEnter: playVideo,
@@ -317,8 +317,8 @@ function initReveal() {
       const artworkIn = smoothstep(mapProgress(self.progress, 0.04, 0.3))
       const copyIn = smoothstep(mapProgress(self.progress, 0.08, 0.34))
       const editorialIn = smoothstep(mapProgress(self.progress, 0.3, 0.48))
-      const out = smoothstep(mapProgress(self.progress, 0.68, 0.94))
-      const brandFlip = smoothstep(mapProgress(self.progress, 0.78, 0.96))
+      const out = smoothstep(mapProgress(self.progress, 0.74, 0.99))
+      const brandFlip = smoothstep(mapProgress(self.progress, 0.82, 0.99))
       const viewportHeight = window.innerHeight
 
       gsap.set(banner, {
@@ -728,6 +728,20 @@ function initProjects() {
       }
     },
   })
+
+  // beige cross-fades up over the dark section as it scrolls in
+  const veil = section.querySelector<HTMLElement>('[data-projects-veil]')
+  if (veil) {
+    gsap.fromTo(
+      veil,
+      { autoAlpha: 1 },
+      {
+        autoAlpha: 0,
+        ease: 'none',
+        scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: true },
+      },
+    )
+  }
 
   window.addEventListener('resize', () => {
     measure()

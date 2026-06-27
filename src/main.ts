@@ -492,6 +492,7 @@ function initProjects() {
   let autoTween: gsap.core.Tween | null = null
   let autoScrolling = false
   let userIdleTimer = 0
+  let slideTimer = 0
   let trigger: ScrollTrigger | undefined
 
   const wrapDelta = (value: number) => {
@@ -532,11 +533,23 @@ function initProjects() {
   const coverPoster = (cover: { kind: string; src: string; poster?: string }) =>
     cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
 
+  const renderFrameImage = (src: string, alt: string) => {
+    mediaBox.innerHTML = ''
+    const img = document.createElement('img')
+    img.className = 'pf-img'
+    img.src = resolvePublicUrl(src)
+    img.alt = alt
+    mediaBox.appendChild(img)
+    backdrop.style.backgroundImage = `url("${resolvePublicUrl(src)}")`
+  }
+
   const setActive = (index: number, immediate = false) => {
     if (index === activeIndex) return
     activeIndex = index
+    window.clearInterval(slideTimer)
     const item = items[index]
     const cover = item.cover as { kind: string; src: string; poster?: string }
+    const slides = (item as { slides?: { kind: string; src: string }[] }).slides
     glass.dataset.activeIndex = String(index)
     frame.style.setProperty('--accent', item.accent)
     backdrop.style.backgroundImage = `url("${resolvePublicUrl(coverPoster(cover))}")`
@@ -560,13 +573,18 @@ function initProjects() {
       if (muteBtn) muteBtn.hidden = false
       updateMuteUI()
     } else {
-      const img = document.createElement('img')
-      img.className = 'pf-img'
-      img.src = resolvePublicUrl(coverPoster(cover))
-      img.alt = item.name
-      mediaBox.appendChild(img)
       currentVideo = null
       if (muteBtn) muteBtn.hidden = true
+      if (slides && slides.length > 1 && !prefersReducedMotion) {
+        let si = 0
+        renderFrameImage(slides[0].src, item.name)
+        slideTimer = window.setInterval(() => {
+          si = (si + 1) % slides.length
+          renderFrameImage(slides[si].src, item.name)
+        }, autoMs / slides.length)
+      } else {
+        renderFrameImage(coverPoster(cover), item.name)
+      }
     }
 
     thumbs.forEach((thumb, i) => {

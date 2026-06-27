@@ -483,6 +483,8 @@ function initProjects() {
   const items = portfolioContent.projects.items
   const count = items.length
   const autoMs = portfolioContent.projects.autoMs
+  const cycles = 2 // scroll loops through all cards this many times before unpinning
+  const maxPos = cycles * count
   let spacing = 1
   let thumbW = 0
   let stageCenter = 0
@@ -624,13 +626,16 @@ function initProjects() {
       scaleX: 1,
       duration: autoMs / 1000,
       ease: 'none',
-      onComplete: () => advanceTo((activeIndex + 1) % count),
+      onComplete: () => autoNext(),
     })
   }
 
-  const advanceTo = (index: number) => {
+  const currentPos = () => (trigger?.progress ?? 0) * maxPos
+
+  const scrollToPos = (pos: number) => {
     if (viewerOpen() || !trigger) return
-    const target = trigger.start + (count > 1 ? index / (count - 1) : 0) * (trigger.end - trigger.start)
+    const clamped = gsap.utils.clamp(0, maxPos, pos)
+    const target = trigger.start + (clamped / maxPos) * (trigger.end - trigger.start)
     autoScrolling = true
     clearAuto()
     const obj = { y: window.scrollY }
@@ -646,13 +651,35 @@ function initProjects() {
     })
   }
 
+  // auto-advance: step forward one card; loop back to the start within the pin
+  const autoNext = () => {
+    let next = Math.round(currentPos()) + 1
+    if (next > maxPos) next = 0
+    scrollToPos(next)
+  }
+
+  // jump to the nearest occurrence of a card index (covers appear twice across the loops)
+  const gotoIndex = (index: number) => {
+    const cur = currentPos()
+    let best = index
+    let bestDist = Infinity
+    for (let c = index; c <= maxPos; c += count) {
+      const d = Math.abs(c - cur)
+      if (d < bestDist) {
+        bestDist = d
+        best = c
+      }
+    }
+    scrollToPos(best)
+  }
+
   measure()
   setActive(0, true)
   positionStrip(0)
   strip.classList.add('is-ready')
 
   thumbs.forEach((thumb, index) => {
-    thumb.addEventListener('click', () => advanceTo(index))
+    thumb.addEventListener('click', () => gotoIndex(index))
   })
   muteBtn?.addEventListener('click', () => {
     soundOn = !soundOn
@@ -677,14 +704,14 @@ function initProjects() {
   trigger = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
-    end: pinDistance(4),
+    end: pinDistance(4 * cycles),
     pin: true,
     invalidateOnRefresh: true,
     onRefreshInit: measure,
     onUpdate: (self) => {
-      const pos = self.progress * (count - 1)
+      const pos = self.progress * maxPos
       positionStrip(pos)
-      setActive(Math.round(pos))
+      setActive(Math.round(pos) % count)
       if (!autoScrolling) {
         clearAuto()
         window.clearTimeout(userIdleTimer)
@@ -704,7 +731,7 @@ function initProjects() {
 
   window.addEventListener('resize', () => {
     measure()
-    positionStrip((trigger?.progress ?? 0) * (count - 1))
+    positionStrip(currentPos())
   })
 }
 

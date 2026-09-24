@@ -15,6 +15,13 @@ if (!app) {
 gsap.registerPlugin(ScrollTrigger)
 gsap.defaults({ ease: 'none' })
 
+// Nav switches to a light, borderless glass while it sits over the cream section,
+// so there is no dark bar / hard line cutting across Selected Work.
+// (declared up here, before any init* runs, so ScrollTrigger callbacks can use it)
+const navTheme = { reveal: false, projects: false }
+const syncNavTheme = () => {
+  document.querySelector('[data-nav]')?.classList.toggle('nav--light', navTheme.reveal || navTheme.projects)
+}
 const pinDistance = (viewportHeights: number) => () => `+=${Math.max(1, Math.round(window.innerHeight * viewportHeights))}`
 const renderProjectTools = (tools: readonly ProjectToolKey[]) =>
   tools
@@ -326,11 +333,20 @@ function initReveal() {
   //   0.70–1.00  editorial headline
   //   1.00–1.50  HOLD — clean dark, nothing from the next section
   //   1.50–1.80  content lifts + fades out
-  //   1.80–2.15  only now does the beige wash rise (empty screen), nav flips
+  //   1.80–2.10  only now does the cream wash rise (empty screen), nav flips
+  //   2.15–3.15  Selected Work rises OVER the finished wash (same cream, so no
+  //              edge) — its card leads, title follows, brief panel swings in
   const PRE_ROLL = 0.65
-  const PIN = 1.5
+  const PIN = 2.5
   const TOTAL = PRE_ROLL + PIN
   const at = (u: number, from: number, to: number) => smoothstep(mapProgress(u, from, to))
+
+  const projectsSection = document.querySelector<HTMLElement>('[data-projects]')
+  const overlap = () => {
+    if (projectsSection) projectsSection.style.marginTop = `-${window.innerHeight}px`
+  }
+  overlap()
+  ScrollTrigger.addEventListener('refreshInit', overlap)
 
   ScrollTrigger.create({
     trigger: reveal,
@@ -347,7 +363,12 @@ function initReveal() {
     invalidateOnRefresh: true,
     onEnter: playVideo,
     onEnterBack: playVideo,
-    onLeave: () => video?.pause(),
+    onLeave: () => {
+      video?.pause()
+      // hand the nav theme over to Selected Work's own trigger
+      navTheme.reveal = false
+      syncNavTheme()
+    },
     onLeaveBack: () => video?.pause(),
     onUpdate: (self) => {
       const u = self.progress * TOTAL
@@ -357,8 +378,12 @@ function initReveal() {
       const copyIn = at(u, 0.3, 0.85)
       const editorialIn = at(u, 0.7, 1.0)
       const out = at(u, 1.5, 1.8)
-      const wash = at(u, 1.8, 2.15)
+      const wash = at(u, 1.8, 2.1)
       const brandFlip = at(u, 1.8, 2.1)
+      if (navTheme.reveal !== wash > 0.6) {
+        navTheme.reveal = wash > 0.6
+        syncNavTheme()
+      }
       const lift = -vh * 0.28 * out
 
       reveal.style.setProperty('--projects-wash', wash.toFixed(3))
@@ -815,34 +840,59 @@ function initProjects() {
     return
   }
 
-  // Entry: the section rises in on its own (no full-screen wipe). The cards land
-  // first, then the title, then the brief panel — each eased, scrubbed with a
-  // little lag so it glides instead of tracking the wheel 1:1.
+  // Entry: the section rises over the reveal's finished cream wash (identical
+  // colour, so its edge is invisible). Its content rides a lag so the CARD glides up
+  // and settles in the middle of the frame first (sine.in -> near-zero velocity on
+  // arrival), then the title fades in, then the brief panel swings up from below.
+  const inner = section.querySelector<HTMLElement>('.projects-inner')
+  const wide = () => window.innerWidth > 820
   const entry = gsap.timeline({
-    defaults: { ease: 'power3.out' },
     scrollTrigger: {
       trigger: section,
-      start: 'top 92%',
+      start: 'top bottom',
       end: 'top top',
-      scrub: 0.8,
+      scrub: 0.6,
       invalidateOnRefresh: true,
     },
   })
-  entry.fromTo(
-    stage,
-    { autoAlpha: 0, y: () => Math.min(window.innerHeight * 0.16, 140), scale: 0.94 },
-    { autoAlpha: 1, y: 0, scale: 1, duration: 0.6 },
-    0,
-  )
-  if (projectsHead) {
-    entry.fromTo(projectsHead, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 0.3)
+  if (inner) {
+    entry.fromTo(inner, { y: () => -window.innerHeight * 0.6 }, { y: 0, ease: 'sine.in', duration: 1 }, 0)
   }
+  entry.fromTo(stage, { autoAlpha: 0, scale: 0.94 }, { autoAlpha: 1, scale: 1, ease: 'power2.out', duration: 0.4 }, 0.02)
+  if (projectsHead) {
+    entry.fromTo(projectsHead, { autoAlpha: 0, y: 28 }, { autoAlpha: 1, y: 0, ease: 'power2.out', duration: 0.3 }, 0.42)
+  }
+  // the card first settles at the TRUE centre of the frame, then eases left to make
+  // room as the brief panel swings in (desktop, where the panel sits on the right)
+  // (shifts card + title together so they stay aligned)
+  entry.fromTo(
+    inner ?? stage,
+    { x: () => (wide() ? glass.offsetWidth / 2 : 0) },
+    { x: 0, ease: 'power2.inOut', duration: 0.42, immediateRender: true },
+    0.55,
+  )
   entry.fromTo(
     glass,
-    { autoAlpha: 0, y: () => Math.min(window.innerHeight * 0.12, 110) },
-    { autoAlpha: 1, y: 0, duration: 0.5 },
-    0.45,
+    {
+      autoAlpha: 0,
+      y: () => window.innerHeight * 0.32,
+      rotation: () => (wide() ? 2.4 : 0),
+      transformOrigin: '100% 100%',
+    },
+    { autoAlpha: 1, y: 0, rotation: 0, ease: 'power3.out', duration: 0.45 },
+    0.55,
   )
+
+  // light nav while the cream section is under it
+  ScrollTrigger.create({
+    trigger: section,
+    start: () => `top ${Math.round(window.innerHeight * 0.06)}`,
+    end: () => `bottom ${Math.round(window.innerHeight * 0.06)}`,
+    onToggle: (self) => {
+      navTheme.projects = self.isActive
+      syncNavTheme()
+    },
+  })
 
   trigger = ScrollTrigger.create({
     trigger: section,

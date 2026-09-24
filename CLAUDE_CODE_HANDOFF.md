@@ -479,3 +479,12 @@ Ask only when the answer affects implementation.
 - Iris pin shortened from 8 to 3 viewport heights.
 - Share image is now `public/social/august-portfolio-social.jpg` (1200x630).
 - Brand name fixed: Kebabz Heaven (the asset folder is still `media/projects/kababz/`).
+
+## Update — Transitions, glows, resume stats (Sept 2026, pushed live)
+
+- $39K reveal pin is 2.5 viewports: content arrives during a 0.65 pre-roll, holds on clean charcoal, lifts out, then the cream wash rises. Selected Work overlaps the last viewport of that pin (`marginTop = -innerHeight`, set in `initReveal` on every refresh) and rises OVER the finished wash — same cream, so no seam. Entry: `.projects-inner` rides a sine.in lag so the card glides to the true centre first, title fades in, then the brief panel swings up from the bottom while card + title ease left.
+- Nav switches to `.nav--light` over the cream section (`navTheme` flags from the reveal wash + a projects trigger).
+- `.section-dusk` gradient between Selected Work and Brand. Iris opens once (pin 2). Build/Meta content arrives while scrolling in.
+- Glows use eased multi-stop radial gradients + `mix-blend-mode: screen` with slow drift; grain is SVG fractal noise.
+- Brand panel shows the full Belamo photo at natural ratio, extended 8vw under the copy column, with an eased mask feather.
+- Metrics, Signage/Gap City case studies, About facts and the Leveraging AI page use figures from `Resume new 3-27.pdf` (June 2026), which is also the hosted resume PDF now.

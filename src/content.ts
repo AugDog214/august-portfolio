@@ -92,9 +92,9 @@ const projectItems: Project[] = [
     name: 'Signage',
     tag: 'Environmental / Large Format',
     blurb:
-      'Exterior identity, monument signs, and wayfinding for Southwest Florida businesses — designed to read at street speed and produced print-ready.',
+      'Exterior identity, monument signs, and wayfinding for Collier County, construction sites, and commercial properties — designed to read at street speed and produced print-ready.',
     role: 'Lead Graphic Designer / Production Specialist',
-    year: '2025 — 2026',
+    year: '2025 — Present',
     client: 'FASTSIGNS of Naples',
     tools: ['illustrator', 'photoshop'],
     accent: '#2f5f8f',
@@ -106,20 +106,24 @@ const projectItems: Project[] = [
     },
     gallery: [
       { kind: 'image', src: 'media/projects/signage/belamo.webp', caption: 'Belamo Patio Furniture — monument sign mockup on site, 48 × 36 in.' },
-      { kind: 'image', src: 'media/projects/signage/wayfinding.webp', caption: 'Directional wayfinding — post-and-panel system for a public campus.' },
+      { kind: 'image', src: 'media/projects/signage/wayfinding.webp', caption: 'Directional wayfinding — post-and-panel system for a county government campus.' },
     ],
     caseStudy: [
       {
         label: 'Context',
-        body: 'As Lead Graphic Designer and Production Specialist at FASTSIGNS of Naples, I take brands from a logo file to aluminum, acrylic, and vinyl — exterior identity, monument signs, and directional wayfinding for businesses across Southwest Florida.',
+        body: 'As Lead Graphic Designer and Production Specialist at FASTSIGNS of Naples, I take brands from a logo file to aluminum, acrylic, and vinyl — large to small signage for clients like Collier County, construction sites, and commercial properties across Southwest Florida.',
       },
       {
         label: 'Approach',
         body: 'Every sign starts as a legibility problem: viewing distance, speed, light, and the building it has to live on. I mock pieces up to scale on real site photography so the client signs off on what the street will actually see, then build the production files that go straight to fabrication.',
       },
       {
+        label: 'Systems',
+        body: 'I build and code custom AI scripts and tools for Illustrator and the print process, cutting per-project turnaround time and cost by 16%. I also built a substrate tracking system from scratch that lowers cost of goods 7% month over month.',
+      },
+      {
         label: 'Outcome',
-        body: 'Work that ships at architectural scale — including a signage package that closed at $39K.',
+        body: 'Pairing design with self-directed social video campaigns, I hit 130% of our monthly sales target — $63K against a $30K goal. One signage package alone closed at $39K.',
       },
     ],
   },
@@ -163,9 +167,9 @@ const projectItems: Project[] = [
     name: 'Gap City Media',
     tag: 'Brand / Social / Video',
     blurb:
-      'Logo, channel branding, and short-form video for Gap City Media — a synthwave identity built to perform on feed.',
-    role: 'Brand Designer / Video Editor',
-    year: '2026',
+      'Live-action commercial content, channel branding, and short-form video for Gap City Media — directed from concept to final cut and built to perform on feed.',
+    role: 'Filmmaker / Creative Director',
+    year: '2023 — 2025',
     client: 'Gap City Media',
     tools: ['illustrator', 'photoshop', 'premiere', 'afterEffects'],
     accent: '#e0398f',
@@ -185,8 +189,12 @@ const projectItems: Project[] = [
         body: 'A retro-synthwave mark — sunset stripes, palms, and a neon wordmark — built as a system, so the same pieces carry from a profile avatar to a full-width channel banner.',
       },
       {
-        label: 'Video',
-        body: 'Short-form edits for the channel and its clients, including promo spots for Faded Jays in Naples, FL — cut vertical, captioned, and paced to win the first second of the scroll.',
+        label: 'Production',
+        body: 'Directed and produced live-action commercial content — multi-camera DJ performances, brand promo reels, and event recaps — plus short-form spots for clients like Faded Jays in Naples, FL, cut vertical and paced to win the first second of the scroll.',
+      },
+      {
+        label: 'Outcome',
+        body: '40% growth in client video views across YouTube and Instagram, 13 new client accounts, and a 17% lift in social lead generation. A video-first client acquisition strategy pushed monthly revenue 15%+ past target.',
       },
     ],
   },
@@ -343,10 +351,11 @@ export const portfolioContent = {
       headline: 'Brand systems that move product.',
       image: 'media/projects/signage/belamo.webp',
       imageAlt: 'Belamo Patio Furniture monument sign mockup, 48 by 36 inches, placed on site photography',
+      // from August's resume (June 2026)
       metrics: [
-        { value: '$39K', label: 'Signage package' },
-        { value: '130%', label: 'Higher campaign read' },
-        { value: '7%', label: 'Lift in conversion path' },
+        { value: '$63K', label: 'Monthly sales — 130% of a $30K target' },
+        { value: '16%', label: 'Faster, cheaper turnaround with custom AI tools' },
+        { value: '7%', label: 'Lower cost of goods, month over month' },
       ],
       credit: 'FASTSIGNS Naples / Lead Graphic Designer / Production Specialist',
     },
@@ -387,13 +396,13 @@ export const portfolioContent = {
     paragraphs: [
       'Born in Lewisville, Texas, I was drawing before I could do much else. In sixth grade I realized art and computers could be a career; a year later, after moving to Louisville, Kentucky, I designed my first logo — for my middle school track team.',
       'In high school I joined the Kentucky Army National Guard as a Fire Control Specialist, running artillery data from a computer to the gun line. In parallel I studied at the University of Kentucky across art history, digital media, sculpture, and 3D design, graduating with a BFA in Digital Media & Design.',
-      'I moved to Florida with one goal: to immerse myself in exceptional art and design, and to be better every day than I was the day before.',
+      'I moved to Florida with one goal: to immerse myself in exceptional art and design. I directed film as Creative Director at Gap City Media, and today I lead design and production at FASTSIGNS of Naples — where pairing design with my own social video campaigns hit 130% of our monthly sales target.',
     ],
     facts: [
       { label: 'Based', value: 'Fort Myers, Florida' },
       { label: 'Now', value: 'Lead Graphic Designer / Production Specialist, FASTSIGNS of Naples' },
-      { label: 'Education', value: 'BFA, Digital Media & Design — University of Kentucky' },
-      { label: 'Service', value: 'Kentucky Army National Guard — 13J Fire Control Specialist, six years' },
+      { label: 'Education', value: 'BFA, Digital Media & Design — University of Kentucky, 2023' },
+      { label: 'Service', value: 'Kentucky Army National Guard — 13J Fire Control Specialist, 2016 — 2023' },
     ],
   },
   contact: {

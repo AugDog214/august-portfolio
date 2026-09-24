@@ -3,77 +3,62 @@ import './styles.css'
 import './leveraging-ai.css'
 
 /**
- * PLACEHOLDER CONTENT — edit this object to fill in the real tools.
- * Each pillar (Design / Speed / Printing) holds tool cards.
- * Replace name / tagline / description / built with the real details.
- * Add or remove `tools` freely; the layout adapts.
+ * Content from August's resume (June 2026). Only verified facts — no invented tool
+ * names. Add named tools as extra entries in `tools` when the details are ready;
+ * the layout adapts to any count.
  */
 const aiPage = {
   kicker: 'Leveraging AI',
   headline: 'Tools I built to make the work move faster.',
   lead:
-    'I build AI-assisted tools for Adobe Illustrator that close the gap between idea and finished art — optimizing how I design, how fast I produce, and how clean it prints. Below is what I have made, and what it unlocks.',
+    'At FASTSIGNS of Naples I integrate AI into the design workflow by building and coding my own scripts and tools for Adobe Illustrator and the print process — cutting per-project turnaround time and cost by 16%. Design, speed, and print-ready output, engineered instead of repeated by hand.',
   pillars: [
     {
       id: 'design',
       label: 'Design',
-      intro: 'Assistive + generative tools that expand what I can make.',
+      intro: 'Custom tooling inside Illustrator, where the work actually happens.',
       tools: [
         {
-          name: 'Tool Name — Design 01',
-          tagline: 'One line on what it does.',
+          name: 'Custom Illustrator scripts',
+          tagline: 'Coded tools that live inside the design workflow.',
           description:
-            'PLACEHOLDER: describe how this tool expands your creative range inside Illustrator — what input you give it, what it produces, and why it beats doing it by hand.',
-          built: 'AI + ExtendScript',
-        },
-        {
-          name: 'Tool Name — Design 02',
-          tagline: 'One line on what it does.',
-          description:
-            'PLACEHOLDER: another design-side tool. Swap in the real name, the problem it solves, and the kind of work it lets you take on.',
-          built: 'AI-assisted',
+            'Scripts and tools I build and code for Adobe Illustrator, so repeatable design and layout steps run the same way every time instead of by hand.',
+          built: 'Claude Code + Codex',
         },
       ],
     },
     {
       id: 'speed',
       label: 'Speed',
-      intro: 'Automation that removes the repetitive work.',
+      intro: 'Automation measured in hours and dollars, not novelty.',
       tools: [
         {
-          name: 'Tool Name — Speed 01',
-          tagline: 'One line on what it does.',
+          name: '16% faster, cheaper turnaround',
+          tagline: 'Per project, across the shop.',
           description:
-            'PLACEHOLDER: describe the repetitive task this automates and the time it saves per job. Numbers land hard here (e.g. "cuts a 2-hour task to 5 minutes").',
-          built: 'Script + AI',
-        },
-        {
-          name: 'Tool Name — Speed 02',
-          tagline: 'One line on what it does.',
-          description:
-            'PLACEHOLDER: another speed tool. What used to be manual, what is now one click.',
-          built: 'Automation',
+            'Wiring AI into the design-to-print workflow cut per-project turnaround time and cost by 16% — the same team shipping more, faster.',
+          built: 'AI-assisted workflow',
         },
       ],
     },
     {
       id: 'printing',
       label: 'Printing',
-      intro: 'Production + print-prep that ships clean, press-ready files.',
+      intro: 'Production systems that keep print jobs clean and costs down.',
       tools: [
         {
-          name: 'Tool Name — Printing 01',
-          tagline: 'One line on what it does.',
+          name: 'Print-process automation',
+          tagline: 'Scripts that carry files from design to press-ready.',
           description:
-            'PLACEHOLDER: describe the print/production problem this solves — bleeds, color, cut lines, large-format prep — and how it guarantees a clean file every time.',
-          built: 'AI + Print pipeline',
+            'Tools built for the printing process itself, so large- and small-format jobs move from artwork to production files with fewer manual steps.',
+          built: 'Claude Code + Codex',
         },
         {
-          name: 'Tool Name — Printing 02',
-          tagline: 'One line on what it does.',
+          name: 'Substrate tracking system',
+          tagline: 'Built from scratch for the production floor.',
           description:
-            'PLACEHOLDER: another production tool. What it checks or generates so nothing fails at the printer.',
-          built: 'Production tool',
+            'A tracking system for print substrates that reduced cost of goods by 7% month over month.',
+          built: 'Custom build',
         },
       ],
     },

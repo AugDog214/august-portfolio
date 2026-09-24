@@ -18,6 +18,35 @@ export const astroSequence = {
   frameCount: 188,
 } as const
 
+export const projectToolMap = {
+  illustrator: {
+    label: 'Adobe Illustrator',
+    icon: 'tool-icons/illustrator.svg',
+  },
+  photoshop: {
+    label: 'Adobe Photoshop',
+    icon: 'tool-icons/photoshop.svg',
+  },
+  premiere: {
+    label: 'Adobe Premiere Pro',
+    icon: 'tool-icons/premiere-pro.svg',
+  },
+  afterEffects: {
+    label: 'Adobe After Effects',
+    icon: 'tool-icons/after-effects.svg',
+  },
+  figma: {
+    label: 'Figma',
+    icon: 'tool-icons/figma.svg',
+  },
+  blender: {
+    label: 'Blender',
+    icon: 'tool-icons/blender.svg',
+  },
+} as const
+
+export type ProjectToolKey = keyof typeof projectToolMap
+
 export const portfolioContent = {
   navigation: {
     brandLabel: 'PORTFOLIO',
@@ -66,6 +95,9 @@ export const portfolioContent = {
         tag: 'Environmental / Large Format',
         blurb:
           'Brand-first environmental signage and wayfinding — exterior identity built for the street and produced print-ready.',
+        role: 'Lead Graphic Designer / Production Specialist',
+        year: '2026',
+        tools: ['illustrator', 'photoshop'] as ProjectToolKey[],
         accent: '#2f5f8f',
         cover: { kind: 'video', src: 'media/projects/signage/cover.mp4', poster: 'media/projects/signage/poster.webp' },
         gallery: [
@@ -78,6 +110,9 @@ export const portfolioContent = {
         tag: 'AI Film / Art Direction',
         blurb:
           'An AI-assisted product film for an IPA concept — world-building, character, and edit rhythm authored as one system.',
+        role: 'Creative Director / AI Film Art Direction',
+        year: '2026',
+        tools: ['photoshop', 'premiere', 'afterEffects'] as ProjectToolKey[],
         accent: '#d8552f',
         cover: { kind: 'video', src: 'media/projects/astro/cover.mp4', poster: 'media/projects/astro/poster.webp' },
         gallery: [{ kind: 'image', src: 'media/projects/astro/can.webp' }],
@@ -87,6 +122,9 @@ export const portfolioContent = {
         tag: 'Brand / Social / Video',
         blurb:
           'Brand, social, and short-form video for Gap City Media — identity through motion, built to perform on feed.',
+        role: 'Brand Designer / Video Editor',
+        year: '2026',
+        tools: ['illustrator', 'photoshop', 'premiere', 'afterEffects'] as ProjectToolKey[],
         accent: '#e0398f',
         cover: { kind: 'video', src: 'media/projects/gapcity/cover.mp4', poster: 'media/projects/gapcity/poster.webp' },
         gallery: [
@@ -99,6 +137,9 @@ export const portfolioContent = {
         tag: 'Menu / Print Design',
         blurb:
           'Menu and print design for Kababz Heaven — appetite-first hierarchy and clean, press-ready artwork.',
+        role: 'Menu Designer / Print Production',
+        year: '2025',
+        tools: ['illustrator', 'photoshop'] as ProjectToolKey[],
         accent: '#c08a3c',
         cover: { kind: 'image', src: 'media/projects/kababz/menu-2.webp' },
         // both menu pages cycle in the frame; page 2 plays first
@@ -113,6 +154,9 @@ export const portfolioContent = {
         tag: 'Poster Series / Motion',
         blurb:
           'An original poster series and motion piece — bold type, composition, and experimental layout.',
+        role: 'Graphic Designer / Motion Designer',
+        year: '2025',
+        tools: ['illustrator', 'photoshop', 'afterEffects'] as ProjectToolKey[],
         accent: '#c2354a',
         cover: { kind: 'video', src: 'media/projects/posters/cover.mp4', poster: 'media/projects/posters/poster.webp' },
         gallery: [{ kind: 'image', src: 'media/projects/posters/antidesign.webp' }],
@@ -122,6 +166,9 @@ export const portfolioContent = {
         tag: 'Packaging / 3D Render',
         blurb:
           'Packaging and 3D product rendering for an energy drink concept — can design, finish, and shelf presence.',
+        role: 'Packaging Designer / 3D Visualizer',
+        year: '2026',
+        tools: ['illustrator', 'photoshop', 'blender'] as ProjectToolKey[],
         accent: '#6a4bd0',
         cover: { kind: 'image', src: 'media/projects/rage/cover.webp' },
         gallery: [],

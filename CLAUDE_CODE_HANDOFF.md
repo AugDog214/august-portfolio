@@ -1,323 +1,471 @@
-# Claude Code Handoff: August Pirraglia Portfolio
+# HANDOFF - August Pirraglia Creative-Director Portfolio
 
-## Project
+You are picking up an in-progress, high-end personal portfolio site. Read this fully before touching anything, then inspect the repo and confirm you understand the architecture.
 
-Local project path:
+## What This Is
+
+A single-page, scroll-driven "scroll film" portfolio for August Pirraglia, a creative director / graphic designer working across brand identity, AI film advertising, print/signage, packaging, and shipped software.
+
+There is also a dedicated second page, "Leveraging AI," about custom AI tools August built for Adobe Illustrator.
+
+Aesthetic:
+
+- Cinematic
+- Editorial
+- Analog-warm
+- Dark charcoal + copper palette
+- One intentionally light cream/beige selected-work section
+- Streetwear/creative energy balanced with agency/professional discipline
+
+## Who It's For / Why
+
+Primary goal: land August a full-time Creative Director role.
+
+Audience:
+
+- Hiring managers
+- Recruiters
+- Creative leads at brands and agencies
+
+Every decision should serve this question:
 
 ```text
-C:\Users\apirr\Desktop\august-portfolio
+Would this make a hiring manager take August seriously and reach out?
 ```
 
-Local preview:
+The site should prove range and taste across brand, film, build, AI, signage, and production.
+
+Current live URL:
 
 ```text
-http://localhost:3001
+https://augdog214.github.io/august-portfolio/
 ```
 
-Work locally first. Do not push to GitHub or deploy live unless August explicitly says `push`, `push to live`, or `push to GitHub`.
+Keep the GitHub Pages URL for now. No custom domain yet.
 
-## What We Are Building
+## Scope
 
-This is a high-end creative director portfolio landing experience for August Pirraglia.
+This build is not feature-complete. More sections and projects are still coming.
 
-The site should feel cinematic, bold, motion-driven, polished, and credible. The tone should sit between streetwear/creative energy and agency/professional discipline.
+Keep the architecture expansion-friendly.
 
-The audience:
+Add a project by adding:
 
-- Creative agencies
-- Potential employers
-- Brand and marketing clients
-- Film and AI advertising collaborators
-- People evaluating August's creative direction, brand identity, signage, marketing, and production ability
+- One entry in `src/content.ts` under `projects.items`
+- Optimized assets in `public/media/projects/<slug>/`
+- Avoid touching unrelated layers unless the project needs a new behavior
 
-The site should quickly communicate that August can build:
+Add a section by adding:
 
-- Brand identity systems
-- Creative AI film ads
-- Marketing assets
-- Signage
-- Production-ready visual systems
-- Motion-driven web experiences
+- Data in `src/content.ts`
+- Markup in `src/render.ts`
+- An init function in `src/main.ts`
+- Styles in `src/styles.css`
 
-## Why We Are Building It
+Pinned ScrollTriggers are load-bearing. Init scroll/pin functions in the same order their sections appear in the DOM, or pin spacers can stack wrong and sections can paint over each other.
 
-This should not feel like a generic portfolio template. It should create a strong first impression and position August as a creative director/designer/builder with range across brand, film, signage, AI, and web.
+Keep the layers separate:
 
-The experience should feel premium, cinematic, and intentional. Motion should support the story, not distract from it.
+- Copy/data in `content.ts`
+- Markup in `render.ts`
+- Motion in `main.ts`
+- Style in `styles.css`
 
-## Stack
+## Tech Stack & Architecture
 
 - Vite
 - TypeScript
-- GSAP / ScrollTrigger
-- CSS
+- GSAP with ScrollTrigger
+- No framework
+- No templates
 
-Main files:
+Core files:
 
-- `src/content.ts`
-- `src/render.ts`
-- `src/main.ts`
-- `src/styles.css`
+- `src/content.ts` - all copy and data, single source of truth
+- `src/render.ts` - one large template string injected into `#app`
+- `src/main.ts` - GSAP timelines, pinned ScrollTriggers, and motion behavior
+- `src/styles.css` - styles and CSS custom-property design tokens
+- `src/urls.ts` - `resolvePublicUrl()`, handles GitHub Pages base path
 
-Media added for section 2:
+Multi-page build:
 
-- `public/media/signage-artwork/artwork.mp4`
-- `public/media/signage-artwork/poster.webp`
+- `index.html`
+- `leveraging-ai.html`
+- `src/leveraging-ai.ts`
+- `src/leveraging-ai.css`
+- `vite.config.ts` has `rollupOptions.input` and `base: './'`
 
-## Current Working Rule
+Assets live in `public/`.
 
-Before major changes, explain what you will execute.
+Always resolve public assets with `resolvePublicUrl`. Do not hardcode `/`.
 
-If doing a new round of implementation, first make a local checkpoint or at least clearly record the current git status. Do not push.
+Helper:
 
-Run `npm run build` after changes.
-
-Use local browser QA at `http://localhost:3001`.
-
-## Design Rules
-
-Keep the existing colors. Do not change the palette unless August explicitly asks.
-
-Current visual language:
-
-- Dark cinematic background
-- Copper/orange accent
-- Off-white text
-- Dark navy ticker rectangle
-- White/off-white nav separators
-- Bold condensed display type for major words
-- Editorial serif for supporting headline/tagline moments
-
-Quality bar:
-
-- No generic template feel
-- No clutter
-- Strong type hierarchy
-- Smooth scroll-triggered motion
-- Desktop and mobile must both look intentional
-- Text must not overlap or get cut off
-
-## Hero Section Current Intent
-
-The hero is full-screen.
-
-Keep the existing background artwork/video/canvas.
-
-Keep the large bold:
-
-```text
-AUGUST PIRRAGLIA
+```ts
+pinDistance(n) => `+=${n * innerHeight}`
 ```
 
-`PORTFOLIO` starts offscreen right and flies into the top-left as the user scrolls. It then stays sticky in the top-left.
+Use it for pin lengths.
 
-Top-right nav:
+## Sections
 
-```text
-WORK | ABOUT | CONTACT
-```
+DOM order lives in `src/render.ts`. Pin/init order in `src/main.ts` must match this order.
 
-Nav text should use the existing orange/copper color. Separators should stay light/off-white.
+1. Hero
+   - Name: `AUGUST PIRRAGLIA`
+   - Tagline
+   - Background is a 188-frame WebP sequence from "Astro Fool's Hopper"
+   - Frames scrub onto a canvas through the hero pin
 
-Under `AUGUST PIRRAGLIA`, the hero now has:
+2. Reveal
+   - `$39K of signage` editorial moment
+   - Signage video
+   - Copper rule
 
-```text
-Building Brands through Designing Identity & AI Film Advertising
-```
+3. Projects
+   - Big recent build
+   - ORYZO-style fixed-frame project carousel
+   - Light cream/beige selected-work section
 
-This line should remain under the name. It was moved from section 2 into the hero. August asked to make it one font size larger than the first moved version.
+4. Horizontal Flow / Work
+   - Brand panel with `$39K` / FASTSIGNS metrics
+   - Film panel with "Astro Fool's Hopper"
+   - Horizontal-scroll pinned
 
-`Creative Director` should be one font size larger than the original version and should remain visually secondary to the main name.
+5. Final Flow
+   - Iris transition
+   - Build / About, "ships-as-software"
+   - Meta, "you're reading this on it"
+   - Contact footer with email, LinkedIn, resume PDF
 
-Open question for alignment:
+## Section 3 - Project Carousel
 
-- August answered `yes` to the transfer question, but verify whether the hero tagline should stay right-aligned under the name or become more centered under `AUGUST PIRRAGLIA`.
+This is the most recent and most complex section.
 
-## Section 2 Current Intent
+Reference behavior: ORYZO-style fixed-frame carousel, inspired by `oryzo.ai`.
 
-Focus next work on section 2.
+Core behavior:
 
-Section 2 is the brand/signage reveal section.
+- Light/cream theme
+- Stationary center frame
+- Project covers play/transition inside the fixed frame
+- Cards do not move
+- Thumbnail filmstrip slides on either side
+- Each cover passes through the fixed frame
 
-Left side:
+Image/video treatment:
 
-- Signage artwork/video from `public/media/signage-artwork/artwork.mp4`
-- Poster at `public/media/signage-artwork/poster.webp`
+- Fit + blurred backdrop
+- Main cover uses `object-fit: contain`
+- Blurred copy fills the frame behind it
+- Mixed aspect ratios should never crop badly
 
-Right side:
+Controls:
 
-```text
-$39K
-of signage. The brand made it inevitable.
-```
+- Auto-advances with a progress bar
+- Auto-advance animates scroll within the pin so the page does not visibly move
+- Scroll-scrub also controls it
+- Clicking a thumbnail works
+- Hover pauses
 
-The old section 2 bottom headline:
+Loop behavior:
 
-```text
-Building Brands through Designing Identity & AI Film Advertising
-```
+- Whole set loops twice before the pin releases
+- `cycles = 2`
+- Position range: `0..cycles * count`
+- Pin length: `pinDistance(4 * cycles)`
 
-was moved into the hero.
+Video behavior:
 
-Section 2 bottom headline should now be:
+- Cover videos autoplay muted, because browsers require muted autoplay
+- Include an unmute toggle
+- The "View Project" full-screen viewer plays media with full audio and controls
 
-```text
-Managing Creative Art Direction
-```
+Visual rules:
 
-August answered that section 2 should be the next focus.
+- Covers have no text labels
+- Identity lives in the editorial title and the translucent frosted glass panel on the right
+- Keep the right frosted glass panel translucent
 
-## Section 2 Ticker / Navy Banner
+Projects currently in `content.ts` under `projects.items`:
 
-There is a dark navy full-width rectangular banner near the top of section 2.
+- Signage, video
+- Astro Fool's Hopper, 4-scene montage video
+- Gap City Media, promo video
+- Kababz: Menu, cycles both menu pages on the card via `slides`, page 2 first
+- Art Posters, Gateway-to-Mars video, AntiDesign poster in viewer
+- Rage Energy Drink, cans image
 
-It should:
+Gap City note:
 
-- Slide in from the right as the user scrolls into section 2
-- Extend beyond both left and right viewport edges
-- Have no white stroke or border
-- Have a strong but tasteful shadow
-- Use glowing white text
-- Use the same bold display font family as the hero name
-- Loop infinitely
-- Read as one continuous text string, not separated chunks
+- Gap City includes logo + left-to-right panning banner in viewer
+- "Faded Jays" is a Gap City client folded into this project
 
-Ticker text pattern:
+Section 2 -> 3 transition:
 
-```text
-Brand Identity Design • AI Film Ads • Marketing • Signage • Brand Identity Design • AI Film Ads • Marketing • Signage ...
-```
+- Scroll-scrubbed gradient veil
+- Class: `.projects-veil`
+- Dark at the top edge, clear over beige
+- Cross-fades beige in so there is no color collision with the dark section above
+
+## Design Tokens
+
+CSS custom properties live in `src/styles.css`.
+
+Dark theme:
+
+- `--bg` around `#141416`
+- `--cop` copper `#c77a3c`
+- `--font-display`
+- `--font-editorial`
+- `--font-mono`
+
+Light Section 3:
+
+- `--p-bg` `#f1ebe0`
+- `--p-fg` `#1b1714`
+- `--p-dim` `#6f655a`
+- `--p-cop` `#9a5520`
 
 Important:
 
-- There must be a middle dot between `Signage` and the next `Brand Identity Design`.
-- There should be a little more breathing room between each word group and middle dot.
-- There should not be a large blank gap at the repeat point.
-- The loop boundary should feel exactly like every other separator.
+Do not use bright `--cop` on the light section. It fails contrast. Use `--p-cop` for WCAG AA contrast on cream.
 
-Recent fix:
+## Current State / Where We Left Off
 
-- Extra CSS padding between repeated ticker groups was removed.
-- The repeated ticker text now uses the same separator everywhere.
-- The ticker was verified to include:
+The portfolio is deployed live to GitHub Pages.
+
+Repo:
 
 ```text
-Signage • Brand Identity Design
+AugDog214/august-portfolio
 ```
 
-## Sticky Label / Section Transition
-
-Top-left `PORTFOLIO` flips/rotates on the X-axis into:
+Branch:
 
 ```text
-BRANDS
+main
 ```
 
-This happens as the user scrolls from section 2 toward section 3.
+Deploy workflow:
 
-Keep this unless August asks to change it.
+```text
+.github/workflows/deploy-pages.yml
+```
 
-## Recently Completed Work
-
-- Hero nav label changed to `PORTFOLIO`.
-- Added hidden/back face `BRANDS` for flip animation.
-- Added signage artwork/video into section 2.
-- Added dark navy continuous ticker banner.
-- Added glow on ticker text.
-- Added stronger shadow on navy banner.
-- Moved `Building Brands through Designing Identity & AI Film Advertising` under the hero name.
-- Replaced section 2 headline with `Managing Creative Art Direction`.
-- Made hero tagline one font size larger.
-- Made `Creative Director` larger than original.
-- `npm run build` passed during the previous session.
-
-## What To Do Next
-
-1. Inspect current git status.
-2. Open local preview at `http://localhost:3001`.
-3. Verify hero composition:
-   - `AUGUST PIRRAGLIA` still fits desktop.
-   - Hero tagline sits under the name.
-   - Hero tagline is one size larger than the first moved version.
-   - `Creative Director` is larger but still secondary.
-   - No overlap with background/progress/scroll elements.
-4. Verify section 2 composition:
-   - Ticker is continuous.
-   - No blank gap between `Signage` and `Brand Identity Design`.
-   - Dot spacing is even everywhere.
-   - Ticker spans beyond both screen edges.
-   - Ticker does not cover the artwork or `$39K` copy.
-   - `Managing Creative Art Direction` appears in section 2.
-5. Improve section 2 first:
-   - Make the layout feel more intentional.
-   - Balance artwork, `$39K`, ticker, and bottom headline.
-   - Keep the streetwear/creative plus agency/professional balance.
-6. Verify responsive layouts:
-   - Desktop: 1280x900 and 1920x1080
-   - Tablet: 768x1024
-   - Mobile: 375x812
-7. Run:
+The workflow builds with:
 
 ```text
 npm run build
 ```
 
-8. Do not push live unless August explicitly says to.
+and deploys to GitHub Pages.
 
-## Improvement Areas
-
-Prioritize section 2.
-
-Potential refinements:
-
-- Tune vertical spacing in section 2.
-- Make `Managing Creative Art Direction` feel intentional, not leftover.
-- Tune ticker speed if it feels too fast or too slow.
-- Tune glow strength if it feels too blurry or too bright.
-- Make sure ticker does not compete too much with `$39K`.
-- Make the signage video crop look deliberate.
-- Check mobile hierarchy carefully.
-- Make the hero tagline and `Creative Director` feel integrated under the name.
-
-## August's Answers From Transfer Questions
-
-Question: Should Claude Code continue from exact current files, or first make a clean checkpoint/commit locally?
-
-Answer: `yes`
-
-Interpretation: make a local checkpoint/status before major work. Do not push.
-
-Question: Should the next session focus only on polishing hero + section 2, or start building section 3?
-
-Answer: `section 2`
-
-Question: For `Managing Creative Art Direction`, use polished wording or original phrasing?
-
-Answer: `yes for the first`
-
-Interpretation: use polished wording:
+Live URL:
 
 ```text
-Managing Creative Art Direction
+https://augdog214.github.io/august-portfolio/
 ```
 
-Question: Should the site feel more luxury/editorial, bold streetwear/creative, or agency/professional?
+Everything listed above is built, QA'd across desktop/tablet/mobile, and committed.
 
-Answer:
+Last known commit:
 
 ```text
-both streetwear/creative and agency/professional
+Smooth the Section 2 -> 3 transition
 ```
 
-## Questions To Ask August Before Major Design Moves
+A full 7-phase audit passed:
 
-Ask only if the answer affects implementation.
+- Build
+- Runtime
+- Functional
+- Responsive
+- Accessibility
+- SEO
+- Performance
 
-1. Should the hero tagline stay right-aligned under `AUGUST PIRRAGLIA`, or should it be centered under the name?
-2. Should `Managing Creative Art Direction` be large/editorial or smaller/supporting?
-3. Should the ticker move slowly like a premium marquee or faster like an energetic ad banner?
-4. Should the ticker stay at the top of section 2, or overlap the artwork slightly?
-5. Should `Creative Director` stay copper/orange, or be white with a copper accent?
-6. On mobile, should the hero tagline remain visible under the name or be reduced/hidden for a cleaner hero?
-7. What should section 3 showcase first: brand identity projects, AI film ads, signage work, or all three?
+Contact email was fixed to:
+
+```text
+apirr47@gmail.com
+```
+
+Canonical tags and JSON-LD were added to both pages.
+
+## What's Next
+
+1. Leveraging AI page real content
+
+August will send the real tool details soon. Until then, keep the `aiPage` object in `src/leveraging-ai.ts` as placeholder content.
+
+When real details arrive, edit:
+
+```text
+src/leveraging-ai.ts
+```
+
+Specifically update the `aiPage` object:
+
+- Kicker
+- Headline
+- Lead
+- Design pillar/tool card
+- Speed pillar/tool card
+- Printing pillar/tool card
+
+Do not invent tool specifics.
+
+2. Social share image
+
+`og:image` is currently an SVG. Facebook, LinkedIn, and X may not render it reliably.
+
+Produce a 1200x630 PNG or JPG share card and wire it into both pages:
+
+- `index.html`
+- `leveraging-ai.html`
+
+Update both Open Graph and Twitter image tags.
+
+3. Optional Gap City video trim
+
+Gap City cover video is currently around 11MB / 35 seconds.
+
+Optional improvement:
+
+- Trim to around 15 seconds
+- Keep the strongest motion/content
+- Optimize file size
+
+## What To Improve
+
+Performance:
+
+- Hero currently preloads about 12MB of frames upfront
+- Fine on desktop, heavy on slow mobile
+- Consider progressive loading or every-Nth frame loading
+
+Fonts:
+
+- Google Fonts are currently external
+- Consider self-hosting for privacy and speed
+
+Reduced motion:
+
+- Horizontal "film" panel may be hidden when motion is off
+- Pre-existing scroll-film limitation
+- Make all content reachable with reduced motion enabled
+
+Light section:
+
+- Keep auditing contrast and focus states if adding UI on the light Section 3
+
+## Working Agreements
+
+- Develop locally
+- Run local dev server on port 3001 when working:
+
+```text
+npm run dev
+```
+
+- Do not push/deploy unless August explicitly says `push`, `push live`, or `push to GitHub`
+- A push to `main` auto-deploys
+- QA in a browser before claiming done
+- Use the gstack `/browse` skill for headless QA
+- Never use `mcp__claude-in-chrome__*` tools
+- Make a checkpoint git commit before major work
+- Use small, descriptive commits
+- Keep the dark/copper palette unless told otherwise
+- Section 3 is the one intentionally light section
+- Keep the right frosted glass panel translucent
+- Keep the content/render/motion/style layers separate
+- Verify `npm run build` is clean before finishing
+
+## First Steps For The New Agent
+
+1. Install dependencies if needed:
+
+```text
+npm install
+```
+
+2. Start local server:
+
+```text
+npm run dev
+```
+
+3. Open:
+
+```text
+http://localhost:3001
+```
+
+4. Scroll the whole page.
+
+5. Read these top-to-bottom:
+
+- `src/content.ts`
+- `src/render.ts`
+- `src/main.ts`
+- `src/styles.css`
+- `src/leveraging-ai.ts`
+- `src/leveraging-ai.css`
+- `src/urls.ts`
+- `vite.config.ts`
+
+6. Confirm:
+
+```text
+npm run build
+```
+
+passes.
+
+7. Ask August for the real Leveraging AI tool details before writing that page content.
+
+## August's Confirmed Answers
+
+Primary conversion goal:
+
+```text
+Full-time creative director role
+```
+
+Where the site should live:
+
+```text
+Keep GitHub Pages URL
+```
+
+Feature completeness:
+
+```text
+More sections/projects coming
+```
+
+Leveraging AI content plan:
+
+```text
+August will send real details soon
+```
+
+Tone:
+
+```text
+Streetwear/creative and agency/professional
+```
+
+## Questions To Ask August Before Major New Work
+
+Ask only when the answer affects implementation.
+
+1. What are the real names/descriptions of the Design, Speed, and Printing AI tools?
+2. Which industries or companies should this portfolio appeal to most for full-time creative director roles?
+3. What new section should come next after the existing project carousel?
+4. What new projects should be added first?
+5. Should the Leveraging AI page feel more technical/product-focused or more creative-director/story-focused?
+6. Should any live work be hidden behind a private case-study viewer, or is everything public?
+7. Is the resume PDF final, or should the site link to a newer version?
 

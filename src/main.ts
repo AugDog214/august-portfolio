@@ -1,6 +1,6 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { astroSequence, portfolioContent, siteMeta } from './content'
+import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectToolKey } from './content'
 import { renderSite } from './render'
 import { resolvePublicUrl } from './urls'
 import './styles.css'
@@ -16,6 +16,16 @@ gsap.registerPlugin(ScrollTrigger)
 gsap.defaults({ ease: 'none' })
 
 const pinDistance = (viewportHeights: number) => () => `+=${Math.max(1, Math.round(window.innerHeight * viewportHeights))}`
+const renderProjectTools = (tools: readonly ProjectToolKey[]) =>
+  tools
+    .map((toolKey) => {
+      const tool = projectToolMap[toolKey]
+
+      return `<li class="project-tool">
+        <img src="${resolvePublicUrl(tool.icon)}" alt="${tool.label}" title="${tool.label}" loading="lazy" decoding="async" />
+      </li>`
+    })
+    .join('')
 
 if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual'
@@ -307,7 +317,7 @@ function initReveal() {
   ScrollTrigger.create({
     trigger: reveal,
     start: 'top top',
-    end: pinDistance(2.2),
+    end: pinDistance(1.25),
     pin: true,
     invalidateOnRefresh: true,
     onEnter: playVideo,
@@ -317,10 +327,14 @@ function initReveal() {
       const artworkIn = smoothstep(mapProgress(self.progress, 0.04, 0.3))
       const copyIn = smoothstep(mapProgress(self.progress, 0.08, 0.34))
       const editorialIn = smoothstep(mapProgress(self.progress, 0.3, 0.48))
-      const out = smoothstep(mapProgress(self.progress, 0.74, 0.99))
-      const brandFlip = smoothstep(mapProgress(self.progress, 0.82, 0.99))
+      const out = smoothstep(mapProgress(self.progress, 0.48, 0.76))
+      const brandFlip = smoothstep(mapProgress(self.progress, 0.58, 0.82))
+      const projectsWash = smoothstep(mapProgress(self.progress, 0.38, 0.82))
+      const projectsBloom = smoothstep(mapProgress(self.progress, 0.34, 0.78))
       const viewportHeight = window.innerHeight
 
+      reveal.style.setProperty('--projects-wash', projectsWash.toFixed(3))
+      reveal.style.setProperty('--projects-bloom', projectsBloom.toFixed(3))
       gsap.set(banner, {
         autoAlpha: artworkIn * (1 - out),
         x: getRevealBannerIntroX(banner) * (1 - artworkIn),
@@ -471,10 +485,15 @@ function initProjects() {
   const muteBtn = document.querySelector<HTMLButtonElement>('[data-pf-mute]')
   const muteIcon = document.querySelector<HTMLElement>('[data-pf-mute-icon]')
   const titleEl = document.querySelector<HTMLElement>('[data-projects-title]')
+  const projectsHead = section?.querySelector<HTMLElement>('.projects-head')
   const glass = document.querySelector<HTMLElement>('[data-project-glass]')
   const glassTag = document.querySelector<HTMLElement>('[data-glass-tag]')
   const glassName = document.querySelector<HTMLElement>('[data-glass-name]')
   const glassBlurb = document.querySelector<HTMLElement>('[data-glass-blurb]')
+  const glassRole = document.querySelector<HTMLElement>('[data-glass-role]')
+  const glassYear = document.querySelector<HTMLElement>('[data-glass-year]')
+  const glassTools = document.querySelector<HTMLElement>('[data-glass-tools]')
+  const entryWipe = document.querySelector<HTMLElement>('[data-projects-entry-wipe]')
 
   if (!section || !stage || !strip || thumbs.length === 0 || !frame || !backdrop || !mediaBox || !glass) {
     return
@@ -600,6 +619,9 @@ function initProjects() {
       if (glassTag) glassTag.textContent = item.tag
       if (glassName) glassName.textContent = item.name
       if (glassBlurb) glassBlurb.textContent = item.blurb
+      if (glassRole) glassRole.textContent = item.role
+      if (glassYear) glassYear.textContent = item.year
+      if (glassTools) glassTools.innerHTML = renderProjectTools(item.tools)
       titleEl?.classList.remove('is-swapping')
       glass.classList.remove('is-swapping')
     }
@@ -701,6 +723,69 @@ function initProjects() {
     return
   }
 
+  const entry = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: 'top 102%',
+      end: 'top top',
+      scrub: true,
+      invalidateOnRefresh: true,
+    },
+  })
+  entry.fromTo(section, { '--projects-entry-feather': 1 }, { '--projects-entry-feather': 0, ease: 'none' }, 0)
+  entry.fromTo(
+    stage,
+    {
+      x: () => -Math.min(window.innerWidth * 0.46, 620),
+      rotateZ: -3.2,
+      scale: 0.96,
+    },
+    {
+      x: 0,
+      rotateZ: 0,
+      scale: 1,
+      ease: 'none',
+    },
+    0,
+  )
+  if (projectsHead) {
+    entry.fromTo(
+      projectsHead,
+      { autoAlpha: 0.35, y: 48 },
+      { autoAlpha: 1, y: 0, ease: 'none' },
+      0.02,
+    )
+  }
+  entry.fromTo(
+    glass,
+    {
+      autoAlpha: 0,
+      y: () => Math.min(window.innerHeight * 0.38, 360),
+    },
+      {
+        autoAlpha: 1,
+        y: 0,
+        ease: 'none',
+      },
+    0.1,
+  )
+
+  if (entryWipe) {
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 118%',
+          end: 'top 8%',
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      })
+      .fromTo(entryWipe, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.26, ease: 'none' }, 0)
+      .to(entryWipe, { autoAlpha: 1, duration: 0.56, ease: 'none' }, 0.26)
+      .to(entryWipe, { autoAlpha: 0, duration: 0.18, ease: 'none' }, 0.82)
+  }
+
   trigger = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
@@ -729,16 +814,16 @@ function initProjects() {
     },
   })
 
-  // beige cross-fades up over the dark section as it scrolls in
+  // Beige cross-fades in before the projects pin starts, avoiding a long dark handoff.
   const veil = section.querySelector<HTMLElement>('[data-projects-veil]')
   if (veil) {
     gsap.fromTo(
       veil,
-      { autoAlpha: 1 },
+      { autoAlpha: 0.38 },
       {
         autoAlpha: 0,
         ease: 'none',
-        scrollTrigger: { trigger: section, start: 'top bottom', end: 'top top', scrub: true },
+        scrollTrigger: { trigger: section, start: 'top 112%', end: 'top 34%', scrub: true },
       },
     )
   }

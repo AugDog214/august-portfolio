@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Blender">
+  <rect width="64" height="64" rx="14" fill="#f4f0e8"/>
+  <path fill="#ea7600" d="M18 24h16l-6-6 6-5 17 15c6 6 4 16-4 21-10 7-27 5-33-4-5-7-2-16 7-20l-3-1z"/>
+  <ellipse cx="37" cy="37" rx="14" ry="11" fill="#ffffff"/>
+  <circle cx="38" cy="37" r="6" fill="#2b83ba"/>
+</svg>

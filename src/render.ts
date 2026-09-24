@@ -1,4 +1,4 @@
-import { astroSequence, portfolioContent, siteMeta } from './content'
+import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectToolKey } from './content'
 import { resolvePublicUrl } from './urls'
 
 export function renderSite() {
@@ -6,6 +6,16 @@ export function renderSite() {
   const firstProject = projects.items[0]
   const coverThumb = (cover: { kind: string; src: string; poster?: string }) =>
     cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
+  const toolList = (tools: readonly ProjectToolKey[]) =>
+    tools
+      .map((toolKey) => {
+        const tool = projectToolMap[toolKey]
+
+        return `<li class="project-tool">
+          <img src="${resolvePublicUrl(tool.icon)}" alt="${tool.label}" title="${tool.label}" loading="lazy" decoding="async" />
+        </li>`
+      })
+      .join('')
   const revealTickerSeparator = '&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;'
   const revealTickerText = `${reveal.subheadline.split(' • ').join(revealTickerSeparator)}${revealTickerSeparator}`
   const revealTicker = Array.from({ length: 4 }, () => `<span class="reveal-subheadline-group">${revealTickerText}</span>`).join('')
@@ -83,6 +93,8 @@ export function renderSite() {
         </div>
       </section>
 
+      <div class="projects-entry-wipe" data-projects-entry-wipe aria-hidden="true"></div>
+
       <section class="projects scene" id="${projects.id}" aria-label="${projects.ariaLabel}" data-scene="projects" data-projects>
         <div class="projects-grain" aria-hidden="true"></div>
         <div class="projects-veil" data-projects-veil aria-hidden="true"></div>
@@ -118,9 +130,29 @@ export function renderSite() {
 
         <aside class="project-glass" data-project-glass>
           <div class="project-glass-inner">
-            <p class="project-glass-tag" data-glass-tag>${firstProject.tag}</p>
-            <h3 class="project-glass-name" data-glass-name>${firstProject.name}</h3>
-            <p class="project-glass-blurb" data-glass-blurb>${firstProject.blurb}</p>
+            <div class="project-brief-main">
+              <p class="project-glass-tag" data-glass-tag>${firstProject.tag}</p>
+              <h3 class="project-glass-name" data-glass-name>${firstProject.name}</h3>
+              <p class="project-glass-blurb" data-glass-blurb>${firstProject.blurb}</p>
+            </div>
+            <dl class="project-brief-meta">
+              <div class="project-brief-row">
+                <dt>My Role</dt>
+                <dd data-glass-role>${firstProject.role}</dd>
+              </div>
+              <div class="project-brief-row">
+                <dt>Year</dt>
+                <dd data-glass-year>${firstProject.year}</dd>
+              </div>
+              <div class="project-brief-row project-brief-row--tools">
+                <dt>Tools</dt>
+                <dd>
+                  <ul class="project-tools" data-glass-tools aria-label="Project tools">
+                    ${toolList(firstProject.tools)}
+                  </ul>
+                </dd>
+              </div>
+            </dl>
             <button class="project-view" type="button" data-view-project>
               <span>${projects.viewLabel}</span>
               <span class="project-view-arrow" aria-hidden="true">&rarr;</span>

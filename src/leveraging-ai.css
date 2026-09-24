@@ -68,8 +68,9 @@ body {
   inset: -20% -30% auto -10%;
   height: 70%;
   z-index: -1;
-  background: radial-gradient(ellipse at 30% 30%, rgba(199, 122, 60, 0.18), transparent 62%);
-  filter: blur(26px);
+  /* eased falloff + additive blend, matching the portfolio's glows */
+  background: radial-gradient(ellipse 60% 70% at 30% 30%, rgba(199, 122, 60, 0.2) 0%, rgba(199, 122, 60, 0.155) 12%, rgba(199, 122, 60, 0.11) 26%, rgba(199, 122, 60, 0.07) 40%, rgba(199, 122, 60, 0.038) 56%, rgba(199, 122, 60, 0.014) 72%, rgba(199, 122, 60, 0.003) 88%, transparent 100%);
+  mix-blend-mode: screen;
   pointer-events: none;
 }
 
@@ -295,4 +296,35 @@ body {
     transform: none;
     transition: none;
   }
+}
+
+/* text-only link on a tool card (no buttons) */
+.ai-card-link {
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: baseline;
+  margin-top: 0.9rem;
+  color: var(--cop);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08rem;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-color 200ms ease;
+}
+
+.ai-card-link:hover,
+.ai-card-link:focus-visible {
+  text-decoration-color: var(--cop);
+}
+
+.ai-card-link span {
+  transition: transform 200ms ease;
+}
+
+.ai-card-link:hover span,
+.ai-card-link:focus-visible span {
+  transform: translateX(3px);
 }

@@ -3,67 +3,102 @@ import './styles.css'
 import './leveraging-ai.css'
 
 /**
- * Content from August's resume (June 2026). Only verified facts — no invented tool
- * names. Add named tools as extra entries in `tools` when the details are ready;
- * the layout adapts to any count.
+ * Leveraging AI — August's own list (Sept 2026) + the 16% figure from his resume.
+ * Each pillar holds cards; `href` renders a text link. Add/remove freely.
  */
-const aiPage = {
+type AiTool = { name: string; tagline: string; description: string; built: string; href?: string; linkLabel?: string }
+type AiPillar = { id: string; label: string; intro: string; tools: AiTool[] }
+
+const aiPage: { kicker: string; headline: string; lead: string; pillars: AiPillar[] } = {
   kicker: 'Leveraging AI',
   headline: 'Tools I built to make the work move faster.',
   lead:
-    'At FASTSIGNS of Naples I integrate AI into the design workflow by building and coding my own scripts and tools for Adobe Illustrator and the print process — cutting per-project turnaround time and cost by 16%. Design, speed, and print-ready output, engineered instead of repeated by hand.',
+    'I direct AI the way I direct a crew: clear intent, tight feedback, final calls stay mine. At FASTSIGNS of Naples that meant five Illustrator tools that cut per-project turnaround and cost by 16%. Beyond the shop it means shipped websites, 3D pool mock-ups, AI video, and code-driven animation — built with Gemini, Codex, Claude Code, and MCP-connected tools like Blender and Higgsfield.',
   pillars: [
     {
-      id: 'design',
-      label: 'Design',
-      intro: 'Custom tooling inside Illustrator, where the work actually happens.',
+      id: 'design-print',
+      label: 'Design + Print',
+      intro: 'Custom tooling inside Illustrator, where the production work actually happens.',
       tools: [
         {
-          name: 'Custom Illustrator scripts',
-          tagline: 'Coded tools that live inside the design workflow.',
+          name: 'Illustrator scripts + tool extensions',
+          tagline: 'Five custom tools for the design and print workflow.',
           description:
-            'Scripts and tools I build and code for Adobe Illustrator, so repeatable design and layout steps run the same way every time instead of by hand.',
-          built: 'Claude Code + Codex',
+            'Five scripts and tool extensions I built for Adobe Illustrator to speed up the graphic design workflow and the printing process at FASTSIGNS — cutting per-project turnaround time and cost by 16%.',
+          built: 'Gemini',
         },
       ],
     },
     {
-      id: 'speed',
-      label: 'Speed',
-      intro: 'Automation measured in hours and dollars, not novelty.',
+      id: 'web',
+      label: 'Web',
+      intro: 'Designed and shipped as working software — no templates.',
       tools: [
         {
-          name: '16% faster, cheaper turnaround',
-          tagline: 'Per project, across the shop.',
+          name: 'This website',
+          tagline: 'You are scrolling it.',
           description:
-            'Wiring AI into the design-to-print workflow cut per-project turnaround time and cost by 16% — the same team shipping more, faster.',
-          built: 'AI-assisted workflow',
+            'A scroll-driven portfolio in Vite, TypeScript, and GSAP — frame-sequence hero, pinned section transitions, and a custom case-study viewer, art directed and built end to end.',
+          built: 'Codex + Claude Code',
+          href: './index.html',
+          linkLabel: 'Back to the portfolio',
+        },
+        {
+          name: 'The Olea Group career site',
+          tagline: 'Recruiting site, designed and built.',
+          description: 'The careers site for The Olea Group — brand, layout, and build, shipped live on its own domain.',
+          built: 'Codex + Claude Code',
+          href: 'https://careers.myoleagroup.com/',
+          linkLabel: 'careers.myoleagroup.com',
+        },
+        {
+          name: "Macarena's Kitchen website",
+          tagline: 'Restaurant site with online ordering.',
+          description:
+            "Website for Macarena's Kitchen, a restaurant client — designed, built, and deployed on a custom domain, with Square online ordering wired in.",
+          built: 'Codex + Claude Code',
+          href: 'https://www.macarenaskitchen.com/',
+          linkLabel: 'macarenaskitchen.com',
         },
       ],
     },
     {
-      id: 'printing',
-      label: 'Printing',
-      intro: 'Production systems that keep print jobs clean and costs down.',
+      id: '3d',
+      label: '3D',
+      intro: 'An AI agent driving Blender, directed toward a client-ready render.',
       tools: [
         {
-          name: 'Print-process automation',
-          tagline: 'Scripts that carry files from design to press-ready.',
+          name: 'Pool 3D mock-ups',
+          tagline: 'Blender, driven through MCP.',
           description:
-            'Tools built for the printing process itself, so large- and small-format jobs move from artwork to production files with fewer manual steps.',
-          built: 'Claude Code + Codex',
+            'Using the Blender MCP to build 3D pool mock-ups for a luxury pool construction client — so the homeowner can see the design before a shovel hits the ground.',
+          built: 'Blender MCP + Codex + Claude Code',
+        },
+      ],
+    },
+    {
+      id: 'motion',
+      label: 'Motion',
+      intro: 'Generated video and animation, directed shot by shot.',
+      tools: [
+        {
+          name: 'AI video content',
+          tagline: 'Generated video through the Higgsfield MCP.',
+          description:
+            'Producing AI-generated video content by connecting to Higgsfield through MCP — directing shots and iterating from prompt to final cut.',
+          built: 'Higgsfield MCP',
         },
         {
-          name: 'Substrate tracking system',
-          tagline: 'Built from scratch for the production floor.',
+          name: 'Animation',
+          tagline: 'Motion written as code.',
           description:
-            'A tracking system for print substrates that reduced cost of goods by 7% month over month.',
-          built: 'Custom build',
+            'Creating animation with Claude Code — timing, easing, and choreography written as code, so every move is exact and repeatable.',
+          built: 'Claude Code',
         },
       ],
     },
   ],
-} as const
+}
 
 function renderAiPage() {
   return `
@@ -109,6 +144,11 @@ function renderAiPage() {
                   <p class="ai-card-tagline">${tool.tagline}</p>
                   <p class="ai-card-desc">${tool.description}</p>
                   <p class="ai-card-built">Built with ${tool.built}</p>
+                  ${
+                    tool.href
+                      ? `<a class="ai-card-link" href="${tool.href}"${tool.href.startsWith('http') ? ' target="_blank" rel="noreferrer"' : ''}>${tool.linkLabel ?? 'Visit'} <span aria-hidden="true">&rarr;</span></a>`
+                      : ''
+                  }
                 </article>`,
                 )
                 .join('')}

@@ -469,3 +469,13 @@ Ask only when the answer affects implementation.
 6. Should any live work be hidden behind a private case-study viewer, or is everything public?
 7. Is the resume PDF final, or should the site link to a newer version?
 
+
+## Update — Content Pass (Sept 2026, local only, not pushed)
+
+- Each project in `projects.items` now has `client` and `caseStudy` (labelled sections). Copy was pulled from August's original portfolio (riff-graphics.myportfolio.com) and tightened. Signage and Gap City had no original write-up, so their copy is built only from facts already on the site; August should expand them.
+- The View Project viewer renders a full case study: intro, meta (Client / Role / Year / Tools), cover, copy blocks interleaved with gallery images (with `caption`), and a text-only Next Project link. Paging inside the viewer syncs the carousel on close (`pf:goto`).
+- New normal-flow About section (`#about`) between Meta and Contact. Build section id is now `#build`.
+- Feature 01 uses the Belamo signage image; Feature 02 plays the Astro film (`data-film-video`, plays only while the horizontal pin is active).
+- Iris pin shortened from 8 to 3 viewport heights.
+- Share image is now `public/social/august-portfolio-social.jpg` (1200x630).
+- Brand name fixed: Kebabz Heaven (the asset folder is still `media/projects/kababz/`).

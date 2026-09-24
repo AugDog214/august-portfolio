@@ -488,3 +488,15 @@ Ask only when the answer affects implementation.
 - Glows use eased multi-stop radial gradients + `mix-blend-mode: screen` with slow drift; grain is SVG fractal noise.
 - Brand panel shows the full Belamo photo at natural ratio, extended 8vw under the copy column, with an eased mask feather.
 - Metrics, Signage/Gap City case studies, About facts and the Leveraging AI page use figures from `Resume new 3-27.pdf` (June 2026), which is also the hosted resume PDF now.
+
+## Update — Leveraging AI showcase + seam fixes (Sept 2026, local only, not pushed)
+
+- The iris section is gone. A new pinned **Leveraging AI showcase** (`#ai`, `[data-ai-show]`, `initAiShowcase`) sits right after Selected Work (projects → section-dusk → ai-show → horiz-flow). Data lives in `portfolioContent.aiShowcase` (`aiShowcaseItems` in `content.ts`, 7 builds, media in `public/media/ai/`).
+  - Headline "From drawn notes, mock-ups, to working systems." rises in large and centred, then at pin +0.14vh each word flies (time-based, expo.out, 85ms stagger) to its final place at the top; scrolling back reverses it. Start positions are measured per line from the words' untransformed layout (`offsetLeft/Top`) and re-measured on every refresh.
+  - Then the info column (left, Brand-panel styling) and the framed media (right) arrive; the photo opens out of its bottom-left corner, where a CSS flare sits (core + conic rays + diagonal beam + streak, screen blend). Copper corner bracket + dash on the top-left.
+  - One build per 0.55vh of pinned scroll; items/media crossfade with CSS transitions. Ticks are clickable (scroll to that build). Videos play only while the section is on screen.
+  - Triggers after the pin use absolute positions read off `pin.start` (a trigger on the pinned element created after its own pin gets pushed past the pin distance otherwise).
+  - Reduced motion: no pin/flight; ticks switch builds directly.
+  - Macarena's Kitchen is currently a closure page live, so its image is a screenshot of the pre-closure site (commit dfe9142 of the site repo).
+- Horizontal Brand → Film: panels are transparent over the section charcoal and the film glow sits on an oversized `::before` — no vertical seam. Copy blocks cancel most of the track motion and crossfade in place (no clipping at the viewport edge). Distance is measured from panel layout, not `scrollWidth`.
+- Hero bottom fade now eases to solid charcoal (no hard line when the pin releases). The $39K ticker banner has an eased horizontal feather (bar, cast shadow, text) and drifts in 16vw instead of sliding across the whole screen.

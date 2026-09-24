@@ -1,8 +1,8 @@
-import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectToolKey } from './content'
+import { astroSequence, portfolioContent, projectToolMap, siteMeta, type AiShowcaseMedia, type ProjectToolKey } from './content'
 import { resolvePublicUrl } from './urls'
 
 export function renderSite() {
-  const { navigation, hero, reveal, projects, horizontalFlow, iris, build, meta, about, contact } = portfolioContent
+  const { navigation, hero, reveal, projects, horizontalFlow, build, meta, about, contact } = portfolioContent
   const firstProject = projects.items[0]
   const coverThumb = (cover: { kind: string; src: string; poster?: string }) =>
     cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
@@ -62,8 +62,10 @@ export function renderSite() {
       <section class="reveal scene" aria-label="${reveal.ariaLabel}" data-scene="reveal" data-reveal>
         <div class="reveal-inner">
           <p class="reveal-subheadline" aria-label="${reveal.subheadline}" data-reveal-banner>
-            <span class="reveal-subheadline-track" aria-hidden="true">
-              ${revealTicker}
+            <span class="reveal-subheadline-mask" aria-hidden="true">
+              <span class="reveal-subheadline-track">
+                ${revealTicker}
+              </span>
             </span>
           </p>
           <figure class="reveal-artwork" data-reveal-artwork>
@@ -164,6 +166,8 @@ export function renderSite() {
 
       <div class="section-dusk" aria-hidden="true"></div>
 
+      ${renderAiShowcase()}
+
       <section class="horiz-flow" id="${horizontalFlow.id}" aria-label="${horizontalFlow.ariaLabel}" data-scene="horizontal-flow" data-horizontal-section>
         <div class="horiz-track" data-horizontal-track>
           <article class="horiz-panel brand-panel" data-horizontal-panel="brand" data-brand-panel>
@@ -205,20 +209,6 @@ export function renderSite() {
               </div>
             </div>
           </article>
-        </div>
-      </section>
-
-      <section class="iris-section scene" aria-label="${iris.ariaLabel}" data-scene="iris" data-iris>
-        <div class="iris-content">
-          <p class="kicker">${iris.kicker}</p>
-          <h2>${iris.headline}</h2>
-        </div>
-        <div class="iris-bars" aria-hidden="true">
-          <span class="iris-bar iris-bar--top"></span>
-          <span class="iris-bar iris-bar--right"></span>
-          <span class="iris-bar iris-bar--bottom"></span>
-          <span class="iris-bar iris-bar--left"></span>
-          <span class="iris-glow" data-iris-glow></span>
         </div>
       </section>
 
@@ -294,4 +284,107 @@ export function renderSite() {
       <div class="project-viewer-scroll" data-viewer-scroll></div>
     </div>
   `
+}
+
+const pad2 = (value: number) => String(value).padStart(2, '0')
+
+function renderAiMedia(media: AiShowcaseMedia) {
+  if (media.kind === 'plate') {
+    // no photos exist of the Illustrator tools, so this is a typographic plate:
+    // a drawn pen path (anchor points + handles) behind the tool count
+    return `<div class="ai-plate">
+      <svg class="ai-plate-path" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <g transform="translate(190 64) scale(0.7)">
+        <path class="ai-plate-curve" d="M40 310 C 150 120, 250 90, 330 200 S 520 330, 600 110" />
+        <path class="ai-plate-handle" d="M40 310 L150 120 M330 200 L250 90 M330 200 L410 310 M600 110 L520 330" />
+        <rect x="34" y="304" width="12" height="12" /><rect x="324" y="194" width="12" height="12" /><rect x="594" y="104" width="12" height="12" />
+        <circle cx="150" cy="120" r="5" /><circle cx="250" cy="90" r="5" /><circle cx="410" cy="310" r="5" /><circle cx="520" cy="330" r="5" />
+        </g>
+      </svg>
+      <p class="ai-plate-value">${media.value}</p>
+      <p class="ai-plate-label">${media.label}</p>
+    </div>`
+  }
+
+  if (media.kind === 'video') {
+    return `<video class="ai-media-el" muted loop playsinline preload="none" poster="${resolvePublicUrl(media.poster)}" aria-label="${media.alt}" data-ai-video>
+      <source src="${resolvePublicUrl(media.src)}" type="video/mp4" />
+    </video>`
+  }
+
+  return `<img class="ai-media-el" src="${resolvePublicUrl(media.src)}" alt="${media.alt}" loading="lazy" decoding="async"${media.position ? ` style="object-position: ${media.position}"` : ''} />`
+}
+
+function renderAiShowcase() {
+  const ai = portfolioContent.aiShowcase
+  const total = pad2(ai.items.length)
+  // each word gets its own box so it can fly from the centre to the top on its own
+  // (the last two words, "working systems.", land in copper)
+  const headlineWords = ai.headline.split(' ')
+  const words = headlineWords
+    .map((word, index) => `<span class="ai-word${index >= headlineWords.length - 2 ? ' ai-word--accent' : ''}" data-ai-word>${word}</span>`)
+    .join(' ')
+
+  return `
+      <section class="ai-show scene" id="${ai.id}" aria-label="${ai.ariaLabel}" data-scene="ai" data-ai-show style="--ai-count: ${ai.items.length}">
+        <div class="ai-show-inner">
+          <header class="ai-show-head">
+            <p class="kicker ai-show-kicker" data-ai-kicker>${ai.kicker}</p>
+            <h2 class="ai-show-title" data-ai-title aria-label="${ai.headline}"><span aria-hidden="true">${words}</span></h2>
+          </header>
+
+          <div class="ai-show-body" data-ai-body>
+            <div class="ai-show-info" data-ai-info>
+              <div class="ai-items">
+                ${ai.items
+                  .map(
+                    (item, index) => `
+                <article class="ai-item${index === 0 ? ' is-active' : ''}" data-ai-item aria-hidden="${index === 0 ? 'false' : 'true'}">
+                  <p class="kicker ai-item-kicker">AI Build ${pad2(index + 1)} / ${item.pillar}</p>
+                  <h3 class="ai-item-name">${item.name}</h3>
+                  <span class="copper-rule"></span>
+                  <p class="ai-item-desc">${item.description}</p>
+                  <dl class="ai-item-meta">
+                    <div><dt>Built with</dt><dd>${item.built}</dd></div>
+                    ${item.stat ? `<div class="ai-item-stat"><dt>${item.stat.value}</dt><dd>${item.stat.label}</dd></div>` : ''}
+                  </dl>
+                  ${item.link ? `<a class="ai-item-link" href="${item.link.href}" target="_blank" rel="noreferrer" tabindex="${index === 0 ? '0' : '-1'}">${item.link.label} <span aria-hidden="true">&nearr;</span></a>` : ''}
+                </article>`,
+                  )
+                  .join('')}
+              </div>
+
+              <div class="ai-show-foot">
+                <p class="ai-count" aria-hidden="true"><span data-ai-count>01</span> / ${total}</p>
+                <ol class="ai-ticks" aria-label="AI builds">
+                  ${ai.items
+                    .map(
+                      (item, index) => `<li><button class="ai-tick${index === 0 ? ' is-active' : ''}" type="button" data-ai-tick="${index}" aria-label="Show ${item.name}"${index === 0 ? ' aria-current="true"' : ''}><span></span></button></li>`,
+                    )
+                    .join('')}
+                </ol>
+                <a class="ai-page-link" href="${ai.pageLink.href}">${ai.pageLink.label} <span aria-hidden="true">&rarr;</span></a>
+              </div>
+            </div>
+
+            <figure class="ai-frame" data-ai-frame>
+              <span class="ai-bracket" aria-hidden="true"></span>
+              <span class="ai-dash" aria-hidden="true"></span>
+              <div class="ai-frame-window" data-ai-window>
+                ${ai.items
+                  .map(
+                    (item, index) => `<div class="ai-media${index === 0 ? ' is-active' : ''}" data-ai-media>${renderAiMedia(item.media)}</div>`,
+                  )
+                  .join('')}
+              </div>
+              <span class="ai-flare" data-ai-flare aria-hidden="true">
+                <span class="ai-flare-rays"></span>
+                <span class="ai-flare-beam"></span>
+                <span class="ai-flare-streak"></span>
+                <span class="ai-flare-core"></span>
+              </span>
+            </figure>
+          </div>
+        </div>
+      </section>`
 }

@@ -299,6 +299,77 @@ const projectItems: Project[] = [
   },
 ]
 
+export type AiShowcaseMedia =
+  | { kind: 'image'; src: string; alt: string; position?: string }
+  | { kind: 'video'; src: string; poster: string; alt: string }
+  | { kind: 'plate'; value: string; label: string }
+
+export type AiShowcaseItem = {
+  pillar: string
+  name: string
+  description: string
+  built: string
+  stat?: { value: string; label: string }
+  link?: { label: string; href: string }
+  media: AiShowcaseMedia
+}
+
+// August's Leveraging AI list (Sept 2026). The 16% figure is from his resume.
+const aiShowcaseItems: AiShowcaseItem[] = [
+  {
+    pillar: 'Design + Print',
+    name: 'Illustrator scripts + tool extensions',
+    description: 'Five custom tools inside Adobe Illustrator that speed up the design workflow and the print process at FASTSIGNS.',
+    built: 'Gemini',
+    stat: { value: '16%', label: 'Faster, cheaper turnaround per project' },
+    media: { kind: 'plate', value: '05', label: 'Custom Illustrator tools' },
+  },
+  {
+    pillar: 'Web',
+    name: 'This website',
+    description: 'A scroll-driven portfolio in Vite, TypeScript, and GSAP, art directed and built end to end. You are scrolling it.',
+    built: 'Codex + Claude Code',
+    media: { kind: 'image', src: 'media/ai/portfolio.webp', alt: "Selected Work section of August's portfolio site", position: '50% 30%' },
+  },
+  {
+    pillar: 'Web',
+    name: 'The Olea Group career site',
+    description: 'The recruiting site for The Olea Group: brand, layout, and build, shipped live on its own domain.',
+    built: 'Codex + Claude Code',
+    link: { label: 'careers.myoleagroup.com', href: 'https://careers.myoleagroup.com/' },
+    media: { kind: 'image', src: 'media/ai/olea-careers.webp', alt: 'The Olea Group careers site home page' },
+  },
+  {
+    pillar: 'Web',
+    name: "Macarena's Kitchen website",
+    description: 'A restaurant site designed, built, and deployed on a custom domain, with Square online ordering wired in.',
+    built: 'Codex + Claude Code',
+    link: { label: 'macarenaskitchen.com', href: 'https://www.macarenaskitchen.com/' },
+    media: { kind: 'image', src: 'media/ai/macarenas-kitchen.webp', alt: "Macarena's Kitchen website home page with the menu" },
+  },
+  {
+    pillar: '3D',
+    name: 'Pool 3D mock-ups',
+    description: 'An AI agent driving Blender through MCP to build pool and lanai mock-ups, so the homeowner sees the design before the dig.',
+    built: 'Blender MCP + Codex + Claude Code',
+    media: { kind: 'image', src: 'media/ai/pool-3d.webp', alt: '3D render of a pool and covered lanai built in Blender', position: '50% 55%' },
+  },
+  {
+    pillar: 'Motion',
+    name: 'AI video content',
+    description: 'Generated video produced through the Higgsfield MCP, directed shot by shot from prompt to final cut.',
+    built: 'Higgsfield MCP',
+    media: { kind: 'video', src: 'media/ai/higgsfield.mp4', poster: 'media/ai/higgsfield-poster.webp', alt: 'AI-generated clip of astronauts brewing beer' },
+  },
+  {
+    pillar: 'Motion',
+    name: 'Animation',
+    description: 'Motion written as code: timing, easing, and choreography that are exact and repeatable.',
+    built: 'Claude Code',
+    media: { kind: 'video', src: 'media/ai/animation.mp4', poster: 'media/ai/animation-poster.webp', alt: 'Code-driven animation of a sun bursting apart' },
+  },
+]
+
 export const portfolioContent = {
   navigation: {
     brandLabel: 'PORTFOLIO',
@@ -369,10 +440,16 @@ export const portfolioContent = {
       credit: "Astro Fool's Hopper / Creative Direction / Motion System",
     },
   },
-  iris: {
-    ariaLabel: 'Screen transition',
-    kicker: 'TRANSITION / BUILD',
-    headline: 'From campaign to working system.',
+  // Leveraging AI showcase — sits right after Selected Work. The headline flies
+  // word-by-word from the middle of the screen to the top, then the pinned
+  // section steps through each build (left: info, right: framed media).
+  aiShowcase: {
+    id: 'ai',
+    ariaLabel: 'Leveraging AI',
+    kicker: 'Leveraging AI',
+    headline: 'From drawn notes, mock-ups, to working systems.',
+    pageLink: { label: 'Every AI build', href: './leveraging-ai.html' },
+    items: aiShowcaseItems,
   },
   build: {
     id: 'build',

@@ -46,12 +46,13 @@ initNav()
 if (prefersReducedMotion) {
   initReducedMotionFallback()
   initProjects()
+  initAiShowcaseStatic()
 } else {
   initHero()
   initReveal()
   initProjects()
+  initAiShowcase()
   initHorizontalFlow()
-  initIris()
   initBuild()
   initMeta()
   initAbout()
@@ -308,7 +309,6 @@ function initReducedMotionFallback() {
     scale: 1,
   })
   gsap.set('[data-horizontal-track]', { x: 0 })
-  gsap.set('[data-film-inner]', { scale: 1 })
 }
 
 function initReveal() {
@@ -390,7 +390,9 @@ function initReveal() {
       reveal.style.setProperty('--projects-bloom', wash.toFixed(3))
       gsap.set(banner, {
         autoAlpha: bannerIn * (1 - out),
-        x: getRevealBannerIntroX(banner) * (1 - bannerIn),
+        // a short drift + fade (its ends are feathered in CSS) instead of the
+        // whole hard-edged bar sliding across the screen
+        x: window.innerWidth * 0.16 * (1 - bannerIn),
         y: lift,
       })
       gsap.set(artwork, {
@@ -417,80 +419,340 @@ function initHorizontalFlow() {
   const track = document.querySelector<HTMLElement>('[data-horizontal-track]')
   const filmInner = document.querySelector<HTMLElement>('[data-film-inner]')
   const filmVideo = document.querySelector<HTMLVideoElement>('[data-film-video]')
+  const brandArt = section?.querySelector<HTMLElement>('.brand-art')
+  const brandCopy = section?.querySelector<HTMLElement>('.brand-copy')
+  const filmCopy = section?.querySelector<HTMLElement>('.film-copy')
 
-  if (!section || !track || !filmInner) {
+  if (!section || !track || !filmInner || !brandArt || !brandCopy || !filmCopy) {
     return
   }
 
-  const horizontalDistance = () => Math.max(0, track.scrollWidth - window.innerWidth)
+  // measured from panel layout, not track.scrollWidth: the parallax layers are
+  // transformed past the last panel's edge and would inflate scrollWidth
+  const lastPanel = track.lastElementChild as HTMLElement | null
+  const horizontalDistance = () =>
+    Math.max(0, (lastPanel ? lastPanel.offsetLeft + lastPanel.offsetWidth : track.scrollWidth) - window.innerWidth)
   const horizontalScrollDistance = () => Math.max(1, Math.round(Math.max(window.innerHeight * 2, horizontalDistance())))
 
-  gsap.set(filmInner, { scale: 1.09 })
+  // Parallax layers, driven by where the track actually IS (the tween's own
+  // progress, which follows the scrub), not by raw scroll — so copy never runs
+  // into the viewport edge. Backgrounds and media slide; the copy blocks mostly
+  // hold their screen position and crossfade (Brand out, then Film in).
+  const layer = (progress: number) => {
+    const vw = window.innerWidth
+    const narrow = vw < 821
+    // how much of the track's motion the copy cancels out: the copy barely
+    // travels while it fades, so it dissolves in place instead of being
+    // sliced by the viewport edge (phones need more, their copy is full-width)
+    const hold = narrow ? 0.92 : 0.8
+    const brandOut = smoothstep(narrow ? mapProgress(progress, 0.04, 0.3) : mapProgress(progress, 0.06, 0.38))
+    const filmSettle = smoothstep(mapProgress(progress, 0.3, 1))
+    const filmCopyIn = smoothstep(narrow ? mapProgress(progress, 0.62, 0.96) : mapProgress(progress, 0.42, 0.84))
+    const innerX = vw * 0.1 * (1 - filmSettle)
+
+    gsap.set(brandCopy, { autoAlpha: 1 - brandOut, x: vw * progress * hold })
+    gsap.set(brandArt, { x: vw * 0.1 * smoothstep(mapProgress(progress, 0, 0.6)) })
+    gsap.set(filmInner, { x: innerX })
+    gsap.set(filmCopy, {
+      autoAlpha: filmCopyIn,
+      x: -vw * (1 - progress) * hold - innerX + vw * 0.03 * (1 - filmCopyIn),
+    })
+  }
+
+  layer(0)
 
   gsap.to(track, {
     x: () => -horizontalDistance(),
     ease: 'none',
+    onUpdate() {
+      layer(this.progress())
+    },
     scrollTrigger: {
       trigger: section,
       start: 'top top',
       end: () => `+=${horizontalScrollDistance()}`,
       pin: true,
-      scrub: 1.5,
+      scrub: 1.2,
       invalidateOnRefresh: true,
       onToggle: (self) => {
         if (!filmVideo) return
         if (self.isActive) void filmVideo.play().catch(() => undefined)
         else filmVideo.pause()
       },
-      onUpdate: (self) => {
-        const settle = smoothstep(mapProgress(self.progress, 0.78, 0.96))
-        gsap.set(filmInner, { scale: 1.09 - 0.09 * settle })
-      },
     },
   })
 }
 
-function initIris() {
-  const iris = document.querySelector<HTMLElement>('[data-iris]')
-  const bars = gsap.utils.toArray<HTMLElement>('.iris-bar')
-  const topBottom = gsap.utils.toArray<HTMLElement>('.iris-bar--top, .iris-bar--bottom')
-  const leftRight = gsap.utils.toArray<HTMLElement>('.iris-bar--left, .iris-bar--right')
-  const glow = document.querySelector<HTMLElement>('[data-iris-glow]')
-  const content = iris?.querySelector<HTMLElement>('.iris-content')
+// ---- Leveraging AI showcase -------------------------------------------------
+type AiShowcaseController = {
+  section: HTMLElement
+  ticks: HTMLButtonElement[]
+  count: number
+  setActive: (index: number) => void
+  setPlaying: (playing: boolean) => void
+}
 
-  if (!iris || !bars.length || !glow || !content) {
+function getAiShowcase(): AiShowcaseController | null {
+  const section = document.querySelector<HTMLElement>('[data-ai-show]')
+
+  if (!section) {
+    return null
+  }
+
+  const items = gsap.utils.toArray<HTMLElement>('[data-ai-item]', section)
+  const media = gsap.utils.toArray<HTMLElement>('[data-ai-media]', section)
+  const ticks = gsap.utils.toArray<HTMLButtonElement>('[data-ai-tick]', section)
+  const countEl = section.querySelector<HTMLElement>('[data-ai-count]')
+  let current = 0
+  let playing = false
+
+  const syncVideos = () => {
+    media.forEach((layer, index) => {
+      const video = layer.querySelector<HTMLVideoElement>('video')
+
+      if (!video) return
+
+      if (playing && index === current) {
+        video.preload = 'auto'
+        void video.play().catch(() => undefined)
+      } else {
+        video.pause()
+      }
+    })
+  }
+
+  const setActive = (index: number) => {
+    const next = gsap.utils.clamp(0, items.length - 1, index)
+
+    if (next === current) return
+
+    current = next
+    // items behind the current one leave upward, items ahead wait below —
+    // so the copy always travels in the scroll direction
+    items.forEach((item, i) => {
+      const on = i === next
+
+      item.classList.toggle('is-active', on)
+      item.classList.toggle('is-past', i < next)
+      item.setAttribute('aria-hidden', String(!on))
+      item.querySelectorAll('a').forEach((link) => {
+        link.tabIndex = on ? 0 : -1
+      })
+    })
+    media.forEach((layer, i) => layer.classList.toggle('is-active', i === next))
+    ticks.forEach((tick, i) => {
+      tick.classList.toggle('is-active', i === next)
+      if (i === next) tick.setAttribute('aria-current', 'true')
+      else tick.removeAttribute('aria-current')
+    })
+    if (countEl) countEl.textContent = String(next + 1).padStart(2, '0')
+    syncVideos()
+  }
+
+  const setPlaying = (value: boolean) => {
+    playing = value
+    syncVideos()
+  }
+
+  return { section, ticks, count: items.length, setActive, setPlaying }
+}
+
+// Reduced motion: no pin, no flight — the numbered ticks switch builds directly.
+function initAiShowcaseStatic() {
+  const show = getAiShowcase()
+
+  show?.ticks.forEach((tick, index) => tick.addEventListener('click', () => show.setActive(index)))
+}
+
+function initAiShowcase() {
+  const show = getAiShowcase()
+
+  if (!show) {
     return
   }
 
-  // The iris now starts CLOSED (reads as the same charcoal as the film panel above)
-  // and opens once onto the headline. Before, it showed the headline, closed over it,
-  // then reopened onto the same headline — ~3 screens of repeat.
-  gsap.set(topBottom, { scaleY: 1 })
-  gsap.set(leftRight, { scaleX: 1 })
-  gsap.set(glow, { autoAlpha: 0 })
+  const { section } = show
+  const title = section.querySelector<HTMLElement>('[data-ai-title]')
+  const kicker = section.querySelector<HTMLElement>('[data-ai-kicker]')
+  const info = section.querySelector<HTMLElement>('[data-ai-info]')
+  const frame = section.querySelector<HTMLElement>('[data-ai-frame]')
+  const frameWindow = section.querySelector<HTMLElement>('[data-ai-window]')
+  const flare = section.querySelector<HTMLElement>('[data-ai-flare]')
+  const words = gsap.utils.toArray<HTMLElement>('[data-ai-word]', section)
 
-  ScrollTrigger.create({ trigger: iris, start: 'top top', end: pinDistance(2), pin: true, invalidateOnRefresh: true })
+  if (!title || !kicker || !info || !frame || !frameWindow || !flare || !words.length) {
+    return
+  }
 
-  // starts opening while the section is still sliding in (top at 55%) so the
-  // closed iris never sits on screen as an empty dark frame
+  // Scroll budget, in viewport-heights of pinned scroll:
+  //   0.00–0.14  headline holds, large, in the middle of the screen
+  //   0.14       words fly one at a time to the top (time-based, expo.out)
+  //   0.30–0.85  info column + framed media arrive, flare blooms
+  //   0.95 →     one build per STEP
+  const INTRO = 0.95
+  const STEP = 0.55
+  const PIN = INTRO + STEP * show.count
+
+  // ---- headline flight -------------------------------------------------------
+  // Each word's START is where it would sit if the whole headline were scaled up
+  // and centred in the viewport, line by line. The words live at their final
+  // (top) layout; the start is applied as a transform, so landing = identity.
+  type Start = { x: number; y: number; scale: number }
+  let starts: Start[] = []
+  let flown = false
+  let flight: gsap.core.Tween | null = null
+
+  const measure = () => {
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    const sectionRect = section.getBoundingClientRect()
+    const titleRect = title.getBoundingClientRect()
+    // offset* ignores transforms, so this is the untransformed final layout
+    const boxes = words.map((word) => ({
+      left: titleRect.left + word.offsetLeft,
+      top: titleRect.top + word.offsetTop,
+      width: word.offsetWidth,
+      height: word.offsetHeight,
+    }))
+    const lines: number[][] = []
+
+    boxes.forEach((box, index) => {
+      const line = lines.find((candidate) => Math.abs(boxes[candidate[0]].top - box.top) < box.height * 0.5)
+      if (line) line.push(index)
+      else lines.push([index])
+    })
+
+    const lineWidth = (line: number[]) => boxes[line[line.length - 1]].left + boxes[line[line.length - 1]].width - boxes[line[0]].left
+    const widest = Math.max(...lines.map(lineWidth))
+    const scale = Math.min(vw < 821 ? 1.3 : 1.7, (vw * 0.88) / widest, (vh * 0.52) / titleRect.height)
+    const centerX = sectionRect.left + vw / 2
+    const centerY = sectionRect.top + vh / 2
+    const titleCenterY = titleRect.top + titleRect.height / 2
+
+    starts = new Array<Start>(words.length)
+    lines.forEach((line) => {
+      const left = boxes[line[0]].left
+      const bigLeft = centerX - (lineWidth(line) * scale) / 2
+      const lineCenterY = boxes[line[0]].top + boxes[line[0]].height / 2
+      const bigCenterY = centerY + (lineCenterY - titleCenterY) * scale
+
+      line.forEach((index) => {
+        const box = boxes[index]
+        starts[index] = {
+          x: bigLeft + (box.left - left + box.width / 2) * scale - (box.left + box.width / 2),
+          y: bigCenterY - (box.top + box.height / 2),
+          scale,
+        }
+      })
+    })
+
+    if (!flown) {
+      flight?.kill()
+      words.forEach((word, index) => gsap.set(word, starts[index]))
+    }
+  }
+
+  const fly = () => {
+    flown = true
+    flight?.kill()
+    // fast departure, decisive landing: expo.out spends most of its distance
+    // early and stops dead on the final position, one word after another
+    flight = gsap.to(words, { x: 0, y: 0, scale: 1, duration: 1.05, ease: 'expo.out', stagger: 0.085, overwrite: 'auto' })
+    gsap.to(kicker, { autoAlpha: 1, y: 0, duration: 0.7, delay: 0.45, ease: 'power3.out', overwrite: 'auto' })
+  }
+
+  const unfly = () => {
+    flown = false
+    flight?.kill()
+    flight = gsap.to(words, {
+      x: (index: number) => starts[index].x,
+      y: (index: number) => starts[index].y,
+      scale: (index: number) => starts[index].scale,
+      duration: 0.8,
+      ease: 'power3.inOut',
+      stagger: { each: 0.04, from: 'end' },
+      overwrite: 'auto',
+    })
+    gsap.to(kicker, { autoAlpha: 0, y: 10, duration: 0.3, overwrite: 'auto' })
+  }
+
+  gsap.set(words, { transformOrigin: '50% 50%' })
+  gsap.set(kicker, { autoAlpha: 0, y: 10 })
+  measure()
+  ScrollTrigger.addEventListener('refresh', measure)
+
+  // headline rises in (still large, centred) while the section scrolls up
+  gsap.fromTo(
+    words,
+    { autoAlpha: 0, yPercent: 38 },
+    {
+      autoAlpha: 1,
+      yPercent: 0,
+      ease: 'power2.out',
+      stagger: 0.06,
+      scrollTrigger: { trigger: section, start: 'top 88%', end: 'top 22%', scrub: 0.6, invalidateOnRefresh: true },
+    },
+  )
+
+  const pin = ScrollTrigger.create({
+    trigger: section,
+    start: 'top top',
+    end: pinDistance(PIN),
+    pin: true,
+    invalidateOnRefresh: true,
+    onUpdate: (self) => {
+      const u = self.progress * PIN
+      show.setActive(Math.floor((u - INTRO) / STEP))
+    },
+  })
+
+  // NOTE: positions below are absolute scroll values read off the pin. A trigger
+  // on the pinned element itself, created after its pin, would otherwise be
+  // pushed past the whole pin distance.
+  ScrollTrigger.create({
+    start: () => pin.start + Math.round(window.innerHeight * 0.14),
+    invalidateOnRefresh: true,
+    onEnter: fly,
+    onLeaveBack: unfly,
+  })
+
+  // info column + frame arrive once the headline has cleared the middle
   gsap
     .timeline({
-      defaults: { ease: 'power2.inOut' },
       scrollTrigger: {
-        trigger: iris,
-        start: 'top 55%',
-        end: () => `+=${Math.round(window.innerHeight * 1.55)}`,
-        scrub: 1,
+        start: () => pin.start + Math.round(window.innerHeight * 0.3),
+        end: () => pin.start + Math.round(window.innerHeight * 0.85),
+        scrub: 0.8,
         invalidateOnRefresh: true,
       },
     })
-    // glow only once the section fills the screen (~0.35) so its edge never shows as a band
-    .to(glow, { autoAlpha: 1, duration: 0.16, ease: 'power1.out' }, 0.3)
-    .to(topBottom, { scaleY: 0, duration: 0.42 }, 0.32)
-    .to(leftRight, { scaleX: 0, duration: 0.42 }, 0.32)
-    .fromTo(content, { scale: 0.94, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.38 }, 0.38)
-    .to(glow, { autoAlpha: 0, duration: 0.3, ease: 'power1.in' }, 0.62)
-    .to({}, { duration: 0.08 }, 0.92)
+    .fromTo(info, { autoAlpha: 0, x: -44 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out' }, 0.1)
+    .fromTo(frame, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, ease: 'none' }, 0)
+    // the photo opens out of the corner the flare sits on
+    .fromTo(
+      frameWindow,
+      { clipPath: 'inset(100% 100% 0% 0%)' },
+      { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.85, ease: 'power3.inOut' },
+      0,
+    )
+    .fromTo('.ai-bracket', { scale: 0 }, { scale: 1, transformOrigin: '0% 0%', duration: 0.45, ease: 'power3.out' }, 0.45)
+    .fromTo('.ai-dash', { scaleX: 0 }, { scaleX: 1, transformOrigin: '0% 50%', duration: 0.4, ease: 'power3.out' }, 0.55)
+    .fromTo(flare, { autoAlpha: 0, scale: 0.35 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'power2.out' }, 0.15)
+
+  // videos only run while the section is on screen
+  ScrollTrigger.create({
+    start: () => pin.start - window.innerHeight,
+    end: () => pin.end + window.innerHeight,
+    invalidateOnRefresh: true,
+    onToggle: (self) => show.setPlaying(self.isActive),
+  })
+
+  show.ticks.forEach((tick, index) =>
+    tick.addEventListener('click', () => {
+      const top = pin.start + window.innerHeight * (INTRO + STEP * index + STEP * 0.4)
+      window.scrollTo({ top, behavior: 'smooth' })
+    }),
+  )
 }
 
 function initBuild() {
@@ -1111,8 +1373,3 @@ function getPortfolioIntroX() {
   return window.innerWidth + 24
 }
 
-function getRevealBannerIntroX(element?: HTMLElement) {
-  const bannerWidth = element?.getBoundingClientRect().width ?? window.innerWidth
-
-  return window.innerWidth * 0.5 + bannerWidth * 0.5 + 32
-}

@@ -509,3 +509,14 @@ Ask only when the answer affects implementation.
 - AI headline sits top-right, right-aligned, with a copper edge rule that draws down after the words land. Corner flare is smaller/dimmer, the section lets it spill past its bottom edge (`z-index: 2; overflow-y: visible`), and it fades out as the section leaves.
 - Grain opacity 0.11 → 0.16.
 - Note: this PC's shell has `NODE_ENV=production`, so a plain `npm install` drops devDependencies. Use `npm install --include=dev`.
+
+## Update — Brand Identity, new animation, cleanup (Sept 2026, pushed live)
+
+- Build ("Brands that ship as working software") and Meta ("You're reading this on it.") sections removed, along with `initBuild` / `initMeta`.
+- New **Brand Identity** section (`#identity`) reuses the showcase (`renderShowcase(config, mirror)` / `initAiShowcase(section)`), mirrored: headline top-left, frame left, info right, light from the frame's bottom-right. Eight identities from August's hard drive (`OneDrive\Desktop\August (HardDrive)`): Solar Home Kentucky (school 2022), River's Edge Cottage, Forage St., Novi, Novare, NvR Nine, Gap City Media, Pirraglia's. Images composed to 1600x1000 in `public/media/brand/`.
+- Leveraging AI: two Mango's Photo Booth builds (hero + package pricing), step 0.48vh (10 builds). Headline a bit larger.
+- Animation build: new code-rendered loop (`public/media/ai/animation.mp4`, source in `tools/motion-loop/index.html`): 8,800 particles, every frame a pure function of time, rendered headless with Playwright and encoded with ffmpeg.
+- Tool icons: official app icons (Iconify "logos" set) in `public/tool-icons/`.
+- Reveal stat now "$64K a month"; Brand metric $64K.
+- About: "About me" label sits on top of the text column, larger/bolder.
+- Fixed: Selected Work light-nav trigger (it switched back to dark one screen into the pin); now reads absolute positions off the pin.

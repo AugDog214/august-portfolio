@@ -123,7 +123,7 @@ const projectItems: Project[] = [
       },
       {
         label: 'Outcome',
-        body: 'Pairing design with self-directed social video campaigns, I hit 130% of our monthly sales target — $63K against a $30K goal. One signage package alone closed at $39K.',
+        body: 'Pairing design with self-directed social video campaigns, I hit 130% of our monthly sales target — $64K a month against a $30K goal. One signage package alone closed at $39K.',
       },
     ],
   },
@@ -355,6 +355,22 @@ const aiShowcaseItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/ai/macarenas-kitchen.webp', alt: "Macarena's Kitchen website home page with the menu" },
   },
   {
+    pillar: 'Web',
+    name: "Mango's Photo Booth website",
+    description: 'A booking-first site for a Southwest Florida photo booth company: event pages, gallery, and a date-check flow that sends visitors straight to reserve.',
+    built: 'Claude Code',
+    link: { label: 'mangosphotobooth.com', href: 'https://mangosphotobooth.com/' },
+    media: { kind: 'image', src: 'media/ai/mangos-hero.webp', alt: "Mango's Photo Booth website hero" },
+  },
+  {
+    pillar: 'Web',
+    name: "Mango's: pricing built to convert",
+    description: 'Three packages with a highlighted middle tier to anchor the choice, backed by city landing pages and structured data so the business shows up in local and AI search.',
+    built: 'Claude Code',
+    stat: { value: '4', label: 'City landing pages + LocalBusiness and FAQ schema' },
+    media: { kind: 'image', src: 'media/ai/mangos-packages.webp', alt: "Mango's Photo Booth package pricing section" },
+  },
+  {
     pillar: '3D',
     name: 'Pool 3D mock-ups',
     description: 'An AI agent driving Blender through MCP to build pool and lanai mock-ups, so the homeowner sees the design before the dig.',
@@ -371,9 +387,68 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   {
     pillar: 'Motion',
     name: 'Animation',
-    description: 'Motion written as code: timing, easing, and choreography that are exact and repeatable.',
-    built: 'Claude Code',
-    media: { kind: 'video', src: 'media/ai/animation.mp4', poster: 'media/ai/animation-poster.webp', alt: 'Code-driven animation of a sun bursting apart' },
+    description: 'An 8-second loop of 8,800 particles: orbit, burst, and assemble into type. Every frame is a pure function of time, so there are zero keyframes and it loops perfectly.',
+    built: 'Claude Code + Canvas',
+    media: { kind: 'video', src: 'media/ai/animation.mp4', poster: 'media/ai/animation-poster.webp', alt: 'Code-rendered particle animation: a copper ring bursts and reassembles into the word MOTION' },
+  },
+]
+
+const brandIdentityItems: AiShowcaseItem[] = [
+  {
+    pillar: 'School · 2022',
+    name: 'Solar Home Kentucky',
+    description: 'Identity for a Kentucky residential solar brand: a sun-and-roofline mark, responsive app-icon versions, reversed and alternate color variations, and a type system.',
+    built: 'Logo system, color, typography',
+    media: { kind: 'image', src: 'media/brand/solar-home-kentucky.webp', alt: 'Solar Home Kentucky logo system presentation' },
+  },
+  {
+    pillar: 'Client · 2023',
+    name: "River's Edge Cottage",
+    description: 'A watercolor mark for a riverside cottage, with reduced and responsive versions, a reversed lockup, and a palette pulled from the river and woods.',
+    built: 'Logo system, color, typography',
+    media: { kind: 'image', src: 'media/brand/rivers-edge-cottage.webp', alt: "River's Edge Cottage logo presentation" },
+  },
+  {
+    pillar: 'Client · 2023',
+    name: 'Forage St.',
+    description: 'A monoline script wordmark and mushroom icon for a food brand, shown on dark and light with its four-color palette.',
+    built: 'Wordmark, icon, color',
+    media: { kind: 'image', src: 'media/brand/forage.webp', alt: 'Forage St. logo final revision presentation' },
+  },
+  {
+    pillar: 'Client · 2023',
+    name: 'Novi',
+    description: 'A hand-lettered circular mark for a restaurant brand, built with reversed and alternate color versions and a matching font pairing.',
+    built: 'Logo, color, typography',
+    media: { kind: 'image', src: 'media/brand/novi.webp', alt: 'Novi logo presentation with food photography' },
+  },
+  {
+    pillar: 'Client · 2024',
+    name: 'Novare',
+    description: 'A bold chrome-gradient wordmark with a sunburst accent for a Naples, Florida client, plus simplified one-color versions and palette.',
+    built: 'Wordmark, variations, color',
+    media: { kind: 'image', src: 'media/brand/novare.webp', alt: 'Novare logo proposal' },
+  },
+  {
+    pillar: 'Client · 2023',
+    name: 'NvR Nine',
+    description: 'A sharp interlocking K monogram with a serif wordmark, delivered as a full black, white, and color file kit.',
+    built: 'Monogram, wordmark, file kit',
+    media: { kind: 'image', src: 'media/brand/nvr-nine.webp', alt: 'NvR Nine monogram logo' },
+  },
+  {
+    pillar: 'Gap City Media · 2024',
+    name: 'Gap City Media',
+    description: 'The studio identity I made while leading creative there: an 80s synthwave sunset, palms, and neon type that set the look for reels and client work.',
+    built: 'Logo, merch, social',
+    media: { kind: 'image', src: 'media/brand/gap-city-media.webp', alt: 'Gap City Media logo' },
+  },
+  {
+    pillar: 'School · 2023',
+    name: "Pirraglia's",
+    description: 'An Italian restaurant identity with a crest monogram and elegant wordmark, responsive versions, a reversed badge, and a type pairing.',
+    built: 'Logo system, color, typography',
+    media: { kind: 'image', src: 'media/brand/pirraglias.webp', alt: "Pirraglia's restaurant logo presentation" },
   },
 ]
 
@@ -398,8 +473,8 @@ export const portfolioContent = {
   },
   reveal: {
     ariaLabel: 'Brand impact',
-    number: '$39K',
-    line: 'of signage. The brand made it inevitable.',
+    number: '$64K',
+    line: 'a month in sales. The brand made it inevitable.',
     headline: 'Managing Creative Art Direction',
     subheadline: 'Brand Identity Design • AI Film Ads • Marketing • Signage',
     artwork: {
@@ -431,7 +506,7 @@ export const portfolioContent = {
       imageAlt: 'Belamo Patio Furniture monument sign mockup, 48 by 36 inches, placed on site photography',
       // from August's resume (June 2026)
       metrics: [
-        { value: '$63K', label: 'Monthly sales — 130% of a $30K target' },
+        { value: '$64K', label: 'Monthly sales, past our $30K goal' },
         { value: '16%', label: 'Faster, cheaper turnaround with custom AI tools' },
         { value: '7%', label: 'Lower cost of goods, month over month' },
       ],
@@ -455,27 +530,26 @@ export const portfolioContent = {
     ariaLabel: 'Leveraging AI',
     kicker: 'Leveraging AI',
     headline: 'From drawn notes, mock-ups, to working systems.',
+    itemLabel: 'AI Build',
+    metaLabel: 'Built with',
     pageLink: { label: 'Every AI build', href: './leveraging-ai.html' },
     items: aiShowcaseItems,
   },
-  build: {
-    id: 'build',
-    ariaLabel: 'Build capability',
-    kicker: 'FEATURE 03 / BUILD',
-    headline: 'Brands that ship as working software.',
-    credit: 'Orion Node Studio / Designer + Builder',
-    note: 'Vanilla JS + GSAP / No templates / Creative systems that move from idea to interface.',
-  },
-  meta: {
-    ariaLabel: 'Site proof',
-    headline: "You're reading this on it.",
-    body: 'BUILT IN VANILLA JS + GSAP / NO TEMPLATES. NO TRACKER. NO AGENCY.',
+  // Brand Identity: same pinned showcase as Leveraging AI, mirrored.
+  brandIdentity: {
+    id: 'identity',
+    ariaLabel: 'Brand identity work',
+    kicker: 'Brand Identity',
+    headline: 'From a hundred sketches to one mark.',
+    itemLabel: 'Identity',
+    metaLabel: 'Scope',
+    items: brandIdentityItems,
   },
   // About — condensed from August's original "About Me" page.
   about: {
     id: 'about',
     ariaLabel: 'About August Pirraglia',
-    kicker: 'ABOUT',
+    kicker: 'About me',
     headlineLines: ['Fine-art trained.', 'Service disciplined.', 'Always shipping.'],
     paragraphs: [
       'Born in Lewisville, Texas, I was drawing before I could do much else. In sixth grade I realized art and computers could be a career; a year later, after moving to Louisville, Kentucky, I designed my first logo — for my middle school track team.',

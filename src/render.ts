@@ -1,8 +1,8 @@
-import { astroSequence, portfolioContent, projectToolMap, siteMeta, type AiShowcaseMedia, type ProjectToolKey } from './content'
+import { astroSequence, portfolioContent, projectToolMap, siteMeta, type AiShowcaseItem, type AiShowcaseMedia, type ProjectToolKey } from './content'
 import { resolvePublicUrl } from './urls'
 
 export function renderSite() {
-  const { navigation, hero, reveal, projects, horizontalFlow, build, meta, about, contact } = portfolioContent
+  const { navigation, hero, reveal, projects, horizontalFlow, about, contact } = portfolioContent
   const firstProject = projects.items[0]
   const coverThumb = (cover: { kind: string; src: string; poster?: string }) =>
     cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
@@ -166,7 +166,7 @@ export function renderSite() {
 
       <div class="section-dusk" aria-hidden="true"></div>
 
-      ${renderAiShowcase()}
+      ${renderShowcase(portfolioContent.aiShowcase)}
 
       <section class="horiz-flow" id="${horizontalFlow.id}" aria-label="${horizontalFlow.ariaLabel}" data-scene="horizontal-flow" data-horizontal-section>
         <div class="horiz-track" data-horizontal-track>
@@ -212,45 +212,16 @@ export function renderSite() {
         </div>
       </section>
 
-      <section class="build scene" id="${build.id}" aria-label="${build.ariaLabel}" data-scene="build" data-build>
-        <div class="build-copy" data-build-copy>
-          <p class="kicker">${build.kicker}</p>
-          <h2>${build.headline}</h2>
-          <span class="copper-rule"></span>
-          <p class="credit">${build.credit}</p>
-          <p class="build-note">${build.note}</p>
-        </div>
-
-        <div class="device-stack" data-device-stack aria-hidden="true">
-          <div class="device device--secondary">
-            <div class="device-screen">
-              <span></span><span></span><span></span>
-            </div>
-          </div>
-          <div class="device device--primary">
-            <div class="device-screen">
-              <span></span><span></span><span></span><span class="screen-cta"></span>
-            </div>
-            <span class="home-indicator"></span>
-          </div>
-        </div>
-      </section>
-
-      <section class="meta scene" aria-label="${meta.ariaLabel}" data-scene="meta" data-meta>
-        <div class="meta-copy" data-meta-copy>
-          <h2>${meta.headline}</h2>
-          <p>${meta.body}</p>
-        </div>
-      </section>
+      ${renderShowcase(portfolioContent.brandIdentity, true)}
 
       <section class="about" id="${about.id}" aria-label="${about.ariaLabel}" data-about>
         <div class="about-inner">
           <header class="about-head" data-about-reveal>
-            <p class="kicker">${about.kicker}</p>
             <h2>${about.headlineLines.map((line) => `<span>${line}</span>`).join(' ')}</h2>
             <span class="copper-rule"></span>
           </header>
           <div class="about-body" data-about-reveal>
+            <h3 class="about-label">${about.kicker}</h3>
             ${about.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}
           </div>
           <dl class="about-facts" data-about-reveal>
@@ -315,8 +286,20 @@ function renderAiMedia(media: AiShowcaseMedia) {
   return `<img class="ai-media-el" src="${resolvePublicUrl(media.src)}" alt="${media.alt}" loading="lazy" decoding="async"${media.position ? ` style="object-position: ${media.position}"` : ''} />`
 }
 
-function renderAiShowcase() {
-  const ai = portfolioContent.aiShowcase
+type ShowcaseConfig = {
+  id: string
+  ariaLabel: string
+  kicker: string
+  headline: string
+  itemLabel: string
+  metaLabel: string
+  pageLink?: { label: string; href: string }
+  items: readonly AiShowcaseItem[]
+}
+
+// One pinned showcase layout, used twice: Leveraging AI (info left, frame right)
+// and Brand Identity (mirrored: frame left, info right, headline top-left).
+function renderShowcase(ai: ShowcaseConfig, mirror = false) {
   const total = pad2(ai.items.length)
   // each word gets its own box so it can fly from the centre to the top on its own
   // (the last two words, "working systems.", land in copper)
@@ -326,7 +309,7 @@ function renderAiShowcase() {
     .join(' ')
 
   return `
-      <section class="ai-show scene" id="${ai.id}" aria-label="${ai.ariaLabel}" data-scene="ai" data-ai-show style="--ai-count: ${ai.items.length}">
+      <section class="ai-show scene${mirror ? ' ai-show--mirror' : ''}" id="${ai.id}" aria-label="${ai.ariaLabel}" data-scene="ai" data-ai-show style="--ai-count: ${ai.items.length}">
         <div class="ai-show-inner">
           <header class="ai-show-head">
             <p class="kicker ai-show-kicker" data-ai-kicker>${ai.kicker}</p>
@@ -341,12 +324,12 @@ function renderAiShowcase() {
                   .map(
                     (item, index) => `
                 <article class="ai-item${index === 0 ? ' is-active' : ''}" data-ai-item aria-hidden="${index === 0 ? 'false' : 'true'}">
-                  <p class="kicker ai-item-kicker">AI Build ${pad2(index + 1)} / ${item.pillar}</p>
+                  <p class="kicker ai-item-kicker">${ai.itemLabel} ${pad2(index + 1)} / ${item.pillar}</p>
                   <h3 class="ai-item-name">${item.name}</h3>
                   <span class="copper-rule"></span>
                   <p class="ai-item-desc">${item.description}</p>
                   <dl class="ai-item-meta">
-                    <div><dt>Built with</dt><dd>${item.built}</dd></div>
+                    <div><dt>${ai.metaLabel}</dt><dd>${item.built}</dd></div>
                     ${item.stat ? `<div class="ai-item-stat"><dt>${item.stat.value}</dt><dd>${item.stat.label}</dd></div>` : ''}
                   </dl>
                   ${item.link ? `<a class="ai-item-link" href="${item.link.href}" target="_blank" rel="noreferrer" tabindex="${index === 0 ? '0' : '-1'}">${item.link.label} <span aria-hidden="true">&nearr;</span></a>` : ''}
@@ -357,14 +340,14 @@ function renderAiShowcase() {
 
               <div class="ai-show-foot">
                 <p class="ai-count" aria-hidden="true"><span data-ai-count>01</span> / ${total}</p>
-                <ol class="ai-ticks" aria-label="AI builds">
+                <ol class="ai-ticks" aria-label="${ai.ariaLabel}">
                   ${ai.items
                     .map(
                       (item, index) => `<li><button class="ai-tick${index === 0 ? ' is-active' : ''}" type="button" data-ai-tick="${index}" aria-label="Show ${item.name}"${index === 0 ? ' aria-current="true"' : ''}><span></span></button></li>`,
                     )
                     .join('')}
                 </ol>
-                <a class="ai-page-link" href="${ai.pageLink.href}">${ai.pageLink.label} <span aria-hidden="true">&rarr;</span></a>
+                ${ai.pageLink ? `<a class="ai-page-link" href="${ai.pageLink.href}">${ai.pageLink.label} <span aria-hidden="true">&rarr;</span></a>` : ''}
               </div>
             </div>
 

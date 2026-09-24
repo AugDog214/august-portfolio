@@ -74,6 +74,15 @@ const aiPage: { kicker: string; headline: string; lead: string; pillars: AiPilla
           href: 'https://www.macarenaskitchen.com/',
           linkLabel: 'macarenaskitchen.com',
         },
+        {
+          name: "Mango's Photo Booth website",
+          tagline: 'Booking-first site for an events business.',
+          description:
+            "Website for Mango's Photo Booth in Southwest Florida: tiered packages with an anchored middle option, event and gallery pages, four city landing pages, and LocalBusiness and FAQ structured data for local and AI search.",
+          built: 'Claude Code',
+          href: 'https://mangosphotobooth.com/',
+          linkLabel: 'mangosphotobooth.com',
+        },
       ],
     },
     {
@@ -106,7 +115,7 @@ const aiPage: { kicker: string; headline: string; lead: string; pillars: AiPilla
           name: 'Animation',
           tagline: 'Motion written as code.',
           description:
-            'Creating animation with Claude Code — timing, easing, and choreography written as code, so every move is exact and repeatable.',
+            'A code-rendered 8-second loop: 8,800 particles orbit, burst, and assemble into type. Every frame is a pure function of time, rendered headless and encoded with ffmpeg. Zero keyframes.',
           built: 'Claude Code',
         },
       ],

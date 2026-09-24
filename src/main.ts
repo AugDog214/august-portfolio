@@ -62,15 +62,15 @@ initNav()
 if (prefersReducedMotion) {
   initReducedMotionFallback()
   initProjects()
-  initAiShowcaseStatic()
+  initAiShowcaseStatic(document.querySelector<HTMLElement>('#ai'))
+  initAiShowcaseStatic(document.querySelector<HTMLElement>('#identity'))
 } else {
   initHero()
   initReveal()
   initProjects()
-  initAiShowcase()
+  initAiShowcase(document.querySelector<HTMLElement>('#ai'))
   initHorizontalFlow()
-  initBuild()
-  initMeta()
+  initAiShowcase(document.querySelector<HTMLElement>('#identity'))
   initAbout()
 }
 
@@ -319,7 +319,7 @@ function initReducedMotionFallback() {
 
   poster?.classList.remove('is-hidden')
   gsap.set(heroProgress, { scaleX: 1, transformOrigin: 'left center' })
-  gsap.set('[data-reveal-banner], [data-reveal-artwork], [data-reveal-copy], [data-reveal-editorial], [data-build-copy], .device--secondary, .device--primary, [data-meta-copy]', {
+  gsap.set('[data-reveal-banner], [data-reveal-artwork], [data-reveal-copy], [data-reveal-editorial]', {
     autoAlpha: 1,
     y: 0,
     scale: 1,
@@ -508,9 +508,7 @@ type AiShowcaseController = {
   setPlaying: (playing: boolean) => void
 }
 
-function getAiShowcase(): AiShowcaseController | null {
-  const section = document.querySelector<HTMLElement>('[data-ai-show]')
-
+function getAiShowcase(section: HTMLElement | null): AiShowcaseController | null {
   if (!section) {
     return null
   }
@@ -574,14 +572,14 @@ function getAiShowcase(): AiShowcaseController | null {
 }
 
 // Reduced motion: no pin, no flight — the numbered ticks switch builds directly.
-function initAiShowcaseStatic() {
-  const show = getAiShowcase()
+function initAiShowcaseStatic(section: HTMLElement | null) {
+  const show = getAiShowcase(section)
 
   show?.ticks.forEach((tick, index) => tick.addEventListener('click', () => show.setActive(index)))
 }
 
-function initAiShowcase() {
-  const show = getAiShowcase()
+function initAiShowcase(root: HTMLElement | null) {
+  const show = getAiShowcase(root)
 
   if (!show) {
     return
@@ -602,13 +600,18 @@ function initAiShowcase() {
     return
   }
 
+  // mirrored variant (Brand Identity): info enters from the right
+  const mirror = section.classList.contains('ai-show--mirror')
+  const bracket = section.querySelector<HTMLElement>('.ai-bracket')
+  const dash = section.querySelector<HTMLElement>('.ai-dash')
+
   // Scroll budget, in viewport-heights of pinned scroll:
   //   0.00–0.14  headline holds, large, in the middle of the screen
   //   0.14       words fly one at a time to the top (time-based, expo.out)
   //   0.30–0.85  info column + framed media arrive, flare blooms
   //   0.95 →     one build per STEP
   const INTRO = 0.95
-  const STEP = 0.55
+  const STEP = section.id === 'ai' ? 0.48 : 0.55
   const PIN = INTRO + STEP * show.count
 
   // ---- headline flight -------------------------------------------------------
@@ -748,17 +751,17 @@ function initAiShowcase() {
         invalidateOnRefresh: true,
       },
     })
-    .fromTo(info, { autoAlpha: 0, x: -44 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out' }, 0.1)
+    .fromTo(info, { autoAlpha: 0, x: mirror ? 44 : -44 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: 'power3.out' }, 0.1)
     .fromTo(frame, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.25, ease: 'none' }, 0)
     // the photo opens out of the corner the flare sits on
     .fromTo(
       frameWindow,
-      { clipPath: 'inset(100% 100% 0% 0%)' },
+      { clipPath: mirror ? 'inset(100% 0% 0% 100%)' : 'inset(100% 100% 0% 0%)' },
       { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.85, ease: 'power3.inOut' },
       0,
     )
-    .fromTo('.ai-bracket', { scale: 0 }, { scale: 1, transformOrigin: '0% 0%', duration: 0.45, ease: 'power3.out' }, 0.45)
-    .fromTo('.ai-dash', { scaleX: 0 }, { scaleX: 1, transformOrigin: '0% 50%', duration: 0.4, ease: 'power3.out' }, 0.55)
+    .fromTo(bracket, { scale: 0 }, { scale: 1, transformOrigin: mirror ? '100% 0%' : '0% 0%', duration: 0.45, ease: 'power3.out' }, 0.45)
+    .fromTo(dash, { scaleX: 0 }, { scaleX: 1, transformOrigin: mirror ? '100% 50%' : '0% 50%', duration: 0.4, ease: 'power3.out' }, 0.55)
     .fromTo(flare, { autoAlpha: 0, scale: 0.35 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'power2.out' }, 0.15)
 
   // the corner light dims away as the section leaves, so it never trails into
@@ -795,70 +798,6 @@ function initAiShowcase() {
       scrollToY(top, true)
     }),
   )
-}
-
-function initBuild() {
-  const build = document.querySelector<HTMLElement>('[data-build]')
-  const copy = document.querySelector<HTMLElement>('[data-build-copy]')
-  const stack = document.querySelector<HTMLElement>('[data-device-stack]')
-
-  if (!build || !copy || !stack) {
-    return
-  }
-
-  ScrollTrigger.create({ trigger: build, start: 'top top', end: pinDistance(1.8), pin: true, invalidateOnRefresh: true })
-
-  // arrive while the section scrolls in, so the screen is never empty
-  gsap
-    .timeline({
-      defaults: { ease: 'power3.out' },
-      scrollTrigger: { trigger: build, start: 'top 72%', end: 'top 8%', scrub: 0.8, invalidateOnRefresh: true },
-    })
-    .fromTo(copy, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.55 }, 0)
-    .fromTo('.device--secondary', { autoAlpha: 0, y: 90 }, { autoAlpha: 0.5, y: 0, duration: 0.6 }, 0.15)
-    .fromTo('.device--primary', { autoAlpha: 0, y: 70 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.3)
-
-  gsap.to(stack, {
-    y: -28,
-    ease: 'none',
-    scrollTrigger: { trigger: build, start: 'top top', end: pinDistance(1.8), scrub: 1.2, invalidateOnRefresh: true },
-  })
-}
-
-function initMeta() {
-  const meta = document.querySelector<HTMLElement>('[data-meta]')
-  const copy = document.querySelector<HTMLElement>('[data-meta-copy]')
-
-  if (!meta || !copy) {
-    return
-  }
-
-  ScrollTrigger.create({ trigger: meta, start: 'top top', end: pinDistance(1.6), pin: true, invalidateOnRefresh: true })
-
-  gsap.fromTo(
-    copy,
-    { autoAlpha: 0, y: 42, scale: 0.96 },
-    {
-      autoAlpha: 1,
-      y: 0,
-      scale: 1,
-      ease: 'power3.out',
-      scrollTrigger: { trigger: meta, start: 'top 68%', end: 'top 10%', scrub: 0.8, invalidateOnRefresh: true },
-    },
-  )
-  gsap.to(copy, {
-    autoAlpha: 0,
-    y: -28,
-    ease: 'power1.in',
-    immediateRender: false,
-    scrollTrigger: {
-      trigger: meta,
-      start: () => `top+=${Math.round(window.innerHeight * 1.15)} top`,
-      end: () => `top+=${Math.round(window.innerHeight * 1.6)} top`,
-      scrub: 0.8,
-      invalidateOnRefresh: true,
-    },
-  })
 }
 
 // About is a normal-flow section (no pin): each block fades up once as it enters.
@@ -1191,17 +1130,6 @@ function initProjects() {
     0.55,
   )
 
-  // light nav while the cream section is under it
-  ScrollTrigger.create({
-    trigger: section,
-    start: () => `top ${Math.round(window.innerHeight * 0.06)}`,
-    end: () => `bottom ${Math.round(window.innerHeight * 0.06)}`,
-    onToggle: (self) => {
-      navTheme.projects = self.isActive
-      syncNavTheme()
-    },
-  })
-
   trigger = ScrollTrigger.create({
     trigger: section,
     start: 'top top',
@@ -1228,6 +1156,22 @@ function initProjects() {
         window.clearTimeout(userIdleTimer)
         currentVideo?.pause()
       }
+    },
+  })
+
+  // light nav while the cream section is under it. Created AFTER the pin so its
+  // "bottom" includes the pin distance (created before, it switched the nav back
+  // to dark one screen into the pinned carousel).
+  // (absolute positions read off the pin: a trigger on the pinned element that is
+  // created after its pin would otherwise be pushed past the whole pin)
+  const pinTrigger = trigger
+  ScrollTrigger.create({
+    start: () => pinTrigger.start - Math.round(window.innerHeight * 0.06),
+    end: () => pinTrigger.end + section.offsetHeight - Math.round(window.innerHeight * 0.06),
+    invalidateOnRefresh: true,
+    onToggle: (self) => {
+      navTheme.projects = self.isActive
+      syncNavTheme()
     },
   })
 

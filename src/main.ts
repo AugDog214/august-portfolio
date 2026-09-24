@@ -1,6 +1,6 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectToolKey } from './content'
+import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectMedia, type ProjectToolKey } from './content'
 import { renderSite } from './render'
 import { resolvePublicUrl } from './urls'
 import './styles.css'
@@ -47,6 +47,7 @@ if (prefersReducedMotion) {
   initIris()
   initBuild()
   initMeta()
+  initAbout()
 }
 
 initProjectViewer()
@@ -62,9 +63,10 @@ function setDocumentMeta() {
   upsertMeta('property', 'og:description', siteMeta.description)
   upsertMeta('property', 'og:type', 'website')
   upsertMeta('property', 'og:url', siteMeta.siteUrl)
-  upsertMeta('property', 'og:image', resolvePublicUrl(siteMeta.ogImage))
+  // share images must be absolute URLs for crawlers
+  upsertMeta('property', 'og:image', `${siteMeta.siteUrl}${siteMeta.ogImage}`)
   upsertMeta('name', 'twitter:card', 'summary_large_image')
-  upsertMeta('name', 'twitter:image', resolvePublicUrl(siteMeta.ogImage))
+  upsertMeta('name', 'twitter:image', `${siteMeta.siteUrl}${siteMeta.ogImage}`)
 }
 
 function upsertMeta(attribute: 'name' | 'property', key: string, content: string) {
@@ -362,6 +364,7 @@ function initHorizontalFlow() {
   const section = document.querySelector<HTMLElement>('[data-horizontal-section]')
   const track = document.querySelector<HTMLElement>('[data-horizontal-track]')
   const filmInner = document.querySelector<HTMLElement>('[data-film-inner]')
+  const filmVideo = document.querySelector<HTMLVideoElement>('[data-film-video]')
 
   if (!section || !track || !filmInner) {
     return
@@ -382,6 +385,11 @@ function initHorizontalFlow() {
       pin: true,
       scrub: 1.5,
       invalidateOnRefresh: true,
+      onToggle: (self) => {
+        if (!filmVideo) return
+        if (self.isActive) void filmVideo.play().catch(() => undefined)
+        else filmVideo.pause()
+      },
       onUpdate: (self) => {
         const settle = smoothstep(mapProgress(self.progress, 0.78, 0.96))
         gsap.set(filmInner, { scale: 1.09 - 0.09 * settle })
@@ -410,7 +418,8 @@ function initIris() {
       scrollTrigger: {
         trigger: iris,
         start: 'top top',
-        end: pinDistance(8),
+        // was 8 viewport-heights of near-empty screen; 3 keeps the beat without dead scroll
+        end: pinDistance(3),
         pin: true,
         scrub: 1.15,
         invalidateOnRefresh: true,
@@ -473,6 +482,24 @@ function initMeta() {
     .to(copy, { autoAlpha: 0, y: -28, duration: 0.16 }, 0.78)
 }
 
+// About is a normal-flow section (no pin): each block fades up once as it enters.
+function initAbout() {
+  gsap.utils.toArray<HTMLElement>('[data-about-reveal]').forEach((block, index) => {
+    gsap.fromTo(
+      block,
+      { autoAlpha: 0, y: 36 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.9,
+        delay: index * 0.08,
+        ease: 'power3.out',
+        scrollTrigger: { trigger: block, start: 'top 86%', once: true },
+      },
+    )
+  })
+}
+
 function initProjects() {
   const section = document.querySelector<HTMLElement>('[data-projects]')
   const stage = document.querySelector<HTMLElement>('[data-pf-stage]')
@@ -490,6 +517,7 @@ function initProjects() {
   const glassTag = document.querySelector<HTMLElement>('[data-glass-tag]')
   const glassName = document.querySelector<HTMLElement>('[data-glass-name]')
   const glassBlurb = document.querySelector<HTMLElement>('[data-glass-blurb]')
+  const glassClient = document.querySelector<HTMLElement>('[data-glass-client]')
   const glassRole = document.querySelector<HTMLElement>('[data-glass-role]')
   const glassYear = document.querySelector<HTMLElement>('[data-glass-year]')
   const glassTools = document.querySelector<HTMLElement>('[data-glass-tools]')
@@ -514,6 +542,8 @@ function initProjects() {
   let autoScrolling = false
   let userIdleTimer = 0
   let slideTimer = 0
+  // assigned once below, after the closures that read it are defined
+  // eslint-disable-next-line prefer-const
   let trigger: ScrollTrigger | undefined
 
   const wrapDelta = (value: number) => {
@@ -619,6 +649,7 @@ function initProjects() {
       if (glassTag) glassTag.textContent = item.tag
       if (glassName) glassName.textContent = item.name
       if (glassBlurb) glassBlurb.textContent = item.blurb
+      if (glassClient) glassClient.textContent = item.client
       if (glassRole) glassRole.textContent = item.role
       if (glassYear) glassYear.textContent = item.year
       if (glassTools) glassTools.innerHTML = renderProjectTools(item.tools)
@@ -641,7 +672,9 @@ function initProjects() {
   }
 
   const startAuto = () => {
-    if (prefersReducedMotion || !progress || viewerOpen()) return
+    // only auto-advance while the visitor is actually inside the pinned carousel —
+    // otherwise the timer would scroll the page on its own from the hero.
+    if (prefersReducedMotion || !progress || viewerOpen() || !trigger?.isActive) return
     clearAuto()
     gsap.set(progress, { scaleX: 0, transformOrigin: 'left center' })
     autoTween = gsap.to(progress, {
@@ -673,10 +706,15 @@ function initProjects() {
     })
   }
 
-  // auto-advance: step forward one card; loop back to the start within the pin
+  // auto-advance: step forward one card. At the end of the pin, stop and let the
+  // visitor scroll on — never yank them back up to the start of the section.
   const autoNext = () => {
-    let next = Math.round(currentPos()) + 1
-    if (next > maxPos) next = 0
+    if (!trigger?.isActive) return
+    const next = Math.round(currentPos()) + 1
+    if (next >= maxPos) {
+      clearAuto()
+      return
+    }
     scrollToPos(next)
   }
 
@@ -717,6 +755,11 @@ function initProjects() {
   section.addEventListener('pf:resume', () => {
     startAuto()
     if (!prefersReducedMotion) currentVideo?.play().catch(() => {})
+  })
+  section.addEventListener('pf:goto', (event) => {
+    const index = (event as CustomEvent<number>).detail
+    if (prefersReducedMotion || !trigger) setActive(index, true)
+    else gotoIndex(index)
   })
 
   if (prefersReducedMotion) {
@@ -800,7 +843,7 @@ function initProjects() {
       if (!autoScrolling) {
         clearAuto()
         window.clearTimeout(userIdleTimer)
-        userIdleTimer = window.setTimeout(startAuto, 900)
+        if (self.isActive) userIdleTimer = window.setTimeout(startAuto, 900)
       }
     },
     onToggle: (self) => {
@@ -809,6 +852,7 @@ function initProjects() {
         if (!viewerOpen()) currentVideo?.play().catch(() => {})
       } else {
         clearAuto()
+        window.clearTimeout(userIdleTimer)
         currentVideo?.pause()
       }
     },
@@ -849,22 +893,81 @@ function initProjectViewer() {
   }
 
   const items = portfolioContent.projects.items
+  const countEl = document.querySelector<HTMLElement>('[data-viewer-count]')
   let lastFocused: HTMLElement | null = null
   let isOpen = false
+  let viewIndex = 0
+  let openedIndex = 0
 
-  const panelHtml = (
-    media: { kind: string; src: string; poster?: string; pan?: boolean },
-    accent: string,
-    name: string,
-  ) => {
-    if (media.kind === 'video') {
-      return `<div class="viewer-panel viewer-panel--video" style="--accent: ${accent}">
-        <video src="${resolvePublicUrl(media.src)}"${media.poster ? ` poster="${resolvePublicUrl(media.poster)}"` : ''} controls playsinline preload="metadata"></video>
-      </div>`
-    }
-    return `<div class="viewer-panel${media.pan ? ' viewer-panel--pan' : ''}" style="--accent: ${accent}">
-      <img src="${resolvePublicUrl(media.src)}" alt="${name}" loading="lazy" decoding="async" />
-    </div>`
+  const pad = (n: number) => String(n).padStart(2, '0')
+
+  const panelHtml = (media: ProjectMedia, name: string, eager = false) => {
+    const caption = media.caption ? `<figcaption class="viewer-caption">${media.caption}</figcaption>` : ''
+    const inner =
+      media.kind === 'video'
+        ? `<video src="${resolvePublicUrl(media.src)}"${media.poster ? ` poster="${resolvePublicUrl(media.poster)}"` : ''} controls playsinline preload="metadata"></video>`
+        : `<img src="${resolvePublicUrl(media.src)}" alt="${media.caption ?? name}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" />`
+    const mod = media.kind === 'video' ? ' viewer-panel--video' : media.pan ? ' viewer-panel--pan' : ''
+    return `<figure class="viewer-figure">
+      <div class="viewer-panel${mod}">${inner}</div>
+      ${caption}
+    </figure>`
+  }
+
+  const blockHtml = (label: string, body: string, n: number) => `
+    <section class="cs-block">
+      <h3 class="cs-label"><span class="cs-num">${pad(n)}</span>${label}</h3>
+      <p class="cs-body">${body}</p>
+    </section>`
+
+  const renderCaseStudy = (index: number) => {
+    const item = items[index]
+    const next = items[(index + 1) % items.length]
+    const sections = item.caseStudy
+    const gallery = item.gallery
+    const flow: string[] = [panelHtml(item.cover, item.name, true)]
+
+    // interleave: two copy blocks, then a gallery image — keeps the read editorial
+    let g = 0
+    sections.forEach((section, i) => {
+      flow.push(blockHtml(section.label, section.body, i + 1))
+      if (i % 2 === 1 && g < gallery.length) flow.push(panelHtml(gallery[g++], item.name))
+    })
+    while (g < gallery.length) flow.push(panelHtml(gallery[g++], item.name))
+
+    scroll.innerHTML = `
+      <article class="cs" style="--accent: ${item.accent}">
+        <header class="cs-intro">
+          <div class="cs-intro-main">
+            <p class="cs-tag">${item.tag}</p>
+            <h2 class="cs-title">${item.name}</h2>
+            <p class="cs-lede">${item.blurb}</p>
+          </div>
+          <dl class="cs-meta">
+            <div><dt>Client</dt><dd>${item.client}</dd></div>
+            <div><dt>My Role</dt><dd>${item.role}</dd></div>
+            <div><dt>Year</dt><dd>${item.year}</dd></div>
+            <div class="cs-meta-tools"><dt>Tools</dt><dd><ul class="project-tools" aria-label="Project tools">${renderProjectTools(item.tools)}</ul></dd></div>
+          </dl>
+        </header>
+        <div class="cs-flow">${flow.join('')}</div>
+        <footer class="cs-next">
+          <span class="cs-next-label">${portfolioContent.projects.nextLabel}</span>
+          <button class="cs-next-link" type="button" data-viewer-next>
+            <span>${next.name}</span><span class="cs-next-arrow" aria-hidden="true">&rarr;</span>
+          </button>
+        </footer>
+      </article>`
+
+    if (titleEl) titleEl.textContent = item.name
+    if (countEl) countEl.textContent = `${pad(index + 1)} / ${pad(items.length)}`
+    scroll.scrollTop = 0
+    viewIndex = index
+
+    scroll.querySelector<HTMLElement>('[data-viewer-next]')?.addEventListener('click', () => {
+      scroll.querySelectorAll('video').forEach((video) => video.pause())
+      renderCaseStudy((viewIndex + 1) % items.length)
+    })
   }
 
   const open = () => {
@@ -873,14 +976,8 @@ function initProjectViewer() {
     }
 
     const index = Number(glass.dataset.activeIndex ?? '0')
-    const item = items[index]
-    const media = [item.cover, ...item.gallery]
-
-    scroll.innerHTML = media.map((m) => panelHtml(m, item.accent, item.name)).join('')
-    if (titleEl) {
-      titleEl.textContent = item.name
-    }
-    scroll.scrollTop = 0
+    openedIndex = index
+    renderCaseStudy(index)
 
     lastFocused = document.activeElement as HTMLElement | null
     document.body.style.overflow = 'hidden'
@@ -928,7 +1025,11 @@ function initProjectViewer() {
     viewer.querySelectorAll('video').forEach((video) => video.pause())
     gsap.set(viewer, { clearProps: 'clipPath' })
     section?.dispatchEvent(new CustomEvent('pf:resume'))
-    lastFocused?.focus?.()
+    // if the visitor paged to another project inside the viewer, land the carousel on it
+    if (viewIndex !== openedIndex) {
+      section?.dispatchEvent(new CustomEvent('pf:goto', { detail: viewIndex }))
+    }
+    lastFocused?.focus?.({ preventScroll: true })
   }
 
   openButton.addEventListener('click', open)

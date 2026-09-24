@@ -2,7 +2,7 @@ import { astroSequence, portfolioContent, projectToolMap, siteMeta, type Project
 import { resolvePublicUrl } from './urls'
 
 export function renderSite() {
-  const { navigation, hero, reveal, projects, horizontalFlow, iris, build, meta, contact } = portfolioContent
+  const { navigation, hero, reveal, projects, horizontalFlow, iris, build, meta, about, contact } = portfolioContent
   const firstProject = projects.items[0]
   const coverThumb = (cover: { kind: string; src: string; poster?: string }) =>
     cover.kind === 'video' ? cover.poster ?? cover.src : cover.src
@@ -136,6 +136,10 @@ export function renderSite() {
               <p class="project-glass-blurb" data-glass-blurb>${firstProject.blurb}</p>
             </div>
             <dl class="project-brief-meta">
+              <div class="project-brief-row project-brief-row--client">
+                <dt>Client</dt>
+                <dd data-glass-client>${firstProject.client}</dd>
+              </div>
               <div class="project-brief-row">
                 <dt>My Role</dt>
                 <dd data-glass-role>${firstProject.role}</dd>
@@ -164,13 +168,9 @@ export function renderSite() {
       <section class="horiz-flow" id="${horizontalFlow.id}" aria-label="${horizontalFlow.ariaLabel}" data-scene="horizontal-flow" data-horizontal-section>
         <div class="horiz-track" data-horizontal-track>
           <article class="horiz-panel brand-panel" data-horizontal-panel="brand" data-brand-panel>
-            <div class="brand-art">
-              <div class="can-study" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
-            </div>
+            <figure class="brand-art">
+              <img class="brand-art-img" src="${resolvePublicUrl(horizontalFlow.brand.image)}" alt="${horizontalFlow.brand.imageAlt}" loading="lazy" decoding="async" />
+            </figure>
             <div class="brand-copy">
               <p class="kicker">${horizontalFlow.brand.kicker}</p>
               <h2>${horizontalFlow.brand.headline}</h2>
@@ -185,9 +185,18 @@ export function renderSite() {
           <article class="horiz-panel film-panel" data-horizontal-panel="film" data-film-panel>
             <div class="film-inner" data-film-inner>
               <div class="video-stage">
-                <div class="video-ph">
-                  <span>${horizontalFlow.film.title}</span>
-                </div>
+                <video
+                  class="film-video"
+                  aria-label="${horizontalFlow.film.title} product film"
+                  muted
+                  loop
+                  playsinline
+                  preload="none"
+                  poster="${resolvePublicUrl(horizontalFlow.film.poster)}"
+                  data-film-video
+                >
+                  <source src="${resolvePublicUrl(horizontalFlow.film.video)}" type="video/mp4" />
+                </video>
               </div>
               <div class="film-copy">
                 <p class="kicker">${horizontalFlow.film.kicker}</p>
@@ -245,8 +254,25 @@ export function renderSite() {
         </div>
       </section>
 
+      <section class="about" id="${about.id}" aria-label="${about.ariaLabel}" data-about>
+        <div class="about-inner">
+          <header class="about-head" data-about-reveal>
+            <p class="kicker">${about.kicker}</p>
+            <h2>${about.headlineLines.map((line) => `<span>${line}</span>`).join(' ')}</h2>
+            <span class="copper-rule"></span>
+          </header>
+          <div class="about-body" data-about-reveal>
+            ${about.paragraphs.map((paragraph) => `<p>${paragraph}</p>`).join('')}
+          </div>
+          <dl class="about-facts" data-about-reveal>
+            ${about.facts.map((fact) => `<div><dt>${fact.label}</dt><dd>${fact.value}</dd></div>`).join('')}
+          </dl>
+        </div>
+      </section>
+
       <footer class="contact scene" id="${contact.id}" aria-label="${contact.ariaLabel}" data-scene="contact" data-contact>
         <div class="contact-content">
+          <p class="kicker contact-kicker">${contact.kicker}</p>
           <a class="contact-email" href="mailto:${siteMeta.email}">${siteMeta.email}</a>
           <p class="social-row">
             ${siteMeta.socials.map((social) => `<a href="${social.href}" target="_blank" rel="noreferrer">${social.label}</a>`).join(' / ')}
@@ -257,11 +283,13 @@ export function renderSite() {
       </footer>
     </main>
 
-    <div class="project-viewer" data-project-viewer aria-hidden="true">
+    <div class="project-viewer" data-project-viewer role="dialog" aria-modal="true" aria-labelledby="viewer-title" aria-hidden="true">
       <div class="project-viewer-bar">
-        <span class="project-viewer-title" data-viewer-title></span>
-        <button class="project-viewer-close" type="button" data-viewer-close aria-label="${projects.closeLabel}">
+        <span class="project-viewer-count" data-viewer-count aria-hidden="true"></span>
+        <span class="project-viewer-title" id="viewer-title" data-viewer-title></span>
+        <button class="project-viewer-close" type="button" data-viewer-close>
           <span>${projects.closeLabel}</span>
+          <span class="project-viewer-close-key" aria-hidden="true">Esc</span>
         </button>
       </div>
       <div class="project-viewer-scroll" data-viewer-scroll></div>

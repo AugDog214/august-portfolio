@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Adobe InDesign">
+  <rect width="64" height="64" rx="14" fill="#49021f"/>
+  <rect x="4" y="4" width="56" height="56" rx="10" fill="none" stroke="#ff3366" stroke-width="3"/>
+  <text x="16" y="43" fill="#ff3366" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="700">Id</text>
+</svg>

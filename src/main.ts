@@ -126,6 +126,9 @@ function initHero() {
       const portfolioLift = 1 - portfolioSettle
 
       gsap.set(progress, { scaleX: self.progress })
+      // the bar lives inside the hero, so once the pin releases it would ride up
+      // the screen as a stray copper line — fade it out as the pin completes
+      gsap.set(progress.parentElement, { autoAlpha: 1 - smoothstep(mapProgress(self.progress, 0.9, 1)) })
       gsap.set(navBrand, {
         x: getPortfolioIntroX() * portfolioLift,
       })
@@ -316,44 +319,68 @@ function initReveal() {
 
   const playVideo = () => void video?.play().catch(() => undefined)
 
+  // Choreography, measured in viewport-heights (u) from the moment the section is
+  // 35% into view. The pin holds 1.5u; the pre-roll (0.65u) lets content start
+  // arriving while the hero scrolls away, so there is no empty dark gap.
+  //   0.05–0.85  artwork, banner, copy arrive
+  //   0.70–1.00  editorial headline
+  //   1.00–1.50  HOLD — clean dark, nothing from the next section
+  //   1.50–1.80  content lifts + fades out
+  //   1.80–2.15  only now does the beige wash rise (empty screen), nav flips
+  const PRE_ROLL = 0.65
+  const PIN = 1.5
+  const TOTAL = PRE_ROLL + PIN
+  const at = (u: number, from: number, to: number) => smoothstep(mapProgress(u, from, to))
+
   ScrollTrigger.create({
     trigger: reveal,
     start: 'top top',
-    end: pinDistance(1.25),
+    end: pinDistance(PIN),
     pin: true,
+    invalidateOnRefresh: true,
+  })
+
+  ScrollTrigger.create({
+    trigger: reveal,
+    start: `top ${Math.round(PRE_ROLL * 100)}%`,
+    end: () => `+=${Math.round(window.innerHeight * TOTAL)}`,
     invalidateOnRefresh: true,
     onEnter: playVideo,
     onEnterBack: playVideo,
     onLeave: () => video?.pause(),
+    onLeaveBack: () => video?.pause(),
     onUpdate: (self) => {
-      const artworkIn = smoothstep(mapProgress(self.progress, 0.04, 0.3))
-      const copyIn = smoothstep(mapProgress(self.progress, 0.08, 0.34))
-      const editorialIn = smoothstep(mapProgress(self.progress, 0.3, 0.48))
-      const out = smoothstep(mapProgress(self.progress, 0.48, 0.76))
-      const brandFlip = smoothstep(mapProgress(self.progress, 0.58, 0.82))
-      const projectsWash = smoothstep(mapProgress(self.progress, 0.38, 0.82))
-      const projectsBloom = smoothstep(mapProgress(self.progress, 0.34, 0.78))
-      const viewportHeight = window.innerHeight
+      const u = self.progress * TOTAL
+      const vh = window.innerHeight
+      const artworkIn = at(u, 0.05, 0.75)
+      const bannerIn = at(u, 0.15, 0.8)
+      const copyIn = at(u, 0.3, 0.85)
+      const editorialIn = at(u, 0.7, 1.0)
+      const out = at(u, 1.5, 1.8)
+      const wash = at(u, 1.8, 2.15)
+      const brandFlip = at(u, 1.8, 2.1)
+      const lift = -vh * 0.28 * out
 
-      reveal.style.setProperty('--projects-wash', projectsWash.toFixed(3))
-      reveal.style.setProperty('--projects-bloom', projectsBloom.toFixed(3))
+      reveal.style.setProperty('--projects-wash', wash.toFixed(3))
+      reveal.style.setProperty('--projects-bloom', wash.toFixed(3))
       gsap.set(banner, {
-        autoAlpha: artworkIn * (1 - out),
-        x: getRevealBannerIntroX(banner) * (1 - artworkIn),
-        y: -viewportHeight * out,
+        autoAlpha: bannerIn * (1 - out),
+        x: getRevealBannerIntroX(banner) * (1 - bannerIn),
+        y: lift,
       })
       gsap.set(artwork, {
         autoAlpha: artworkIn * (1 - out),
-        y: viewportHeight * 1.08 * (1 - artworkIn) - viewportHeight * 1.12 * out,
-        scale: 0.96 + 0.04 * artworkIn - 0.04 * out,
+        y: vh * 0.42 * (1 - artworkIn) + lift,
+        scale: 0.96 + 0.04 * artworkIn,
       })
+      // copy rises into place (it used to drop from above, straight through the ticker)
       gsap.set(copy, {
         autoAlpha: copyIn * (1 - out),
-        y: -viewportHeight * 0.92 * (1 - copyIn) - viewportHeight * out,
+        y: 56 * (1 - copyIn) + lift,
       })
       gsap.set(editorial, {
         autoAlpha: editorialIn * (1 - out),
-        y: 72 * (1 - editorialIn) - viewportHeight * out,
+        y: 48 * (1 - editorialIn) + lift,
       })
       gsap.set(brandInner, { rotateX: 180 * brandFlip })
     },
@@ -404,33 +431,41 @@ function initIris() {
   const topBottom = gsap.utils.toArray<HTMLElement>('.iris-bar--top, .iris-bar--bottom')
   const leftRight = gsap.utils.toArray<HTMLElement>('.iris-bar--left, .iris-bar--right')
   const glow = document.querySelector<HTMLElement>('[data-iris-glow]')
+  const content = iris?.querySelector<HTMLElement>('.iris-content')
 
-  if (!iris || !bars.length || !glow) {
+  if (!iris || !bars.length || !glow || !content) {
     return
   }
 
-  gsap.set(topBottom, { scaleY: 0 })
-  gsap.set(leftRight, { scaleX: 0 })
+  // The iris now starts CLOSED (reads as the same charcoal as the film panel above)
+  // and opens once onto the headline. Before, it showed the headline, closed over it,
+  // then reopened onto the same headline — ~3 screens of repeat.
+  gsap.set(topBottom, { scaleY: 1 })
+  gsap.set(leftRight, { scaleX: 1 })
   gsap.set(glow, { autoAlpha: 0 })
 
+  ScrollTrigger.create({ trigger: iris, start: 'top top', end: pinDistance(2), pin: true, invalidateOnRefresh: true })
+
+  // starts opening while the section is still sliding in (top at 55%) so the
+  // closed iris never sits on screen as an empty dark frame
   gsap
     .timeline({
+      defaults: { ease: 'power2.inOut' },
       scrollTrigger: {
         trigger: iris,
-        start: 'top top',
-        // was 8 viewport-heights of near-empty screen; 3 keeps the beat without dead scroll
-        end: pinDistance(3),
-        pin: true,
-        scrub: 1.15,
+        start: 'top 55%',
+        end: () => `+=${Math.round(window.innerHeight * 1.55)}`,
+        scrub: 1,
         invalidateOnRefresh: true,
       },
     })
-    .to(topBottom, { scaleY: 1, duration: 0.34 }, 0)
-    .to(leftRight, { scaleX: 1, duration: 0.34 }, 0)
-    .to(glow, { autoAlpha: 1, duration: 0.2 }, 0.28)
-    .to(glow, { autoAlpha: 0, duration: 0.28 }, 0.48)
-    .to(topBottom, { scaleY: 0, duration: 0.34 }, 0.54)
-    .to(leftRight, { scaleX: 0, duration: 0.34 }, 0.54)
+    // glow only once the section fills the screen (~0.35) so its edge never shows as a band
+    .to(glow, { autoAlpha: 1, duration: 0.16, ease: 'power1.out' }, 0.3)
+    .to(topBottom, { scaleY: 0, duration: 0.42 }, 0.32)
+    .to(leftRight, { scaleX: 0, duration: 0.42 }, 0.32)
+    .fromTo(content, { scale: 0.94, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.38 }, 0.38)
+    .to(glow, { autoAlpha: 0, duration: 0.3, ease: 'power1.in' }, 0.62)
+    .to({}, { duration: 0.08 }, 0.92)
 }
 
 function initBuild() {
@@ -442,21 +477,23 @@ function initBuild() {
     return
   }
 
+  ScrollTrigger.create({ trigger: build, start: 'top top', end: pinDistance(1.8), pin: true, invalidateOnRefresh: true })
+
+  // arrive while the section scrolls in, so the screen is never empty
   gsap
     .timeline({
-      scrollTrigger: {
-        trigger: build,
-        start: 'top top',
-        end: pinDistance(4),
-        pin: true,
-        scrub: 1.2,
-        invalidateOnRefresh: true,
-      },
+      defaults: { ease: 'power3.out' },
+      scrollTrigger: { trigger: build, start: 'top 72%', end: 'top 8%', scrub: 0.8, invalidateOnRefresh: true },
     })
-    .fromTo(copy, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.22 }, 0.06)
-    .fromTo('.device--secondary', { autoAlpha: 0, y: 90 }, { autoAlpha: 0.5, y: 0, duration: 0.28 }, 0.12)
-    .fromTo('.device--primary', { autoAlpha: 0, y: 70 }, { autoAlpha: 1, y: 0, duration: 0.32 }, 0.18)
-    .to(stack, { y: -28, duration: 0.44 }, 0.52)
+    .fromTo(copy, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.55 }, 0)
+    .fromTo('.device--secondary', { autoAlpha: 0, y: 90 }, { autoAlpha: 0.5, y: 0, duration: 0.6 }, 0.15)
+    .fromTo('.device--primary', { autoAlpha: 0, y: 70 }, { autoAlpha: 1, y: 0, duration: 0.6 }, 0.3)
+
+  gsap.to(stack, {
+    y: -28,
+    ease: 'none',
+    scrollTrigger: { trigger: build, start: 'top top', end: pinDistance(1.8), scrub: 1.2, invalidateOnRefresh: true },
+  })
 }
 
 function initMeta() {
@@ -467,19 +504,32 @@ function initMeta() {
     return
   }
 
-  gsap
-    .timeline({
-      scrollTrigger: {
-        trigger: meta,
-        start: 'top top',
-        end: pinDistance(3),
-        pin: true,
-        scrub: 1.15,
-        invalidateOnRefresh: true,
-      },
-    })
-    .fromTo(copy, { autoAlpha: 0, y: 42, scale: 0.96 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.26 }, 0.08)
-    .to(copy, { autoAlpha: 0, y: -28, duration: 0.16 }, 0.78)
+  ScrollTrigger.create({ trigger: meta, start: 'top top', end: pinDistance(1.6), pin: true, invalidateOnRefresh: true })
+
+  gsap.fromTo(
+    copy,
+    { autoAlpha: 0, y: 42, scale: 0.96 },
+    {
+      autoAlpha: 1,
+      y: 0,
+      scale: 1,
+      ease: 'power3.out',
+      scrollTrigger: { trigger: meta, start: 'top 68%', end: 'top 10%', scrub: 0.8, invalidateOnRefresh: true },
+    },
+  )
+  gsap.to(copy, {
+    autoAlpha: 0,
+    y: -28,
+    ease: 'power1.in',
+    immediateRender: false,
+    scrollTrigger: {
+      trigger: meta,
+      start: () => `top+=${Math.round(window.innerHeight * 1.15)} top`,
+      end: () => `top+=${Math.round(window.innerHeight * 1.6)} top`,
+      scrub: 0.8,
+      invalidateOnRefresh: true,
+    },
+  })
 }
 
 // About is a normal-flow section (no pin): each block fades up once as it enters.
@@ -521,7 +571,6 @@ function initProjects() {
   const glassRole = document.querySelector<HTMLElement>('[data-glass-role]')
   const glassYear = document.querySelector<HTMLElement>('[data-glass-year]')
   const glassTools = document.querySelector<HTMLElement>('[data-glass-tools]')
-  const entryWipe = document.querySelector<HTMLElement>('[data-projects-entry-wipe]')
 
   if (!section || !stage || !strip || thumbs.length === 0 || !frame || !backdrop || !mediaBox || !glass) {
     return
@@ -766,68 +815,34 @@ function initProjects() {
     return
   }
 
+  // Entry: the section rises in on its own (no full-screen wipe). The cards land
+  // first, then the title, then the brief panel — each eased, scrubbed with a
+  // little lag so it glides instead of tracking the wheel 1:1.
   const entry = gsap.timeline({
+    defaults: { ease: 'power3.out' },
     scrollTrigger: {
       trigger: section,
-      start: 'top 102%',
+      start: 'top 92%',
       end: 'top top',
-      scrub: true,
+      scrub: 0.8,
       invalidateOnRefresh: true,
     },
   })
-  entry.fromTo(section, { '--projects-entry-feather': 1 }, { '--projects-entry-feather': 0, ease: 'none' }, 0)
   entry.fromTo(
     stage,
-    {
-      x: () => -Math.min(window.innerWidth * 0.46, 620),
-      rotateZ: -3.2,
-      scale: 0.96,
-    },
-    {
-      x: 0,
-      rotateZ: 0,
-      scale: 1,
-      ease: 'none',
-    },
+    { autoAlpha: 0, y: () => Math.min(window.innerHeight * 0.16, 140), scale: 0.94 },
+    { autoAlpha: 1, y: 0, scale: 1, duration: 0.6 },
     0,
   )
   if (projectsHead) {
-    entry.fromTo(
-      projectsHead,
-      { autoAlpha: 0.35, y: 48 },
-      { autoAlpha: 1, y: 0, ease: 'none' },
-      0.02,
-    )
+    entry.fromTo(projectsHead, { autoAlpha: 0, y: 36 }, { autoAlpha: 1, y: 0, duration: 0.45 }, 0.3)
   }
   entry.fromTo(
     glass,
-    {
-      autoAlpha: 0,
-      y: () => Math.min(window.innerHeight * 0.38, 360),
-    },
-      {
-        autoAlpha: 1,
-        y: 0,
-        ease: 'none',
-      },
-    0.1,
+    { autoAlpha: 0, y: () => Math.min(window.innerHeight * 0.12, 110) },
+    { autoAlpha: 1, y: 0, duration: 0.5 },
+    0.45,
   )
-
-  if (entryWipe) {
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top 118%',
-          end: 'top 8%',
-          scrub: true,
-          invalidateOnRefresh: true,
-        },
-      })
-      .fromTo(entryWipe, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.26, ease: 'none' }, 0)
-      .to(entryWipe, { autoAlpha: 1, duration: 0.56, ease: 'none' }, 0.26)
-      .to(entryWipe, { autoAlpha: 0, duration: 0.18, ease: 'none' }, 0.82)
-  }
 
   trigger = ScrollTrigger.create({
     trigger: section,
@@ -857,20 +872,6 @@ function initProjects() {
       }
     },
   })
-
-  // Beige cross-fades in before the projects pin starts, avoiding a long dark handoff.
-  const veil = section.querySelector<HTMLElement>('[data-projects-veil]')
-  if (veil) {
-    gsap.fromTo(
-      veil,
-      { autoAlpha: 0.38 },
-      {
-        autoAlpha: 0,
-        ease: 'none',
-        scrollTrigger: { trigger: section, start: 'top 112%', end: 'top 34%', scrub: true },
-      },
-    )
-  }
 
   window.addEventListener('resize', () => {
     measure()
@@ -951,10 +952,13 @@ function initProjectViewer() {
           </dl>
         </header>
         <div class="cs-flow">${flow.join('')}</div>
-        <footer class="cs-next">
-          <span class="cs-next-label">${portfolioContent.projects.nextLabel}</span>
-          <button class="cs-next-link" type="button" data-viewer-next>
-            <span>${next.name}</span><span class="cs-next-arrow" aria-hidden="true">&rarr;</span>
+        <footer class="cs-next" style="--next-accent: ${next.accent}">
+          <button class="cs-next-link" type="button" data-viewer-next aria-label="${portfolioContent.projects.nextLabel}: ${next.name}">
+            <span class="cs-next-label">${portfolioContent.projects.nextLabel} &mdash; ${pad(((index + 1) % items.length) + 1)} / ${pad(items.length)}</span>
+            <span class="cs-next-title"><span class="cs-next-name">${next.name}</span><span class="cs-next-arrow" aria-hidden="true">&rarr;</span></span>
+            <span class="cs-next-peek" aria-hidden="true">
+              <img src="${resolvePublicUrl(next.cover.kind === 'video' ? next.cover.poster ?? next.cover.src : next.cover.src)}" alt="" loading="lazy" decoding="async" />
+            </span>
           </button>
         </footer>
       </article>`

@@ -93,11 +93,8 @@ export function renderSite() {
         </div>
       </section>
 
-      <div class="projects-entry-wipe" data-projects-entry-wipe aria-hidden="true"></div>
-
       <section class="projects scene" id="${projects.id}" aria-label="${projects.ariaLabel}" data-scene="projects" data-projects>
         <div class="projects-grain" aria-hidden="true"></div>
-        <div class="projects-veil" data-projects-veil aria-hidden="true"></div>
         <div class="projects-inner">
           <header class="projects-head">
             <p class="projects-eyebrow">${projects.eyebrow}</p>
@@ -164,6 +161,8 @@ export function renderSite() {
           </div>
         </aside>
       </section>
+
+      <div class="section-dusk" aria-hidden="true"></div>
 
       <section class="horiz-flow" id="${horizontalFlow.id}" aria-label="${horizontalFlow.ariaLabel}" data-scene="horizontal-flow" data-horizontal-section>
         <div class="horiz-track" data-horizontal-track>

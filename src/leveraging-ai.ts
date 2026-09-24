@@ -97,6 +97,13 @@ const aiPage: { kicker: string; headline: string; lead: string; pillars: AiPilla
             'Using the Blender MCP to build 3D pool mock-ups for a luxury pool construction client — so the homeowner can see the design before a shovel hits the ground.',
           built: 'Blender MCP + Codex + Claude Code',
         },
+        {
+          name: 'Ruskin pool: final mock-ups',
+          tagline: 'A lakefront pool, sold before the dig.',
+          description:
+            'The final presentation for a lakefront pool and lanai build by Complete Renovation and Construction: aerials, the screened cage, and the view from across the lake, generated and composited before construction started.',
+          built: 'Gemini + Higgsfield + Photoshop',
+        },
       ],
     },
     {

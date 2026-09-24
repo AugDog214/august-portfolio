@@ -303,6 +303,7 @@ export type AiShowcaseMedia =
   | { kind: 'image'; src: string; alt: string; position?: string }
   | { kind: 'video'; src: string; poster: string; alt: string }
   | { kind: 'plate'; value: string; label: string }
+  | { kind: 'gallery'; images: readonly { src: string; alt: string }[] }
 
 export type AiShowcaseItem = {
   pillar: string
@@ -376,6 +377,22 @@ const aiShowcaseItems: AiShowcaseItem[] = [
     description: 'An AI agent driving Blender through MCP to build pool and lanai mock-ups, so the homeowner sees the design before the dig.',
     built: 'Blender MCP + Codex + Claude Code',
     media: { kind: 'image', src: 'media/ai/pool-3d.webp', alt: '3D render of a pool and covered lanai built in Blender', position: '50% 55%' },
+  },
+  {
+    pillar: '3D',
+    name: 'Ruskin pool: final mock-ups',
+    description: 'The final presentation for a lakefront pool and lanai build by Complete Renovation and Construction: aerials, the screened cage, and the view from across the lake, all before construction started.',
+    built: 'Gemini + Higgsfield + Photoshop',
+    media: {
+      kind: 'gallery',
+      images: [
+        { src: 'media/ai/ruskin-1.webp', alt: 'Ruskin pool mock-up seen from across the lake' },
+        { src: 'media/ai/ruskin-2.webp', alt: 'Ruskin pool mock-up, left side with fire bowls and sun shelf' },
+        { src: 'media/ai/ruskin-3.webp', alt: 'Ruskin pool mock-up, aerial view of the house and pool' },
+        { src: 'media/ai/ruskin-4.webp', alt: 'Ruskin pool mock-up, top-down view of the pool and fire pit' },
+        { src: 'media/ai/ruskin-5.webp', alt: 'Ruskin pool mock-up with the screened lanai cage' },
+      ],
+    },
   },
   {
     pillar: 'Motion',

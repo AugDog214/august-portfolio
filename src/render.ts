@@ -277,6 +277,17 @@ function renderAiMedia(media: AiShowcaseMedia) {
     </div>`
   }
 
+  if (media.kind === 'gallery') {
+    return `<div class="ai-gallery" style="--g-count: ${media.images.length}">
+      ${media.images
+        .map(
+          (image, index) =>
+            `<img class="ai-media-el ai-gallery-img" style="--g-i: ${index}" src="${resolvePublicUrl(image.src)}" alt="${image.alt}" loading="lazy" decoding="async" />`,
+        )
+        .join('')}
+    </div>`
+  }
+
   if (media.kind === 'video') {
     return `<video class="ai-media-el" muted loop playsinline preload="none" poster="${resolvePublicUrl(media.poster)}" aria-label="${media.alt}" data-ai-video>
       <source src="${resolvePublicUrl(media.src)}" type="video/mp4" />

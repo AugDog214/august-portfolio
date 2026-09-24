@@ -1367,11 +1367,13 @@ video {
 
   .reveal-inner {
     grid-template-rows: minmax(0, 34%) minmax(0, 28%) minmax(0, 30%);
-    padding-top: calc(var(--nav-h) + 4.9rem);
+    /* banner ends ~4.3rem below the nav: leave ~2.5rem of air under it */
+    row-gap: 1.1rem;
+    padding-top: calc(var(--nav-h) + 7rem);
   }
 
   .reveal-artwork {
-    max-height: 38svh;
+    max-height: 34svh;
   }
 
   .reveal-number {
@@ -2013,10 +2015,15 @@ video {
     padding-right: 0;
   }
 
+  /* card rides higher so it clears the brief panel below it */
   .pf-frame {
-    top: 42%;
-    width: min(78vw, 22rem);
-    height: clamp(15rem, 40svh, 24rem);
+    top: 30%;
+    width: min(76vw, 21rem);
+    height: clamp(14rem, 35svh, 21rem);
+  }
+
+  .pf-strip {
+    top: 30%;
   }
 
   .pf-thumb {
@@ -3559,5 +3566,52 @@ video {
 
   .ai-show--mirror .ai-dash {
     right: 48px;
+  }
+}
+
+/* gallery media: the stills crossfade on a slow loop (Ruskin pool) */
+.ai-gallery {
+  position: absolute;
+  inset: 0;
+  --g-step: 3.2s;
+}
+
+.ai-gallery-img {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: ai-gallery calc(var(--g-step) * var(--g-count)) linear infinite;
+  animation-delay: calc(var(--g-step) * var(--g-i));
+}
+
+.ai-gallery-img:first-child {
+  opacity: 1;
+}
+
+/* 5 stills x 3.2s: each is fully visible for its 20% slice, crossfading at the edges */
+@keyframes ai-gallery {
+  0% { opacity: 0; transform: scale(1.04); }
+  4% { opacity: 1; }
+  20% { opacity: 1; }
+  25% { opacity: 0; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-gallery-img {
+    animation: none;
+  }
+}
+
+/* short phones (SE / mini): smaller card so it still clears the brief panel */
+@media (max-width: 520px) and (max-height: 740px) {
+  .pf-frame {
+    top: 25%;
+    height: 28svh;
+    width: min(64vw, 17rem);
+  }
+
+  .pf-strip {
+    top: 25%;
   }
 }

@@ -325,6 +325,13 @@ const aiShowcaseItems: AiShowcaseItem[] = [
     media: { kind: 'plate', value: '05', label: 'Custom Illustrator tools' },
   },
   {
+    pillar: 'Tools',
+    name: 'Orion Node Studio',
+    description: 'My own node-based AI workflow editor. Preset flows like this pool visualization chain references, prompt writing, and batch renders into one run.',
+    built: 'Codex + Claude Code',
+    media: { kind: 'image', src: 'media/ai/orion-node-studio.webp', alt: 'Orion Node Studio canvas with the Pool and Landscape Design Visualization preset workflow' },
+  },
+  {
     pillar: 'Web',
     name: 'This website',
     description: 'A scroll-driven portfolio in Vite, TypeScript, and GSAP, art directed and built end to end. You are scrolling it.',

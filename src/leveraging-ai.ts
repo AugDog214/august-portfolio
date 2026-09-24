@@ -30,6 +30,20 @@ const aiPage: { kicker: string; headline: string; lead: string; pillars: AiPilla
       ],
     },
     {
+      id: 'tools',
+      label: 'Tools',
+      intro: 'My own software for running AI production end to end.',
+      tools: [
+        {
+          name: 'Orion Node Studio',
+          tagline: 'A node-based AI workflow editor.',
+          description:
+            'A canvas where image, text, and assistant nodes connect into reusable production flows, with batch runs and preset workflows such as pool and landscape visualization. Built in vanilla JavaScript with a Node/Express backend connected to Gemini and OpenAI.',
+          built: 'Codex + Claude Code',
+        },
+      ],
+    },
+    {
       id: 'web',
       label: 'Web',
       intro: 'Designed and shipped as working software — no templates.',

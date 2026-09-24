@@ -2,6 +2,8 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectMedia, type ProjectToolKey } from './content'
 import { renderSite } from './render'
+import Lenis from 'lenis'
+import 'lenis/dist/lenis.css'
 import { resolvePublicUrl } from './urls'
 import './styles.css'
 
@@ -14,6 +16,20 @@ if (!app) {
 
 gsap.registerPlugin(ScrollTrigger)
 gsap.defaults({ ease: 'none' })
+
+// Smooth scrolling: each wheel notch is eased into one continuous scroll, so every
+// scroll-linked animation moves on a smooth curve instead of stepping (and, for
+// anything that counters the scroll, wobbling) once per notch. Touch stays native.
+const lenis = prefersReducedMotion ? null : new Lenis({ lerp: 0.1, anchors: true })
+if (lenis) {
+  lenis.on('scroll', ScrollTrigger.update)
+  gsap.ticker.add((time) => lenis.raf(time * 1000))
+  gsap.ticker.lagSmoothing(0)
+}
+const scrollToY = (y: number, smooth = false) => {
+  if (lenis) lenis.scrollTo(y, { immediate: !smooth, force: true })
+  else window.scrollTo({ top: y, behavior: smooth ? 'smooth' : 'auto' })
+}
 
 // Nav switches to a light, borderless glass while it sits over the cream section,
 // so there is no dark bar / hard line cutting across Selected Work.
@@ -578,6 +594,8 @@ function initAiShowcase() {
   const frame = section.querySelector<HTMLElement>('[data-ai-frame]')
   const frameWindow = section.querySelector<HTMLElement>('[data-ai-window]')
   const flare = section.querySelector<HTMLElement>('[data-ai-flare]')
+  const flareInner = section.querySelector<HTMLElement>('[data-ai-flare-inner]')
+  const rule = section.querySelector<HTMLElement>('[data-ai-rule]')
   const words = gsap.utils.toArray<HTMLElement>('[data-ai-word]', section)
 
   if (!title || !kicker || !info || !frame || !frameWindow || !flare || !words.length) {
@@ -659,6 +677,8 @@ function initAiShowcase() {
     // early and stops dead on the final position, one word after another
     flight = gsap.to(words, { x: 0, y: 0, scale: 1, duration: 1.05, ease: 'expo.out', stagger: 0.085, overwrite: 'auto' })
     gsap.to(kicker, { autoAlpha: 1, y: 0, duration: 0.7, delay: 0.45, ease: 'power3.out', overwrite: 'auto' })
+    // the copper edge draws down once the last word has landed against it
+    if (rule) gsap.to(rule, { scaleY: 1, autoAlpha: 1, duration: 0.8, delay: 0.55, ease: 'expo.out', overwrite: 'auto' })
   }
 
   const unfly = () => {
@@ -674,10 +694,12 @@ function initAiShowcase() {
       overwrite: 'auto',
     })
     gsap.to(kicker, { autoAlpha: 0, y: 10, duration: 0.3, overwrite: 'auto' })
+    if (rule) gsap.to(rule, { scaleY: 0, autoAlpha: 0, duration: 0.3, overwrite: 'auto' })
   }
 
   gsap.set(words, { transformOrigin: '50% 50%' })
   gsap.set(kicker, { autoAlpha: 0, y: 10 })
+  if (rule) gsap.set(rule, { scaleY: 0, autoAlpha: 0 })
   measure()
   ScrollTrigger.addEventListener('refresh', measure)
 
@@ -739,6 +761,26 @@ function initAiShowcase() {
     .fromTo('.ai-dash', { scaleX: 0 }, { scaleX: 1, transformOrigin: '0% 50%', duration: 0.4, ease: 'power3.out' }, 0.55)
     .fromTo(flare, { autoAlpha: 0, scale: 0.35 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'power2.out' }, 0.15)
 
+  // the corner light dims away as the section leaves, so it never trails into
+  // the next section
+  if (flareInner) {
+    gsap.fromTo(
+      flareInner,
+      { autoAlpha: 1 },
+      {
+        autoAlpha: 0,
+        ease: 'power1.in',
+        immediateRender: false,
+        scrollTrigger: {
+          start: () => pin.end,
+          end: () => pin.end + Math.round(window.innerHeight * 0.55),
+          scrub: true,
+          invalidateOnRefresh: true,
+        },
+      },
+    )
+  }
+
   // videos only run while the section is on screen
   ScrollTrigger.create({
     start: () => pin.start - window.innerHeight,
@@ -750,7 +792,7 @@ function initAiShowcase() {
   show.ticks.forEach((tick, index) =>
     tick.addEventListener('click', () => {
       const top = pin.start + window.innerHeight * (INTRO + STEP * index + STEP * 0.4)
-      window.scrollTo({ top, behavior: 'smooth' })
+      scrollToY(top, true)
     }),
   )
 }
@@ -1034,7 +1076,7 @@ function initProjects() {
       y: target,
       duration: 0.7,
       ease: 'power2.inOut',
-      onUpdate: () => window.scrollTo(0, obj.y),
+      onUpdate: () => scrollToY(obj.y),
       onComplete: () => {
         autoScrolling = false
         startAuto()
@@ -1113,7 +1155,11 @@ function initProjects() {
       trigger: section,
       start: 'top bottom',
       end: 'top top',
-      scrub: 0.6,
+      // locked to the scroll (no scrub lag): this entry partly COUNTERS the
+      // scroll (the card holds near centre while the section rises), and a lagged
+      // counter-motion made the card jump up, then drift back down, on every
+      // wheel notch. Lenis supplies the smoothing instead.
+      scrub: true,
       invalidateOnRefresh: true,
     },
   })
@@ -1298,6 +1344,7 @@ function initProjectViewer() {
     lastFocused = document.activeElement as HTMLElement | null
     document.body.style.overflow = 'hidden'
     document.body.dataset.viewerOpen = 'true'
+    lenis?.stop()
     section?.dispatchEvent(new CustomEvent('pf:pause'))
     viewer.setAttribute('aria-hidden', 'false')
     viewer.classList.add('is-open')
@@ -1337,6 +1384,7 @@ function initProjectViewer() {
     viewer.classList.remove('is-open')
     viewer.setAttribute('aria-hidden', 'true')
     document.body.style.overflow = ''
+    lenis?.start()
     delete document.body.dataset.viewerOpen
     viewer.querySelectorAll('video').forEach((video) => video.pause())
     gsap.set(viewer, { clearProps: 'clipPath' })

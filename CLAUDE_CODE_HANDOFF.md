@@ -500,3 +500,12 @@ Ask only when the answer affects implementation.
   - Macarena's Kitchen is currently a closure page live, so its image is a screenshot of the pre-closure site (commit dfe9142 of the site repo).
 - Horizontal Brand → Film: panels are transparent over the section charcoal and the film glow sits on an oversized `::before` — no vertical seam. Copy blocks cancel most of the track motion and crossfade in place (no clipping at the viewport edge). Distance is measured from panel layout, not `scrollWidth`.
 - Hero bottom fade now eases to solid charcoal (no hard line when the pin releases). The $39K ticker banner has an eased horizontal feather (bar, cast shadow, text) and drifts in 16vw instead of sliding across the whole screen.
+
+## Update — Smooth scroll, Orion Node Studio, AI headline (Sept 2026, local only, not pushed)
+
+- **Lenis** smooth scrolling is on (`lenis` dependency, wired to the GSAP ticker + `ScrollTrigger.update`; off for reduced motion). Programmatic scrolls go through `scrollToY()`. The case-study viewer stops Lenis while open and its scroll area has `data-lenis-prevent`.
+- The Selected Work entry timeline is now `scrub: true`. It counters the scroll (card holds near centre while the section rises), and the old 0.6s scrub lag made the card and brief panel jump up then drift back down on every wheel notch. Checked with a wheel-scroll test: 0 direction reversals.
+- New AI build 02: **Orion Node Studio** (`media/ai/orion-node-studio.webp`, the Pool & Landscape Design Visualization preset). Also added to the Leveraging AI page under a Tools pillar. The showcase now has 8 builds.
+- AI headline sits top-right, right-aligned, with a copper edge rule that draws down after the words land. Corner flare is smaller/dimmer, the section lets it spill past its bottom edge (`z-index: 2; overflow-y: visible`), and it fades out as the section leaves.
+- Grain opacity 0.11 → 0.16.
+- Note: this PC's shell has `NODE_ENV=production`, so a plain `npm install` drops devDependencies. Use `npm install --include=dev`.

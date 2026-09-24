@@ -281,7 +281,7 @@ export function renderSite() {
           <span class="project-viewer-close-key" aria-hidden="true">Esc</span>
         </button>
       </div>
-      <div class="project-viewer-scroll" data-viewer-scroll></div>
+      <div class="project-viewer-scroll" data-viewer-scroll data-lenis-prevent></div>
     </div>
   `
 }
@@ -331,6 +331,7 @@ function renderAiShowcase() {
           <header class="ai-show-head">
             <p class="kicker ai-show-kicker" data-ai-kicker>${ai.kicker}</p>
             <h2 class="ai-show-title" data-ai-title aria-label="${ai.headline}"><span aria-hidden="true">${words}</span></h2>
+            <span class="ai-show-rule" data-ai-rule aria-hidden="true"></span>
           </header>
 
           <div class="ai-show-body" data-ai-body>
@@ -378,10 +379,12 @@ function renderAiShowcase() {
                   .join('')}
               </div>
               <span class="ai-flare" data-ai-flare aria-hidden="true">
-                <span class="ai-flare-rays"></span>
-                <span class="ai-flare-beam"></span>
-                <span class="ai-flare-streak"></span>
-                <span class="ai-flare-core"></span>
+                <span class="ai-flare-inner" data-ai-flare-inner>
+                  <span class="ai-flare-rays"></span>
+                  <span class="ai-flare-beam"></span>
+                  <span class="ai-flare-streak"></span>
+                  <span class="ai-flare-core"></span>
+                </span>
               </span>
             </figure>
           </div>

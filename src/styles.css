@@ -98,7 +98,7 @@ video {
   inset: -18%;
   z-index: 900;
   pointer-events: none;
-  opacity: 0.11;
+  opacity: 0.16; /* was 0.11 — a touch more visible 80s film texture */
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 0.86  0 0 0 0 0.68  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 220px 220px;
@@ -2777,7 +2777,23 @@ video {
 }
 
 .ai-show-head {
-  max-width: 64rem;
+  position: relative;
+  justify-self: end;
+  max-width: min(36rem, 52%);
+  padding-right: clamp(1.1rem, 1.8vw, 1.8rem);
+  text-align: right;
+}
+
+/* vertical copper edge the right-aligned lines hang from */
+.ai-show-rule {
+  position: absolute;
+  top: 0.2rem;
+  right: 0;
+  bottom: 0.2rem;
+  width: 2px;
+  background: linear-gradient(180deg, var(--cop), rgba(199, 122, 60, 0.35));
+  box-shadow: 0 0 14px rgba(199, 122, 60, 0.45);
+  transform-origin: 50% 0%;
 }
 
 .ai-show-kicker {
@@ -2788,7 +2804,7 @@ video {
   position: relative; /* words measure their final layout against this box */
   margin: 0;
   color: var(--fg);
-  font-size: clamp(2.2rem, 4.5vw, 4.9rem);
+  font-size: clamp(2.1rem, 3.9vw, 4.3rem);
   font-weight: 700;
   line-height: 0.96;
   text-wrap: balance;
@@ -2810,6 +2826,14 @@ video {
   column-gap: clamp(2rem, 5vw, 6rem);
   align-items: center;
   min-height: 0;
+}
+
+/* The corner flare spills past the section's bottom edge; the section sits above
+   the next one so that light fades out naturally instead of being sliced off. */
+.ai-show {
+  z-index: 2;
+  overflow: visible;
+  overflow-x: clip;
 }
 
 /* ---- left: build info (styled like the Brand panel copy) ---- */
@@ -3039,7 +3063,7 @@ video {
 .ai-frame {
   position: relative;
   justify-self: end;
-  width: min(100%, calc((100svh - var(--nav-h) - 19rem) * 1.6));
+  width: min(100%, calc((100svh - var(--nav-h) - 21.5rem) * 1.6));
   aspect-ratio: 16 / 10;
   margin: 0;
 }
@@ -3139,43 +3163,54 @@ video {
   pointer-events: none;
 }
 
-.ai-flare > span {
+/* smaller + dimmer than the first pass: an accent on the frame corner, not a
+   second focal point competing with the headline */
+.ai-flare-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  opacity: 0.82;
+}
+
+.ai-flare-inner > span {
   position: absolute;
   mix-blend-mode: screen;
   pointer-events: none;
 }
 
 .ai-flare-core {
-  left: -9rem;
-  top: -9rem;
-  width: 18rem;
-  height: 18rem;
+  left: -5.5rem;
+  top: -5.5rem;
+  width: 11rem;
+  height: 11rem;
   border-radius: 50%;
   background: radial-gradient(
     circle,
-    rgba(255, 251, 243, 1) 0%,
-    rgba(255, 233, 198, 0.95) 3%,
-    rgba(255, 190, 120, 0.72) 7.5%,
-    rgba(240, 144, 70, 0.46) 14%,
-    rgba(214, 128, 62, 0.27) 23%,
-    rgba(199, 122, 60, 0.14) 34%,
-    rgba(199, 122, 60, 0.065) 47%,
-    rgba(199, 122, 60, 0.024) 61%,
-    rgba(199, 122, 60, 0.006) 75%,
-    rgba(199, 122, 60, 0) 88%
+    rgba(255, 250, 240, 0.92) 0%,
+    rgba(255, 228, 190, 0.8) 3%,
+    rgba(255, 186, 116, 0.56) 8%,
+    rgba(236, 142, 70, 0.34) 15%,
+    rgba(212, 128, 62, 0.19) 25%,
+    rgba(199, 122, 60, 0.095) 37%,
+    rgba(199, 122, 60, 0.042) 50%,
+    rgba(199, 122, 60, 0.015) 64%,
+    rgba(199, 122, 60, 0.004) 78%,
+    rgba(199, 122, 60, 0) 90%
   );
   animation: ai-flare-pulse 5.5s ease-in-out infinite alternate;
 }
 
 .ai-flare-rays {
-  left: -21rem;
-  top: -21rem;
-  width: 42rem;
-  height: 42rem;
+  left: -12.5rem;
+  top: -12.5rem;
+  width: 25rem;
+  height: 25rem;
   border-radius: 50%;
   background:
-    repeating-conic-gradient(from 3deg, rgba(255, 196, 132, 0) 0deg, rgba(255, 196, 132, 0.2) 1.2deg, rgba(255, 196, 132, 0) 2.6deg, rgba(255, 196, 132, 0) 17deg),
-    repeating-conic-gradient(from 11deg, rgba(255, 170, 100, 0) 0deg, rgba(255, 170, 100, 0.12) 2deg, rgba(255, 170, 100, 0) 4.4deg, rgba(255, 170, 100, 0) 29deg);
+    repeating-conic-gradient(from 3deg, rgba(255, 196, 132, 0) 0deg, rgba(255, 196, 132, 0.13) 1.2deg, rgba(255, 196, 132, 0) 2.6deg, rgba(255, 196, 132, 0) 17deg),
+    repeating-conic-gradient(from 11deg, rgba(255, 170, 100, 0) 0deg, rgba(255, 170, 100, 0.08) 2deg, rgba(255, 170, 100, 0) 4.4deg, rgba(255, 170, 100, 0) 29deg);
   -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.72) 12%, rgba(0, 0, 0, 0.4) 26%, rgba(0, 0, 0, 0.17) 42%, rgba(0, 0, 0, 0.05) 58%, transparent 70%);
   mask-image: radial-gradient(circle, #000 0%, rgba(0, 0, 0, 0.72) 12%, rgba(0, 0, 0, 0.4) 26%, rgba(0, 0, 0, 0.17) 42%, rgba(0, 0, 0, 0.05) 58%, transparent 70%);
   animation: ai-flare-spin 90s linear infinite;
@@ -3184,11 +3219,11 @@ video {
 .ai-flare-beam {
   left: 0;
   top: -1px;
-  width: 44rem;
-  height: 2px;
+  width: 20rem;
+  height: 1.5px;
   transform: rotate(146deg);
   transform-origin: 0 50%;
-  background: linear-gradient(90deg, rgba(255, 240, 220, 0.95) 0%, rgba(255, 190, 120, 0.6) 9%, rgba(230, 140, 70, 0.3) 26%, rgba(199, 122, 60, 0.1) 52%, rgba(199, 122, 60, 0) 100%);
+  background: linear-gradient(90deg, rgba(255, 238, 216, 0.75) 0%, rgba(255, 188, 118, 0.42) 12%, rgba(230, 140, 70, 0.18) 34%, rgba(199, 122, 60, 0.05) 62%, rgba(199, 122, 60, 0) 100%);
 }
 
 /* the beam's soft body */
@@ -3196,19 +3231,19 @@ video {
   content: '';
   position: absolute;
   left: 0;
-  top: -18px;
-  width: 72%;
-  height: 38px;
-  background: linear-gradient(90deg, rgba(255, 160, 90, 0.2), rgba(255, 160, 90, 0.07) 40%, rgba(255, 160, 90, 0));
+  top: -12px;
+  width: 64%;
+  height: 26px;
+  background: linear-gradient(90deg, rgba(255, 160, 90, 0.12), rgba(255, 160, 90, 0.04) 40%, rgba(255, 160, 90, 0));
   filter: blur(10px);
 }
 
 .ai-flare-streak {
-  left: -22rem;
+  left: -13rem;
   top: -1px;
-  width: 44rem;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(255, 190, 130, 0), rgba(255, 190, 130, 0.22) 30%, rgba(255, 238, 214, 0.75) 50%, rgba(255, 190, 130, 0.22) 70%, rgba(255, 190, 130, 0));
+  width: 26rem;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(255, 190, 130, 0), rgba(255, 190, 130, 0.14) 30%, rgba(255, 236, 212, 0.55) 50%, rgba(255, 190, 130, 0.14) 70%, rgba(255, 190, 130, 0));
 }
 
 @keyframes ai-flare-pulse {
@@ -3306,6 +3341,11 @@ video {
     margin-bottom: 0.7rem;
   }
 
+  .ai-show-head {
+    max-width: none;
+    padding-right: 0.9rem;
+  }
+
   .ai-show-title {
     font-size: clamp(1.9rem, 8.2vw, 3rem);
   }
@@ -3336,26 +3376,26 @@ video {
   }
 
   .ai-flare-core {
-    left: -6rem;
-    top: -6rem;
-    width: 12rem;
-    height: 12rem;
+    left: -4rem;
+    top: -4rem;
+    width: 8rem;
+    height: 8rem;
   }
 
   .ai-flare-rays {
-    left: -13rem;
-    top: -13rem;
-    width: 26rem;
-    height: 26rem;
+    left: -8.5rem;
+    top: -8.5rem;
+    width: 17rem;
+    height: 17rem;
   }
 
   .ai-flare-beam {
-    width: 22rem;
+    width: 12rem;
   }
 
   .ai-flare-streak {
-    left: -12rem;
-    width: 24rem;
+    left: -8rem;
+    width: 16rem;
   }
 
   .ai-show-info {

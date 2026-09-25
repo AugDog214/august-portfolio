@@ -1104,6 +1104,28 @@ body::after {
   text-transform: uppercase;
 }
 
+/* loop: scroll room past the footer, and the black the page cuts through */
+.loop-bridge {
+  height: 90svh;
+  background: var(--bg);
+}
+
+.loop-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 880; /* above the page, under grain + sparkle so the black still breathes */
+  background: #070708;
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-bridge,
+  .loop-veil {
+    display: none;
+  }
+}
+
 .contact {
   display: grid;
   place-items: center;

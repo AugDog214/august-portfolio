@@ -23,6 +23,7 @@ export function renderSite() {
   return `
     <a class="skip-link" href="#${horizontalFlow.id}">Skip to work</a>
     <div class="grain" aria-hidden="true"></div>
+    <div class="loop-veil" aria-hidden="true" data-loop-veil></div>
 
     <header class="site-nav" data-nav>
       <a class="nav-brand" href="#${hero.id}" aria-label="${siteMeta.name} home" data-nav-brand>
@@ -241,6 +242,8 @@ export function renderSite() {
         </div>
         <div class="horizon-glow" aria-hidden="true"></div>
       </footer>
+
+      <div class="loop-bridge" aria-hidden="true" data-loop-bridge></div>
     </main>
 
     <div class="project-viewer" data-project-viewer role="dialog" aria-modal="true" aria-labelledby="viewer-title" aria-hidden="true">

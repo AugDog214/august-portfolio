@@ -72,9 +72,42 @@ if (prefersReducedMotion) {
   initHorizontalFlow()
   initAiShowcase(document.querySelector<HTMLElement>('#identity'))
   initAbout()
+  initLoop()
 }
 
 initProjectViewer()
+
+// Loop: past the contact footer a bridge fades the screen to black; at the
+// bottom it cuts back to the top and the hero fades up out of the black.
+function initLoop() {
+  const bridge = document.querySelector<HTMLElement>('[data-loop-bridge]')
+  const veil = document.querySelector<HTMLElement>('[data-loop-veil]')
+  if (!bridge || !veil) return
+  let jumping = false
+  ScrollTrigger.create({
+    trigger: bridge,
+    start: 'top bottom',
+    end: 'bottom bottom',
+    onUpdate: (self) => {
+      if (jumping) return
+      veil.style.opacity = String(Math.min(1, self.progress * 1.15))
+      if (self.progress < 0.995) return
+      jumping = true
+      veil.style.opacity = '1'
+      scrollToY(0)
+      requestAnimationFrame(() => {
+        ScrollTrigger.update()
+        gsap.to(veil, {
+          opacity: 0,
+          duration: 1.1,
+          delay: 0.2,
+          ease: 'power2.out',
+          onComplete: () => { jumping = false },
+        })
+      })
+    },
+  })
+}
 
 window.addEventListener('load', () => ScrollTrigger.refresh())
 document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => undefined)

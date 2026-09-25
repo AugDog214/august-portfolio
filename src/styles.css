@@ -98,7 +98,7 @@ video {
   inset: -18%;
   z-index: 900;
   pointer-events: none;
-  opacity: 0.155; /* toned back down: subtle 80s film texture under a light sparkle */
+  opacity: 0.13; /* toned back down: subtle 80s film texture under a light sparkle */
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 0.86  0 0 0 0 0.68  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 220px 220px;
@@ -115,7 +115,7 @@ body::after {
   inset: -18%;
   z-index: 901;
   pointer-events: none;
-  opacity: 0.18; /* a faint glint only */
+  opacity: 0.12; /* a faint glint only */
   mix-blend-mode: screen;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1  0 0 0 0 0.93  0 0 0 0 0.82  4 0 0 0 -2.1'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0 0 0 0 0 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
   background-size: 300px 300px;
@@ -3810,5 +3810,43 @@ body::after {
     margin: clamp(1rem, 2.4vh, 1.6rem) 0 clamp(1.3rem, 3vh, 2rem);
     font-size: clamp(1.26rem, min(2.1vw, 3.5vh), 2.1rem);
     line-height: 1.22;
+  }
+}
+
+/* ============================================================
+   MOBILE / TOUCH PERFORMANCE — the Selected Work card strip was stuttering
+   on phones. Full-screen blend layers and live backdrop blurs force the
+   whole page to re-composite every frame the cards move, so on touch
+   devices they're swapped for cheap equivalents.
+   ============================================================ */
+@media (max-width: 820px), (hover: none) {
+  /* grain holds still (a static texture reads the same on a small screen) */
+  .grain {
+    inset: 0;
+    animation: none;
+  }
+
+  body::after {
+    display: none;
+  }
+
+  /* glass panel: a solid frosted fill instead of a per-frame blur */
+  .project-glass {
+    background:
+      radial-gradient(ellipse at 78% 10%, rgba(255, 255, 255, 0.32), transparent 52%),
+      linear-gradient(180deg, rgba(250, 243, 232, 0.96) 0%, rgba(236, 225, 207, 0.95) 100%);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .pf-mute {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(20, 18, 16, 0.7);
+  }
+
+  /* lighter card shadows: each moving card repaints its shadow */
+  .pf-thumb {
+    box-shadow: 0 6px 14px rgba(27, 23, 20, 0.14);
   }
 }

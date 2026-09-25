@@ -21,6 +21,9 @@ gsap.defaults({ ease: 'none' })
 // scroll-linked animation moves on a smooth curve instead of stepping (and, for
 // anything that counters the scroll, wobbling) once per notch. Touch stays native.
 const lenis = prefersReducedMotion ? null : new Lenis({ lerp: 0.1, anchors: true })
+// phones: the address bar showing/hiding resizes the viewport; without this every
+// pinned section re-measures mid-swipe, which makes the card strip jump and stall
+ScrollTrigger.config({ ignoreMobileResize: true })
 if (lenis) {
   lenis.on('scroll', ScrollTrigger.update)
   gsap.ticker.add((time) => lenis.raf(time * 1000))
@@ -1171,6 +1174,7 @@ function initProjects() {
     start: 'top top',
     end: pinDistance(4 * cycles),
     pin: true,
+    anticipatePin: 1, // no one-frame pin hop on a fast touch fling
     invalidateOnRefresh: true,
     onRefreshInit: measure,
     onUpdate: (self) => {

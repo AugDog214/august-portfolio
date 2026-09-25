@@ -758,8 +758,9 @@ video {
 }
 
 .brand-copy h2,
-.film-copy h2,
-.build-copy h2,
+.film-copy h2 {
+  margin: 1.3rem 0 1.7rem;
+}
 
 .metric-stack {
   display: grid;
@@ -3613,5 +3614,156 @@ video {
 
   .pf-strip {
     top: 25%;
+  }
+}
+
+/* ============================================================
+   DESKTOP TYPE SCALE-UP — the copy owns its half of each section
+   (Brand, Film, Leveraging AI, Brand Identity). Sizes track both
+   width and height so the stacks still fit a short laptop screen.
+   ============================================================ */
+@media (min-width: 821px) {
+  /* ---- showcases: info and frame split the section 50 / 50 ---- */
+  .ai-show-inner {
+    width: min(100% - clamp(2.4rem, 8vw, 10rem), 112rem);
+  }
+
+  .ai-show-body,
+  .ai-show--mirror .ai-show-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: clamp(2.4rem, 5vw, 6rem);
+  }
+
+  .ai-item-kicker {
+    font-size: clamp(0.62rem, 0.72vw, 0.8rem);
+  }
+
+  .ai-item-name {
+    max-width: 15ch;
+    font-size: clamp(2.2rem, min(4.3vw, 7.2vh), 5.2rem);
+    line-height: 0.96;
+  }
+
+  .ai-item .copper-rule {
+    width: 60px;
+    margin: clamp(0.9rem, 2vh, 1.4rem) 0;
+  }
+
+  .ai-item-desc {
+    max-width: 40rem;
+    font-size: clamp(1.02rem, min(1.45vw, 2.45vh), 1.55rem);
+    line-height: 1.42;
+  }
+
+  .ai-item-meta,
+  .ai-show-foot {
+    max-width: 40rem;
+  }
+
+  .ai-item-meta {
+    margin-top: clamp(1rem, 2.4vh, 1.7rem);
+  }
+
+  .ai-item-meta div {
+    grid-template-columns: 8rem minmax(0, 1fr);
+  }
+
+  .ai-item-meta dt {
+    font-size: clamp(0.62rem, 0.7vw, 0.76rem);
+  }
+
+  .ai-item-meta dd {
+    font-size: clamp(0.8rem, 0.95vw, 1.02rem);
+  }
+
+  .ai-item-meta .ai-item-stat dt {
+    font-size: clamp(1.9rem, 2.6vw, 2.8rem);
+  }
+
+  .ai-item-meta .ai-item-stat dd {
+    font-size: clamp(0.64rem, 0.72vw, 0.8rem);
+  }
+
+  .ai-item-link {
+    font-size: clamp(0.68rem, 0.78vw, 0.86rem);
+  }
+
+  .ai-count {
+    font-size: clamp(0.72rem, 0.82vw, 0.9rem);
+  }
+
+  .ai-tick {
+    width: 28px;
+  }
+
+  .ai-page-link {
+    font-size: clamp(0.62rem, 0.7vw, 0.76rem);
+  }
+
+  /* ---- Brand panel: the copy fills the right half ---- */
+  .brand-copy {
+    padding: 52px clamp(2.4rem, 6vw, 7rem) 52px clamp(1.6rem, 3vw, 4rem);
+  }
+
+  .brand-copy .kicker,
+  .film-copy .kicker {
+    font-size: clamp(0.62rem, 0.72vw, 0.8rem);
+  }
+
+  .brand-copy h2,
+  .film-copy h2 {
+    margin: 0;
+  }
+
+  .brand-copy h2 {
+    max-width: 13ch;
+    font-size: clamp(2.6rem, min(5vw, 8.4vh), 6rem);
+    line-height: 0.95;
+  }
+
+  .brand-copy .copper-rule {
+    width: 60px;
+    margin: clamp(1.1rem, 2.6vh, 1.8rem) 0 clamp(0.6rem, 1.6vh, 1.2rem);
+  }
+
+  .brand-copy .metric-stack {
+    gap: clamp(1rem, 2.6vh, 1.8rem);
+    margin: clamp(1rem, 2.4vh, 1.6rem) 0 clamp(1.4rem, 3.4vh, 2.4rem);
+  }
+
+  .brand-copy .metric-stack div {
+    gap: 0.35rem;
+  }
+
+  .brand-copy .metric-stack dt {
+    font-size: clamp(2.2rem, min(3.8vw, 6.4vh), 4.4rem);
+  }
+
+  .brand-copy .metric-stack dd {
+    font-size: clamp(0.7rem, 0.86vw, 0.95rem);
+  }
+
+  .brand-copy .credit,
+  .film-copy .credit {
+    font-size: clamp(0.62rem, 0.7vw, 0.78rem);
+  }
+
+  /* ---- Film panel: the copy fills the left half, beside the video ---- */
+  /* runs right up to the video's outer frame, less a gutter
+     (video centre = 50vw + its offset; half its width = min(330px, 27vw)) */
+  .film-copy {
+    width: min(54rem, calc(50vw + clamp(13rem, 22vw, 26rem) - min(330px, 27vw) - clamp(1.2rem, 4vw, 4rem) - 4.5rem));
+  }
+
+  .film-copy h2 {
+    font-size: clamp(2.8rem, min(6vw, 10vh), 7.2rem);
+    line-height: 0.95;
+  }
+
+  .film-copy p:not(.kicker, .credit) {
+    max-width: 40rem;
+    margin: clamp(1rem, 2.4vh, 1.6rem) 0 clamp(1.3rem, 3vh, 2rem);
+    font-size: clamp(1.15rem, min(1.9vw, 3.2vh), 1.9rem);
+    line-height: 1.22;
   }
 }

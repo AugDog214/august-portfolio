@@ -3635,12 +3635,12 @@ video {
   }
 
   .ai-item-kicker {
-    font-size: clamp(0.62rem, 0.72vw, 0.8rem);
+    font-size: clamp(0.68rem, 0.8vw, 0.9rem);
   }
 
   .ai-item-name {
     max-width: 15ch;
-    font-size: clamp(2.2rem, min(4.3vw, 7.2vh), 5.2rem);
+    font-size: clamp(2.4rem, min(4.8vw, 8vh), 5.8rem);
     line-height: 0.96;
   }
 
@@ -3651,7 +3651,7 @@ video {
 
   .ai-item-desc {
     max-width: 40rem;
-    font-size: clamp(1.02rem, min(1.45vw, 2.45vh), 1.55rem);
+    font-size: clamp(1.1rem, min(1.6vw, 2.7vh), 1.72rem);
     line-height: 1.42;
   }
 
@@ -3673,7 +3673,7 @@ video {
   }
 
   .ai-item-meta dd {
-    font-size: clamp(0.8rem, 0.95vw, 1.02rem);
+    font-size: clamp(0.88rem, 1.05vw, 1.14rem);
   }
 
   .ai-item-meta .ai-item-stat dt {
@@ -3707,7 +3707,7 @@ video {
 
   .brand-copy .kicker,
   .film-copy .kicker {
-    font-size: clamp(0.62rem, 0.72vw, 0.8rem);
+    font-size: clamp(0.68rem, 0.8vw, 0.9rem);
   }
 
   .brand-copy h2,
@@ -3717,7 +3717,7 @@ video {
 
   .brand-copy h2 {
     max-width: 13ch;
-    font-size: clamp(2.6rem, min(5vw, 8.4vh), 6rem);
+    font-size: clamp(2.9rem, min(5.6vw, 9.4vh), 6.7rem);
     line-height: 0.95;
   }
 
@@ -3736,16 +3736,16 @@ video {
   }
 
   .brand-copy .metric-stack dt {
-    font-size: clamp(2.2rem, min(3.8vw, 6.4vh), 4.4rem);
+    font-size: clamp(2.45rem, min(4.2vw, 7vh), 4.9rem);
   }
 
   .brand-copy .metric-stack dd {
-    font-size: clamp(0.7rem, 0.86vw, 0.95rem);
+    font-size: clamp(0.78rem, 0.96vw, 1.05rem);
   }
 
   .brand-copy .credit,
   .film-copy .credit {
-    font-size: clamp(0.62rem, 0.7vw, 0.78rem);
+    font-size: clamp(0.68rem, 0.78vw, 0.86rem);
   }
 
   /* ---- Film panel: the copy fills the left half, beside the video ---- */
@@ -3756,14 +3756,14 @@ video {
   }
 
   .film-copy h2 {
-    font-size: clamp(2.8rem, min(6vw, 10vh), 7.2rem);
+    font-size: clamp(3.1rem, min(6.6vw, 11vh), 8rem);
     line-height: 0.95;
   }
 
   .film-copy p:not(.kicker, .credit) {
     max-width: 40rem;
     margin: clamp(1rem, 2.4vh, 1.6rem) 0 clamp(1.3rem, 3vh, 2rem);
-    font-size: clamp(1.15rem, min(1.9vw, 3.2vh), 1.9rem);
+    font-size: clamp(1.26rem, min(2.1vw, 3.5vh), 2.1rem);
     line-height: 1.22;
   }
 }

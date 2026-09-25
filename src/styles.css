@@ -110,6 +110,7 @@ video {
 /* its own fixed layer (not inside .grain) so the overlay blend and 0.2
    opacity don't swallow it */
 body::after {
+  display: none; /* sparkle retired: too busy. Remove this line to bring it back */
   content: '';
   position: fixed;
   inset: -18%;

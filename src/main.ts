@@ -610,7 +610,10 @@ function initAiShowcase(root: HTMLElement | null) {
   //   0.14       words fly one at a time to the top (time-based, expo.out)
   //   0.30–0.85  info column + framed media arrive, flare blooms
   //   0.95 →     one build per STEP
-  const INTRO = 0.95
+  // HOLD: how long the big centred headline stays put before the words fly
+  // (was 0.14vh = one wheel notch, too fast to read; now ~3-4 notches)
+  const HOLD = 0.5
+  const INTRO = HOLD + 0.81
   const STEP = section.id === 'ai' ? 0.48 : 0.55
   const PIN = INTRO + STEP * show.count
 
@@ -735,7 +738,7 @@ function initAiShowcase(root: HTMLElement | null) {
   // on the pinned element itself, created after its pin, would otherwise be
   // pushed past the whole pin distance.
   ScrollTrigger.create({
-    start: () => pin.start + Math.round(window.innerHeight * 0.14),
+    start: () => pin.start + Math.round(window.innerHeight * HOLD),
     invalidateOnRefresh: true,
     onEnter: fly,
     onLeaveBack: unfly,
@@ -745,8 +748,8 @@ function initAiShowcase(root: HTMLElement | null) {
   gsap
     .timeline({
       scrollTrigger: {
-        start: () => pin.start + Math.round(window.innerHeight * 0.3),
-        end: () => pin.start + Math.round(window.innerHeight * 0.85),
+        start: () => pin.start + Math.round(window.innerHeight * (HOLD + 0.16)),
+        end: () => pin.start + Math.round(window.innerHeight * (HOLD + 0.71)),
         scrub: 0.8,
         invalidateOnRefresh: true,
       },

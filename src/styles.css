@@ -3820,10 +3820,10 @@ body::after {
    devices they're swapped for cheap equivalents.
    ============================================================ */
 @media (max-width: 820px), (hover: none) {
-  /* grain holds still (a static texture reads the same on a small screen) */
+  /* grain: see below */
   .grain {
-    inset: 0;
-    animation: none;
+    /* phones: keep the flicker (a still grain vanishes on a dark page; 3 steps a second is cheap) and run it a bit stronger */
+    opacity: 0.17;
   }
 
   body::after {

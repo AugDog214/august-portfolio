@@ -3824,7 +3824,6 @@ body::after {
   .grain {
     inset: 0;
     animation: none;
-    opacity: 0.2; /* phones: small bright screens + dark page hide the grain, so it runs stronger here */
   }
 
   body::after {

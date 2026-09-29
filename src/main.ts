@@ -78,7 +78,53 @@ if (prefersReducedMotion) {
   initLoop()
 }
 
+initScrollCue()
+
 initProjectViewer()
+
+// Scroll cue: a watermark at the bottom of the screen that only shows up when the
+// visitor pauses. It names what's next, points sideways in the horizontal section,
+// and gets out of the way the moment they scroll (and for good at the contact).
+function initScrollCue() {
+  const cue = document.querySelector<HTMLElement>('[data-scroll-cue]')
+  const label = document.querySelector<HTMLElement>('[data-scroll-cue-label]')
+  if (!cue || !label) return
+  const stops: [string, string][] = [
+    ['[data-hero]', 'Scroll to begin'],
+    ['[data-reveal]', 'Keep going'],
+    ['[data-projects]', 'Scroll through the work'],
+    ['#ai', 'Scroll for more builds'],
+    ['[data-horizontal-section]', 'Keep scrolling'],
+    ['#identity', 'Scroll for more marks'],
+    ['[data-about]', 'Almost there'],
+  ]
+  let idle = 0
+  const place = () => {
+    const mid = window.innerHeight / 2
+    let text = ''
+    let sideways = false
+    for (const [sel, words] of stops) {
+      const el = document.querySelector<HTMLElement>(sel)
+      if (!el) continue
+      const r = el.getBoundingClientRect()
+      if (r.top <= mid && r.bottom > mid) {
+        text = words
+        sideways = sel === '[data-horizontal-section]'
+      }
+    }
+    const hide = !text || document.body.dataset.viewerOpen === 'true'
+    if (!hide) label.textContent = text
+    cue.classList.toggle('is-sideways', sideways)
+    cue.classList.toggle('is-shown', !hide)
+  }
+  const onScroll = () => {
+    cue.classList.remove('is-shown')
+    window.clearTimeout(idle)
+    idle = window.setTimeout(place, 1600)
+  }
+  window.addEventListener('scroll', onScroll, { passive: true })
+  idle = window.setTimeout(place, 1400)
+}
 
 // Loop: past the contact footer a bridge fades the screen to black; at the
 // bottom it cuts back to the top and the hero fades up out of the black.

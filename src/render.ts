@@ -24,6 +24,13 @@ export function renderSite() {
     <a class="skip-link" href="#${horizontalFlow.id}">Skip to work</a>
     <div class="grain" aria-hidden="true"></div>
     <div class="loop-veil" aria-hidden="true" data-loop-veil></div>
+    <div class="scroll-cue" aria-hidden="true" data-scroll-cue>
+      <span class="scroll-cue-label" data-scroll-cue-label>Scroll to begin</span>
+      <span class="scroll-cue-guide">
+        <span class="scroll-cue-track"><span class="scroll-cue-drop"></span></span>
+        <svg class="scroll-cue-arrow" viewBox="0 0 12 8" width="12" height="8"><path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.2" /></svg>
+      </span>
+    </div>
 
     <header class="site-nav" data-nav>
       <a class="nav-brand" href="#${hero.id}" aria-label="${siteMeta.name} home" data-nav-brand>

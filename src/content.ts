@@ -107,6 +107,11 @@ const projectItems: Project[] = [
     gallery: [
       { kind: 'image', src: 'media/projects/signage/belamo.webp', caption: 'Belamo Patio Furniture — monument sign mockup on site, 48 × 36 in.' },
       { kind: 'image', src: 'media/projects/signage/wayfinding.webp', caption: 'Directional wayfinding — post-and-panel system for a county government campus.' },
+      { kind: 'image', src: 'media/projects/signage/collier-panels.webp', caption: 'Collier County wayfinding, installed: navy post-and-panel directional signs on the government campus.' },
+      { kind: 'image', src: 'media/projects/signage/collier-procurement.webp', caption: 'Collier County: swappable panels, so departments can be added or moved without a new sign.' },
+      { kind: 'image', src: 'media/projects/signage/collier-museum.webp', caption: 'Collier County: the same system at a second campus entrance.' },
+      { kind: 'image', src: 'media/projects/signage/collier-campus.webp', caption: 'Collier County: the sign in context, reading from the drive.' },
+      { kind: 'image', src: 'media/projects/signage/wellmed-door.webp', caption: 'WellMed: door vinyl, printed, cut, and installed start to finish.' },
     ],
     caseStudy: [
       {
@@ -320,10 +325,16 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   {
     pillar: 'Design + Print',
     name: 'Illustrator scripts + tool extensions',
-    description: 'Five custom tools inside Adobe Illustrator that speed up the design workflow and the print process at FASTSIGNS.',
+    description: 'Five custom tools inside Adobe Illustrator for the print process at FASTSIGNS, like the Sticker Machine, which lays out a full run of numbered decals from a list, and a Dimension Tool that adds measurement callouts to sign proofs.',
     built: 'Gemini',
     stat: { value: '16%', label: 'Faster, cheaper turnaround per project' },
-    media: { kind: 'plate', value: '05', label: 'Custom Illustrator tools' },
+    media: {
+      kind: 'gallery',
+      images: [
+        { src: 'media/ai/sticker-machine.webp', alt: 'The Sticker Machine: a custom Illustrator panel that lays out numbered decals from a data list' },
+        { src: 'media/ai/dimension-tool.webp', alt: 'Dimension Tool: a custom Illustrator panel that draws measurement callouts on a sign proof' },
+      ],
+    },
   },
   {
     pillar: 'Tools',

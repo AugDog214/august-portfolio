@@ -281,7 +281,7 @@ function renderAiMedia(media: AiShowcaseMedia) {
   }
 
   if (media.kind === 'gallery') {
-    return `<div class="ai-gallery" style="--g-count: ${media.images.length}">
+    return `<div class="ai-gallery ai-gallery--n${media.images.length}" style="--g-count: ${media.images.length}">
       ${media.images
         .map(
           (image, index) =>

@@ -76,6 +76,8 @@ export type Project = {
   tools: ProjectToolKey[]
   accent: string
   cover: ProjectMedia
+  /** optional longer cut shown at the top of the View Project viewer (the cover stays the short carousel loop) */
+  viewer?: ProjectMedia
   /** optional images that cycle inside the frame instead of a single cover */
   slides?: ProjectMedia[]
   gallery: ProjectMedia[]
@@ -147,6 +149,12 @@ const projectItems: Project[] = [
       src: 'media/projects/astro/cover.mp4',
       poster: 'media/projects/astro/poster.webp',
       caption: 'Product film — four-scene montage.',
+    },
+    viewer: {
+      kind: 'video',
+      src: 'media/projects/astro/full-film.mp4',
+      poster: 'media/projects/astro/poster.webp',
+      caption: 'The full ad, with sound.',
     },
     gallery: [{ kind: 'image', src: 'media/projects/astro/can.webp', caption: 'Hero can render — the original jester-astronaut illustration on pack.' }],
     caseStudy: [

@@ -1314,7 +1314,7 @@ function initProjectViewer() {
     const next = items[(index + 1) % items.length]
     const sections = item.caseStudy
     const gallery = item.gallery
-    const flow: string[] = [panelHtml(item.cover, item.name, true)]
+    const flow: string[] = [panelHtml(item.viewer ?? item.cover, item.name, true)]
 
     // interleave: two copy blocks, then a gallery image — keeps the read editorial
     let g = 0

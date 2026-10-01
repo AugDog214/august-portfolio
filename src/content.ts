@@ -130,7 +130,7 @@ const projectItems: Project[] = [
       },
       {
         label: 'Outcome',
-        body: 'Pairing design with self-directed social video campaigns, I hit 130% of our monthly sales target — $64K a month against a $30K goal. One signage package alone closed at $39K.',
+        body: 'Pairing design with self-directed social video campaigns, I blew past our monthly sales goal — $71K a month against a $30K target. One signage package alone closed at $39K.',
       },
     ],
   },
@@ -509,7 +509,7 @@ export const portfolioContent = {
   },
   reveal: {
     ariaLabel: 'Brand impact',
-    number: '$64K',
+    number: '$71K',
     line: 'a month in sales. The brand made it inevitable.',
     headline: 'Managing Creative Art Direction',
     subheadline: 'Brand Identity Design • AI Film Ads • Marketing • Signage',
@@ -542,7 +542,7 @@ export const portfolioContent = {
       imageAlt: 'Belamo Patio Furniture monument sign mockup, 48 by 36 inches, placed on site photography',
       // from August's resume (June 2026)
       metrics: [
-        { value: '$64K', label: 'Monthly sales, past our $30K goal' },
+        { value: '$71K', label: 'Monthly sales, past our $30K goal' },
         { value: '16%', label: 'Faster, cheaper turnaround with custom AI tools' },
         { value: '7%', label: 'Lower cost of goods, month over month' },
       ],
@@ -590,7 +590,7 @@ export const portfolioContent = {
     paragraphs: [
       'Born in Lewisville, Texas, I was drawing before I could do much else. In sixth grade I realized art and computers could be a career; a year later, after moving to Louisville, Kentucky, I designed my first logo — for my middle school track team.',
       'In high school I joined the Kentucky Army National Guard as a Fire Control Specialist, running artillery data from a computer to the gun line. In parallel I studied at the University of Kentucky across art history, digital media, sculpture, and 3D design, graduating with a BFA in Digital Media & Design.',
-      'I moved to Florida with one goal: to immerse myself in exceptional art and design. I directed film as Creative Director at Gap City Media, and today I lead design and production at FASTSIGNS of Naples — where pairing design with my own social video campaigns hit 130% of our monthly sales target.',
+      'I moved to Florida with one goal: to immerse myself in exceptional art and design. I directed film as Creative Director at Gap City Media, and today I lead design and production at FASTSIGNS of Naples — where pairing design with my own social video campaigns blew past our $30K monthly sales goal.',
     ],
     facts: [
       { label: 'Based', value: 'Fort Myers, Florida' },

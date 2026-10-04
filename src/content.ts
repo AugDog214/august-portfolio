@@ -320,6 +320,8 @@ export type AiShowcaseMedia =
 
 export type AiShowcaseItem = {
   pillar: string
+  // short phrase shown above the media: what kind of piece this is
+  tag: string
   name: string
   description: string
   built: string
@@ -332,6 +334,7 @@ export type AiShowcaseItem = {
 const aiShowcaseItems: AiShowcaseItem[] = [
   {
     pillar: 'Design + Print',
+    tag: 'Custom Illustrator Tool',
     name: 'Illustrator scripts + tool extensions',
     description: 'Five custom tools inside Adobe Illustrator for the print process at FASTSIGNS, like the Sticker Machine, which lays out a full run of numbered decals from a list, and a Dimension Tool that adds measurement callouts to sign proofs.',
     built: 'Gemini',
@@ -346,6 +349,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Tools',
+    tag: 'AI Workflow App',
     name: 'Orion Node Studio',
     description: 'My own node-based AI workflow editor. Preset flows like this pool visualization chain references, prompt writing, and batch renders into one run.',
     built: 'Codex + Claude Code',
@@ -353,6 +357,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Web',
+    tag: 'Website',
     name: 'This website',
     description: 'A scroll-driven portfolio in Vite, TypeScript, and GSAP, art directed and built end to end. You are scrolling it.',
     built: 'Codex + Claude Code',
@@ -360,6 +365,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Web',
+    tag: 'Website',
     name: 'The Olea Group career site',
     description: 'The recruiting site for The Olea Group: brand, layout, and build, shipped live on its own domain.',
     built: 'Codex + Claude Code',
@@ -368,6 +374,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Web',
+    tag: 'Website',
     name: "Macarena's Kitchen website",
     description: 'A restaurant site designed, built, and deployed on a custom domain, with Square online ordering wired in.',
     built: 'Codex + Claude Code',
@@ -376,6 +383,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Web',
+    tag: 'Website',
     name: "Mango's Photo Booth website",
     description: 'A booking-first site for a Southwest Florida photo booth company: event pages, gallery, and a date-check flow that sends visitors straight to reserve.',
     built: 'Claude Code',
@@ -384,6 +392,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Web',
+    tag: 'Website / Pricing Page',
     name: "Mango's: pricing built to convert",
     description: 'Three packages with a highlighted middle tier to anchor the choice, backed by city landing pages and structured data so the business shows up in local and AI search.',
     built: 'Claude Code',
@@ -392,6 +401,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: '3D',
+    tag: '3D Mock-Up',
     name: 'Pool 3D mock-ups',
     description: 'An AI agent driving Blender through MCP to build pool and lanai mock-ups, so the homeowner sees the design before the dig.',
     built: 'Blender MCP + Codex + Claude Code',
@@ -399,6 +409,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: '3D',
+    tag: '3D Presentation',
     name: 'Ruskin pool: final mock-ups',
     description: 'The final presentation for a lakefront pool and lanai build by Complete Renovation and Construction: aerials, the screened cage, and the view from across the lake, all before construction started.',
     built: 'Gemini + Higgsfield + Photoshop',
@@ -415,6 +426,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Motion',
+    tag: 'AI Video',
     name: 'AI video content',
     description: 'Generated video produced through the Higgsfield MCP, directed shot by shot from prompt to final cut.',
     built: 'Higgsfield MCP',
@@ -422,6 +434,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Motion',
+    tag: 'Code Animation',
     name: 'Animation',
     description: 'An 8-second loop of 8,800 particles: orbit, burst, and assemble into type. Every frame is a pure function of time, so there are zero keyframes and it loops perfectly.',
     built: 'Claude Code + Canvas',
@@ -432,6 +445,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
 const brandIdentityItems: AiShowcaseItem[] = [
   {
     pillar: 'School · 2022',
+    tag: 'Logo / Brand Layout',
     name: 'Solar Home Kentucky',
     description: 'Identity for a Kentucky residential solar brand: a sun-and-roofline mark, responsive app-icon versions, reversed and alternate color variations, and a type system.',
     built: 'Logo system, color, typography',
@@ -439,6 +453,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Client · 2023',
+    tag: 'Logo / Brand Layout',
     name: "River's Edge Cottage",
     description: 'A watercolor mark for a riverside cottage, with reduced and responsive versions, a reversed lockup, and a palette pulled from the river and woods.',
     built: 'Logo system, color, typography',
@@ -446,6 +461,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Client · 2023',
+    tag: 'Logo',
     name: 'Forage St.',
     description: 'A monoline script wordmark and mushroom icon for a food brand, shown on dark and light with its four-color palette.',
     built: 'Wordmark, icon, color',
@@ -453,6 +469,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Client · 2023',
+    tag: 'Logo / Brand Layout',
     name: 'Novi',
     description: 'A hand-lettered circular mark for a restaurant brand, built with reversed and alternate color versions and a matching font pairing.',
     built: 'Logo, color, typography',
@@ -460,6 +477,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Client · 2024',
+    tag: 'Logo',
     name: 'Novare',
     description: 'A bold chrome-gradient wordmark with a sunburst accent for a Naples, Florida client, plus simplified one-color versions and palette.',
     built: 'Wordmark, variations, color',
@@ -467,6 +485,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Client · 2023',
+    tag: 'Monogram Logo',
     name: 'NvR Nine',
     description: 'A sharp interlocking K monogram with a serif wordmark, delivered as a full black, white, and color file kit.',
     built: 'Monogram, wordmark, file kit',
@@ -474,6 +493,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Gap City Media · 2024',
+    tag: 'Studio Logo',
     name: 'Gap City Media',
     description: 'The studio identity I made while leading creative there: an 80s synthwave sunset, palms, and neon type that set the look for reels and client work.',
     built: 'Logo, merch, social',
@@ -481,6 +501,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'School · 2023',
+    tag: 'Logo / Brand Layout',
     name: "Pirraglia's",
     description: 'An Italian restaurant identity with a crest monogram and elegant wordmark, responsive versions, a reversed badge, and a type pairing.',
     built: 'Logo system, color, typography',

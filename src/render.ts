@@ -132,6 +132,11 @@ export function renderSite() {
               <span class="pf-mute-icon" data-pf-mute-icon aria-hidden="true">&#128263;</span>
             </button>
           </div>
+
+          <button class="project-view" type="button" data-view-project>
+            <span>${projects.viewLabel}</span>
+            <span class="project-view-arrow" aria-hidden="true">&rarr;</span>
+          </button>
         </div>
         </div>
 
@@ -164,10 +169,6 @@ export function renderSite() {
                 </dd>
               </div>
             </dl>
-            <button class="project-view" type="button" data-view-project>
-              <span>${projects.viewLabel}</span>
-              <span class="project-view-arrow" aria-hidden="true">&rarr;</span>
-            </button>
           </div>
         </aside>
       </section>
@@ -373,6 +374,9 @@ function renderShowcase(ai: ShowcaseConfig, mirror = false) {
             </div>
 
             <figure class="ai-frame" data-ai-frame>
+              <p class="ai-tags" aria-hidden="true">
+                ${ai.items.map((item, index) => `<span class="ai-tag${index === 0 ? ' is-active' : ''}" data-ai-tag>${item.tag}</span>`).join('')}
+              </p>
               <span class="ai-bracket" aria-hidden="true"></span>
               <span class="ai-dash" aria-hidden="true"></span>
               <div class="ai-frame-window" data-ai-window>

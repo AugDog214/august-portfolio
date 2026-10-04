@@ -597,6 +597,7 @@ function getAiShowcase(section: HTMLElement | null): AiShowcaseController | null
 
   const items = gsap.utils.toArray<HTMLElement>('[data-ai-item]', section)
   const media = gsap.utils.toArray<HTMLElement>('[data-ai-media]', section)
+  const tags = gsap.utils.toArray<HTMLElement>('[data-ai-tag]', section)
   const ticks = gsap.utils.toArray<HTMLButtonElement>('[data-ai-tick]', section)
   const countEl = section.querySelector<HTMLElement>('[data-ai-count]')
   let current = 0
@@ -636,6 +637,7 @@ function getAiShowcase(section: HTMLElement | null): AiShowcaseController | null
       })
     })
     media.forEach((layer, i) => layer.classList.toggle('is-active', i === next))
+    tags.forEach((tag, i) => tag.classList.toggle('is-active', i === next))
     ticks.forEach((tick, i) => {
       tick.classList.toggle('is-active', i === next)
       if (i === next) tick.setAttribute('aria-current', 'true')
@@ -847,6 +849,8 @@ function initAiShowcase(root: HTMLElement | null) {
     )
     .fromTo(bracket, { scale: 0 }, { scale: 1, transformOrigin: mirror ? '100% 0%' : '0% 0%', duration: 0.45, ease: 'power3.out' }, 0.45)
     .fromTo(dash, { scaleX: 0 }, { scaleX: 1, transformOrigin: mirror ? '100% 50%' : '0% 50%', duration: 0.4, ease: 'power3.out' }, 0.55)
+    // the piece-type label lands just after the bracket draws in
+    .fromTo(section.querySelector('.ai-tags'), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 0.6)
     .fromTo(flare, { autoAlpha: 0, scale: 0.35 }, { autoAlpha: 1, scale: 1, duration: 0.8, ease: 'power2.out' }, 0.15)
 
   // the corner light dims away as the section leaves, so it never trails into
@@ -961,6 +965,8 @@ function initProjects() {
     const glassWidth = window.innerWidth > 820 ? glass.offsetWidth : 0
     stageCenter = (stage.clientWidth - glassWidth) / 2
     frame.style.left = `${stageCenter}px`
+    // the View Project pill sits under the frame, so it follows the same center
+    stage.style.setProperty('--pf-cx', `${stageCenter}px`)
   }
 
   const positionStrip = (pos: number) => {

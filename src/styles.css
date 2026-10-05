@@ -4299,3 +4299,306 @@ body::after {
     display: none;
   }
 }
+
+/* ============================================================
+   OCTOBER PASS — section label in the header, viewer header links,
+   Contact ending, Selected Work panel thirds, whole banners,
+   showcase label position
+   ============================================================ */
+
+/* ---- header: the top-left label names the section on screen ---- */
+.nav-brand-label {
+  display: inline-block;
+  /* room for the letters to roll without the clip shaving ascenders */
+  margin: -0.18em 0;
+  padding: 0.18em 0;
+  overflow: hidden;
+  white-space: nowrap;
+  perspective: 400px;
+}
+
+.nav-brand-char {
+  display: inline-block;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+@media (max-width: 520px) {
+  /* the longer section names share a phone-width header with four links */
+  .nav-brand {
+    font-size: 0.98rem;
+  }
+}
+
+/* ---- project viewer: site links in the bar ---- */
+.project-viewer-bar {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto;
+}
+
+.project-viewer-links {
+  display: flex;
+  justify-self: end;
+  gap: clamp(0.9rem, 1.6vw, 1.5rem);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.project-viewer-links a {
+  color: var(--p-cop, #9a5520);
+  transition: color 160ms ease;
+}
+
+.project-viewer-links a:hover,
+.project-viewer-links a:focus-visible {
+  color: var(--p-fg);
+}
+
+@media (max-width: 1080px) {
+  .project-viewer-bar {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    row-gap: 0;
+    height: auto;
+    min-height: var(--nav-h);
+    padding-top: 0.55rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .project-viewer-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-self: center;
+    gap: 1.15rem;
+    padding-top: 0.55rem;
+    font-size: 0.58rem;
+  }
+}
+
+.cs-meta .cs-meta-ai {
+  font-size: 0.94rem;
+  line-height: 1.45;
+}
+
+/* ---- wide banners: always whole, never cropped, panned, or squeezed ---- */
+.cs .viewer-panel--wide {
+  border-radius: 8px;
+  background: transparent;
+}
+
+.viewer-zoom {
+  display: none;
+}
+
+@media (max-width: 820px) {
+  /* on a phone the whole banner is only a strip tall, so a swipeable close-up sits under it */
+  .viewer-zoom {
+    display: block;
+    margin-top: 0.7rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 10px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .viewer-zoom::-webkit-scrollbar {
+    display: none;
+  }
+
+  .viewer-zoom img {
+    width: auto;
+    max-width: none;
+    height: 9.5rem;
+  }
+
+  .viewer-figure--wide .viewer-caption::after {
+    content: 'Swipe the close-up.';
+    margin-left: 0.4rem;
+    opacity: 0.7;
+  }
+}
+
+/* ---- Contact: the glow carries past the section edge, and the page signs off ---- */
+.contact {
+  z-index: 2;
+  overflow: visible;
+  overflow-x: clip;
+}
+
+.contact-signoff {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: clamp(1.5rem, 4.4vh, 2.8rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.3rem 0.9rem;
+  width: min(100% - 2rem, 40rem);
+  margin: 0;
+  padding-top: 1.05rem;
+  color: rgba(232, 230, 225, 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.16rem;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+}
+
+.contact-signoff::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2.8rem;
+  height: 1px;
+  background: var(--cop);
+  transform: translateX(-50%);
+}
+
+.contact-signoff span + span::before {
+  content: '·';
+  margin-right: 0.9rem;
+  color: var(--cop);
+}
+
+.loop-bridge {
+  position: relative;
+}
+
+.loop-bridge-label {
+  position: absolute;
+  top: 34%;
+  left: 50%;
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  margin: 0;
+  color: rgba(232, 230, 225, 0.42);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.3rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.loop-bridge-line {
+  width: 1px;
+  height: clamp(2.4rem, 7vh, 4.2rem);
+  background: linear-gradient(180deg, rgba(199, 122, 60, 0), rgba(199, 122, 60, 0.7));
+}
+
+/* ---- Selected Work: the brief panel reads in thirds (category / title + blurb / details) ---- */
+@media (min-width: 821px) {
+  .project-glass-inner {
+    justify-content: flex-start;
+  }
+
+  .project-brief-main {
+    flex: 1 1 auto;
+    grid-template-rows: auto 1fr auto auto 1.2fr;
+    gap: 0;
+  }
+
+  .project-glass-name {
+    grid-row: 3;
+  }
+
+  .project-glass-blurb {
+    grid-row: 4;
+    margin-top: 0.95rem;
+  }
+}
+
+/* ---- showcases: piece-type label sits up and in, above the dash, clear of the bracket ---- */
+.ai-tags {
+  left: 58px;
+  bottom: calc(100% + 42px);
+}
+
+.ai-show--mirror .ai-tags {
+  left: auto;
+  right: 58px;
+}
+
+@media (min-width: 821px) {
+  .ai-frame {
+    width: min(100%, calc((100svh - var(--nav-h) - 27.6rem) * 1.6));
+    margin-top: 3.1rem;
+  }
+}
+
+@media (max-width: 820px) {
+  .ai-tags {
+    left: 38px;
+    bottom: calc(100% + 29px);
+  }
+
+  .ai-show--mirror .ai-tags {
+    left: auto;
+    right: 38px;
+  }
+
+  .ai-frame {
+    margin-top: 2.9rem;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 560px) {
+  .ai-tags {
+    left: 30px;
+    bottom: calc(100% + 20px);
+  }
+
+  .ai-show--mirror .ai-tags {
+    left: auto;
+    right: 30px;
+  }
+
+  .ai-frame {
+    width: min(100%, calc((100svh - var(--nav-h) - 8.4rem) * 1.6));
+    margin-top: 2.1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loop-bridge-label {
+    display: none;
+  }
+}
+
+/* ---- viewer video: the panel takes the video's own shape (no black bars) ---- */
+.cs .viewer-panel--fit {
+  width: min(100%, calc(82svh * var(--ar, 1.7778)));
+  margin-inline: auto;
+}
+
+.cs .viewer-panel--fit video {
+  width: 100%;
+  height: auto;
+  max-height: none;
+}
+
+/* the swipe strip must never widen the case-study column */
+.cs-flow {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.viewer-figure {
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .contact-signoff {
+    gap: 0.3rem 0.6rem;
+    font-size: 0.5rem;
+    letter-spacing: 0.12rem;
+  }
+
+  .contact-signoff span + span::before {
+    margin-right: 0.6rem;
+  }
+}

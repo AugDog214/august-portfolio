@@ -80,6 +80,8 @@ if (prefersReducedMotion) {
 
 initScrollCue()
 
+initNavLabel()
+
 initProjectViewer()
 
 // Scroll cue: a watermark at the bottom of the screen that only shows up when the
@@ -128,6 +130,97 @@ function initScrollCue() {
 
 // Loop: past the contact footer a bridge fades the screen to black; at the
 // bottom it cuts back to the top and the hero fades up out of the black.
+// The top-left label names whatever section is on screen. Leveraging AI arrives the
+// way PORTFOLIO first does (flying in from the right edge); every other change is a
+// split-flap roll: the old letters tip up and out, the new ones roll in from below.
+function initNavLabel() {
+  const label = document.querySelector<HTMLElement>('[data-nav-label]')
+  if (!label) return
+  const stops = portfolioContent.navigation.sectionLabels as readonly { selector: string; label: string; short?: string; enter?: string }[]
+  const brand = document.querySelector<HTMLElement>('[data-nav-brand]')
+  let current = label.textContent ?? ''
+  let token = 0
+  let sliding = false
+
+  const letters = (text: string) =>
+    text
+      .split('')
+      .map((char) => `<span class="nav-brand-char">${char === ' ' ? '&nbsp;' : char}</span>`)
+      .join('')
+
+  const set = (text: string, enter?: string) => {
+    if (text === current) return
+    current = text
+    const run = ++token
+    gsap.killTweensOf(label)
+    gsap.killTweensOf(label.children)
+
+    if (prefersReducedMotion) {
+      label.textContent = text
+      return
+    }
+
+    if (enter === 'slide' && brand) {
+      // the whole brand travels in from the right edge, like PORTFOLIO does in the hero
+      sliding = true
+      gsap.to(label, {
+        autoAlpha: 0,
+        duration: 0.16,
+        ease: 'power1.in',
+        onComplete: () => {
+          if (run !== token) return
+          label.textContent = text
+          gsap.set(label, { autoAlpha: 1 })
+          gsap.fromTo(brand, { x: getPortfolioIntroX() }, { x: 0, duration: 1.05, ease: 'power3.out', onComplete: () => { sliding = false } })
+        },
+      })
+      return
+    }
+
+    if (sliding && brand) {
+      gsap.killTweensOf(brand)
+      gsap.set(brand, { x: 0 })
+      sliding = false
+    }
+    gsap.set(label, { autoAlpha: 1 })
+    label.innerHTML = letters(label.textContent ?? '')
+    gsap.to(label.children, {
+      yPercent: -105,
+      rotateX: 80,
+      autoAlpha: 0,
+      duration: 0.22,
+      stagger: 0.012,
+      ease: 'power2.in',
+      onComplete: () => {
+        if (run !== token) return
+        label.innerHTML = letters(text)
+        gsap.fromTo(
+          label.children,
+          { yPercent: 105, rotateX: -80, autoAlpha: 0 },
+          { yPercent: 0, rotateX: 0, autoAlpha: 1, duration: 0.42, stagger: 0.02, ease: 'power3.out' },
+        )
+      },
+    })
+  }
+
+  const place = () => {
+    const mid = window.innerHeight * 0.45
+    const narrow = window.innerWidth <= 820
+    let hit: (typeof stops)[number] | undefined
+    for (const stop of stops) {
+      const el = document.querySelector<HTMLElement>(stop.selector)
+      if (!el) continue
+      const rect = el.getBoundingClientRect()
+      if (rect.top <= mid && rect.bottom > mid) hit = stop
+    }
+    if (hit) set((narrow && hit.short) || hit.label, hit.enter)
+  }
+
+  place()
+  window.addEventListener('scroll', place, { passive: true })
+  window.addEventListener('resize', place)
+}
+
 function initLoop() {
   const bridge = document.querySelector<HTMLElement>('[data-loop-bridge]')
   const veil = document.querySelector<HTMLElement>('[data-loop-veil]')
@@ -1302,9 +1395,14 @@ function initProjectViewer() {
       media.kind === 'video'
         ? `<video src="${resolvePublicUrl(media.src)}"${media.poster ? ` poster="${resolvePublicUrl(media.poster)}"` : ''} controls playsinline preload="metadata"></video>`
         : `<img src="${resolvePublicUrl(media.src)}" alt="${media.caption ?? name}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" />`
-    const mod = media.kind === 'video' ? ' viewer-panel--video' : media.pan ? ' viewer-panel--pan' : ''
-    return `<figure class="viewer-figure">
+    const mod = media.kind === 'video' ? ' viewer-panel--video' : media.wide ? ' viewer-panel--wide' : media.pan ? ' viewer-panel--pan' : ''
+    // a wide banner is always shown whole; on phones a swipeable close-up sits under it
+    const zoom = media.wide
+      ? `<div class="viewer-zoom" data-lenis-prevent><img src="${resolvePublicUrl(media.src)}" alt="" loading="lazy" decoding="async" /></div>`
+      : ''
+    return `<figure class="viewer-figure${media.wide ? ' viewer-figure--wide' : ''}">
       <div class="viewer-panel${mod}">${inner}</div>
+      ${zoom}
       ${caption}
     </figure>`
   }
@@ -1343,6 +1441,7 @@ function initProjectViewer() {
             <div><dt>My Role</dt><dd>${item.role}</dd></div>
             <div><dt>Year</dt><dd>${item.year}</dd></div>
             <div class="cs-meta-tools"><dt>Tools</dt><dd><ul class="project-tools" aria-label="Project tools">${renderProjectTools(item.tools)}</ul></dd></div>
+            ${item.aiTools ? `<div><dt>AI Tools</dt><dd class="cs-meta-ai">${item.aiTools.join(' · ')}</dd></div>` : ''}
           </dl>
         </header>
         <div class="cs-flow">${flow.join('')}</div>
@@ -1357,6 +1456,19 @@ function initProjectViewer() {
         </footer>
       </article>`
 
+    // size every video panel to the video itself, so a portrait piece never sits
+    // inside black side bars
+    scroll.querySelectorAll<HTMLVideoElement>('.viewer-panel--video video').forEach((video) => {
+      const fit = () => {
+        if (!video.videoWidth || !video.videoHeight) return
+        const panel = video.parentElement as HTMLElement
+        panel.style.setProperty('--ar', String(video.videoWidth / video.videoHeight))
+        panel.classList.add('viewer-panel--fit')
+      }
+      if (video.readyState >= 1) fit()
+      else video.addEventListener('loadedmetadata', fit, { once: true })
+    })
+
     if (titleEl) titleEl.textContent = item.name
     if (countEl) countEl.textContent = `${pad(index + 1)} / ${pad(items.length)}`
     scroll.scrollTop = 0
@@ -1365,6 +1477,23 @@ function initProjectViewer() {
     scroll.querySelector<HTMLElement>('[data-viewer-next]')?.addEventListener('click', () => {
       scroll.querySelectorAll('video').forEach((video) => video.pause())
       renderCaseStudy((viewIndex + 1) % items.length)
+      playLead()
+    })
+  }
+
+  // The lead video starts the instant the viewer opens. This runs inside the click
+  // that opened it, so the full ad is allowed to start with sound; short cover
+  // loops play muted and loop. If the browser refuses sound, fall back to muted.
+  const playLead = () => {
+    const video = scroll.querySelector<HTMLVideoElement>('.cs-flow .viewer-panel--video video')
+    if (!video) return
+    const withSound = Boolean(items[viewIndex].viewer)
+    video.preload = 'auto'
+    video.loop = !withSound
+    video.muted = !withSound
+    void video.play().catch(() => {
+      video.muted = true
+      void video.play().catch(() => undefined)
     })
   }
 
@@ -1376,6 +1505,7 @@ function initProjectViewer() {
     const index = Number(glass.dataset.activeIndex ?? '0')
     openedIndex = index
     renderCaseStudy(index)
+    playLead()
 
     lastFocused = document.activeElement as HTMLElement | null
     document.body.style.overflow = 'hidden'
@@ -1434,6 +1564,21 @@ function initProjectViewer() {
 
   openButton.addEventListener('click', open)
   closeButton.addEventListener('click', close)
+
+  // header links inside the viewer: close it, then travel to that section
+  viewer.querySelectorAll<HTMLAnchorElement>('[data-viewer-link]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const href = link.getAttribute('href') ?? ''
+      if (!href.startsWith('#')) return // a separate page (Leveraging AI): let it navigate
+      event.preventDefault()
+      const stayOnProject = href === `#${portfolioContent.projects.id}`
+      if (!stayOnProject) viewIndex = openedIndex // don't re-seat the carousel on the way out
+      close()
+      if (stayOnProject) return
+      const target = document.querySelector<HTMLElement>(href)
+      if (target) window.requestAnimationFrame(() => scrollToY(target.getBoundingClientRect().top + window.scrollY))
+    })
+  })
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && isOpen) {
       close()

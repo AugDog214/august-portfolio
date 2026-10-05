@@ -36,7 +36,7 @@ export function renderSite() {
       <a class="nav-brand" href="#${hero.id}" aria-label="${siteMeta.name} home" data-nav-brand>
         <span class="nav-brand-inner" data-nav-brand-inner>
           <span class="nav-brand-face nav-brand-face--front">${navigation.brandLabel}</span>
-          <span class="nav-brand-face nav-brand-face--back">${navigation.brandNextLabel}</span>
+          <span class="nav-brand-face nav-brand-face--back"><span class="nav-brand-label" data-nav-label>${navigation.brandNextLabel}</span></span>
         </span>
       </a>
       <nav class="nav-links" aria-label="Primary">
@@ -248,16 +248,22 @@ export function renderSite() {
           </p>
           <a class="resume-link" href="${resolvePublicUrl(siteMeta.resumeLink)}" target="_blank" rel="noreferrer">${contact.resumeLabel}</a>
         </div>
+        <p class="contact-signoff">${contact.signoff.map((part) => `<span>${part}</span>`).join('')}</p>
         <div class="horizon-glow" aria-hidden="true"></div>
       </footer>
 
-      <div class="loop-bridge" aria-hidden="true" data-loop-bridge></div>
+      <div class="loop-bridge" aria-hidden="true" data-loop-bridge>
+        <p class="loop-bridge-label"><span class="loop-bridge-line"></span>${contact.loopLabel}</p>
+      </div>
     </main>
 
     <div class="project-viewer" data-project-viewer role="dialog" aria-modal="true" aria-labelledby="viewer-title" aria-hidden="true">
       <div class="project-viewer-bar">
         <span class="project-viewer-count" data-viewer-count aria-hidden="true"></span>
         <span class="project-viewer-title" id="viewer-title" data-viewer-title></span>
+        <nav class="project-viewer-links" aria-label="Site sections">
+          ${navigation.links.map((link) => `<a href="${link.href}" data-viewer-link>${link.label}</a>`).join('')}
+        </nav>
         <button class="project-viewer-close" type="button" data-viewer-close>
           <span>${projects.closeLabel}</span>
           <span class="project-viewer-close-key" aria-hidden="true">Esc</span>

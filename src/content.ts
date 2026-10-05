@@ -58,6 +58,8 @@ export type ProjectMedia = {
   src: string
   poster?: string
   pan?: boolean
+  /** very wide image (channel banner): always shown whole, never cropped or panned */
+  wide?: boolean
   /** short caption shown under the panel in the viewer */
   caption?: string
 }
@@ -74,6 +76,8 @@ export type Project = {
   year: string
   client: string
   tools: ProjectToolKey[]
+  /** AI tools named as text in the viewer's meta column (no icons) */
+  aiTools?: string[]
   accent: string
   cover: ProjectMedia
   /** optional longer cut shown at the top of the View Project viewer (the cover stays the short carousel loop) */
@@ -140,9 +144,10 @@ const projectItems: Project[] = [
     blurb:
       'A space-jester IPA brand that started as packaging illustration and grew into an AI-directed product film — character, world, and edit rhythm authored as one system.',
     role: 'Creative Director / Illustrator / AI Film Art Direction',
-    year: '2023 — 2026',
+    year: '2026',
     client: 'Original brand concept',
     tools: ['photoshop', 'premiere', 'afterEffects'],
+    aiTools: ['Kling', 'Veo', 'Midjourney', 'Nano Banana', 'ChatGPT image', 'ElevenLabs'],
     accent: '#d8552f',
     cover: {
       kind: 'video',
@@ -156,7 +161,13 @@ const projectItems: Project[] = [
       poster: 'media/projects/astro/poster.webp',
       caption: 'The full ad, with sound.',
     },
-    gallery: [{ kind: 'image', src: 'media/projects/astro/can.webp', caption: 'Hero can render — the original jester-astronaut illustration on pack.' }],
+    gallery: [
+      { kind: 'image', src: 'media/projects/astro/can.webp', caption: 'Hero can render — the original jester-astronaut illustration on pack.' },
+      { kind: 'image', src: 'media/projects/astro/storyboard-1.webp', caption: 'Storyboard: the four steps, character references, and shots 1 – 2.' },
+      { kind: 'image', src: 'media/projects/astro/storyboard-2.webp', caption: 'Storyboard: shots 3 – 6. Thumbnail sketch on the left, reference frames on the right.' },
+      { kind: 'image', src: 'media/projects/astro/storyboard-3.webp', caption: 'Storyboard: shots 7 – 10, from the brewery to the title card.' },
+      { kind: 'image', src: 'media/projects/astro/storyboard-4.webp', caption: 'Storyboard: shots 11 – 14, ending on the can.' },
+    ],
     caseStudy: [
       {
         label: 'Origin',
@@ -167,8 +178,28 @@ const projectItems: Project[] = [
         body: 'To give the characters whimsy, I posed each one in a jester-like contrapposto stance so the gesture carries the personality. I used Midjourney as a reference board for what jester astronauts could look like, and ChatGPT to workshop names — “Astro Fool’s Hopper” landed because it captured the playful, cosmic tone of the characters and their brewery.',
       },
       {
-        label: 'Film',
-        body: 'The film takes the illustrated brand into motion: AI-assisted product worlds, art direction, and a four-scene edit, all directed toward a single look.',
+        label: 'Script',
+        body: 'The ad started on paper, not in a generator. Step one was the script: theme, message, story, tone, and mood, so every later choice had something to answer to.',
+      },
+      {
+        label: 'Shot list',
+        body: 'I broke the ad into a 14-shot list. Each shot got a quick thumbnail sketch with its camera move, narration line, and notes on how the characters should move.',
+      },
+      {
+        label: 'Assets + look',
+        body: 'Before any video, I built reference frames for each shot — characters, settings, and color — using Midjourney, Nano Banana, and ChatGPT image. That gave the video models one fixed look to hold from shot to shot.',
+      },
+      {
+        label: 'Performance',
+        body: 'I recorded myself acting out the movement and the composition of the scenes, then gave that footage to Kling to reimagine each scene around my motion. The blocking in the ad is mine.',
+      },
+      {
+        label: 'Video',
+        body: 'The shots were generated in Kling and Veo from the reference frames and my recorded movement, then cut together in Premiere.',
+      },
+      {
+        label: 'Sound design',
+        body: 'Sound was its own pass: audio built with ElevenLabs, then sound effects, a final mix, and a color grade on the finished cut.',
       },
       {
         label: 'Takeaway',
@@ -194,7 +225,9 @@ const projectItems: Project[] = [
     },
     gallery: [
       { kind: 'image', src: 'media/projects/gapcity/logo.webp', caption: 'Primary mark.' },
-      { kind: 'image', src: 'media/projects/gapcity/banner.webp', pan: true, caption: 'Channel banner.' },
+      { kind: 'image', src: 'media/projects/gapcity/logo-sheet.webp', caption: 'Logo system: proposed mark, reversed version, alternates, palette, and type.' },
+      { kind: 'image', src: 'media/projects/gapcity/banner.webp', wide: true, caption: 'Channel banner.' },
+      { kind: 'image', src: 'media/projects/gapcity/banner-car.webp', wide: true, caption: 'Channel banner, car-meet edition.' },
     ],
     caseStudy: [
       {
@@ -434,7 +467,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Motion',
-    tag: 'Code Animation',
+    tag: 'Motion Graphics',
     name: 'Animation',
     description: 'An 8-second loop of 8,800 particles: orbit, burst, and assemble into type. Every frame is a pure function of time, so there are zero keyframes and it loops perfectly.',
     built: 'Claude Code + Canvas',
@@ -493,11 +526,11 @@ const brandIdentityItems: AiShowcaseItem[] = [
   },
   {
     pillar: 'Gap City Media · 2024',
-    tag: 'Studio Logo',
+    tag: 'Logo / Brand Layout',
     name: 'Gap City Media',
     description: 'The studio identity I made while leading creative there: an 80s synthwave sunset, palms, and neon type that set the look for reels and client work.',
     built: 'Logo, merch, social',
-    media: { kind: 'image', src: 'media/brand/gap-city-media.webp', alt: 'Gap City Media logo' },
+    media: { kind: 'image', src: 'media/brand/gap-city-sheet.webp', alt: 'Gap City Media logo system: proposed mark, reversed version, alternate designs, palette, and fonts' },
   },
   {
     pillar: 'School · 2023',
@@ -507,12 +540,31 @@ const brandIdentityItems: AiShowcaseItem[] = [
     built: 'Logo system, color, typography',
     media: { kind: 'image', src: 'media/brand/pirraglias.webp', alt: "Pirraglia's restaurant logo presentation" },
   },
+  {
+    pillar: 'Client · 2026',
+    tag: 'Label / Packaging',
+    name: "Mango's Habanero Hot Sauce",
+    description: "A hot sauce label for Mango's Photo Booth, taken from notebook sketches to the finished wrap: a badge wordmark, a mango mascot in sunglasses holding a flame, and Home Made and Freshly Picked side panels.",
+    built: 'Label, mascot, wordmark',
+    media: { kind: 'image', src: 'media/brand/mangos-hot-sauce.webp', alt: "Mango's Habanero Hot Sauce: two pages of notebook sketches beside the finished bottle label" },
+  },
 ]
 
 export const portfolioContent = {
   navigation: {
     brandLabel: 'PORTFOLIO',
     brandNextLabel: 'PROJECT',
+    // the top-left label names the section on screen. `short` is used on narrow screens.
+    sectionLabels: [
+      { selector: '[data-hero]', label: 'PROJECT' },
+      { selector: '[data-reveal]', label: 'PROJECT' },
+      { selector: '[data-projects]', label: 'PROJECT' },
+      { selector: '#ai', label: 'LEVERAGING AI', enter: 'slide' },
+      { selector: '[data-horizontal-section]', label: 'BRAND + FILM' },
+      { selector: '#identity', label: 'LOGO / BRAND IDENTITY', short: 'BRAND IDENTITY' },
+      { selector: '[data-about]', label: 'ABOUT' },
+      { selector: '[data-contact]', label: 'CONTACT' },
+    ],
     links: [
       { label: 'Work', href: '#projects' },
       { label: 'Leveraging AI', href: './leveraging-ai.html' },
@@ -625,5 +677,7 @@ export const portfolioContent = {
     ariaLabel: 'Contact',
     kicker: 'Open to creative director roles + select freelance',
     resumeLabel: 'August-Pirraglia-Resume.pdf',
+    signoff: ['August Pirraglia', 'Fort Myers, Florida', '2026'],
+    loopLabel: 'Back to the top',
   },
 } as const

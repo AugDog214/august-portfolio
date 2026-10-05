@@ -1,0 +1,535 @@
+/* ============================================================
+   ARCHIVE — dark contact-sheet grid + single-project pages
+   (loaded after styles.css; reuses its tokens and the Selected
+   Work / case-study styles)
+   ============================================================ */
+
+/* ---- header shared by the Archive and project pages ---- */
+.sub-nav {
+  position: fixed;
+}
+
+.sub-nav-brand {
+  color: var(--cop);
+}
+
+.sub-nav.nav--light .sub-nav-brand {
+  color: #9a5520;
+}
+
+.sub-nav .nav-links a[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 0.45em;
+}
+
+/* ---- archive page ---- */
+.arc-page {
+  width: min(100% - clamp(2rem, 6vw, 6rem), 104rem);
+  margin: 0 auto;
+  padding: calc(var(--nav-h) + clamp(2rem, 5vh, 3.6rem)) 0 clamp(4rem, 10vh, 7rem);
+}
+
+.arc-intro {
+  max-width: 62rem;
+  margin-bottom: clamp(1.2rem, 3vh, 2rem);
+}
+
+.arc-headline {
+  margin: 0;
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: clamp(2.1rem, 4.2vw, 4rem);
+  font-weight: 700;
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.arc-lead {
+  max-width: 44rem;
+  margin: clamp(1rem, 2.4vh, 1.6rem) 0 0;
+  color: rgba(232, 230, 225, 0.78);
+  font-size: clamp(1rem, 1.25vw, 1.2rem);
+  line-height: 1.55;
+}
+
+.arc-filters {
+  position: sticky;
+  top: var(--nav-h);
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  margin: 0 calc(clamp(1rem, 3vw, 3rem) * -1) clamp(1.4rem, 3vh, 2.2rem);
+  padding: 0.9rem clamp(1rem, 3vw, 3rem);
+  background: rgba(20, 20, 22, 0.86);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(232, 230, 225, 0.08);
+}
+
+/* text-only, like the nav: the active view is copper with a rule under it */
+.arc-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  padding: 0.5rem 0 0.42rem;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: none;
+  color: rgba(232, 230, 225, 0.62);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12rem;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+
+.arc-chip:hover,
+.arc-chip:focus-visible {
+  color: var(--fg);
+}
+
+.arc-chip.is-active {
+  border-color: var(--cop);
+  color: var(--cop);
+}
+
+.arc-chip-count {
+  font-size: 0.58rem;
+  letter-spacing: 0.04rem;
+  opacity: 0.7;
+}
+
+.arc-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(1.1rem, 1.6vw, 1.7rem) clamp(0.8rem, 1.1vw, 1.2rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.arc-item {
+  min-width: 0;
+  animation: arc-in 520ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(var(--arc-i, 0) * 35ms);
+}
+
+.arc-item[hidden] {
+  display: none;
+}
+
+.arc-item--wide {
+  grid-column: span 2;
+}
+
+@keyframes arc-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.arc-card {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  height: 100%;
+  color: var(--fg);
+  transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.arc-media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgba(232, 230, 225, 0.1);
+  background: #0e0e10;
+  transition:
+    border-color 240ms ease,
+    box-shadow 320ms ease;
+}
+
+/* two columns wide: the row's 4:5 cards set the height, this is the lone-row fallback */
+.arc-item--wide .arc-media {
+  aspect-ratio: 1640 / 1000;
+}
+
+.arc-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.arc-reveal {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 2.6rem 0.85rem 0.8rem;
+  background: linear-gradient(180deg, rgba(14, 14, 16, 0) 0%, rgba(14, 14, 16, 0.6) 45%, rgba(14, 14, 16, 0.92) 100%);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 240ms ease,
+    transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.arc-title {
+  font-family: var(--font-display);
+  font-size: clamp(0.98rem, 1.15vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.02;
+}
+
+.arc-year {
+  flex: 0 0 auto;
+  color: var(--cop);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08rem;
+}
+
+.arc-film {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.7rem;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  letter-spacing: 0.18rem;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  text-transform: uppercase;
+}
+
+.arc-meta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.7rem;
+  align-items: baseline;
+  padding: 0.6rem 0.1rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+}
+
+.arc-num {
+  color: var(--cop);
+}
+
+.arc-tag {
+  overflow: hidden;
+  color: rgba(232, 230, 225, 0.66);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arc-kind {
+  color: rgba(232, 230, 225, 0.66);
+}
+
+.arc-kind--client {
+  color: var(--cop);
+}
+
+.arc-card:hover,
+.arc-card:focus-visible {
+  transform: translateY(-6px);
+}
+
+.arc-card:hover .arc-media,
+.arc-card:focus-visible .arc-media {
+  border-color: rgba(199, 122, 60, 0.7);
+  box-shadow:
+    0 26px 50px rgba(0, 0, 0, 0.5),
+    0 0 36px rgba(199, 122, 60, 0.14);
+}
+
+.arc-card:hover .arc-media img,
+.arc-card:focus-visible .arc-media img {
+  transform: scale(1.035);
+}
+
+.arc-card:hover .arc-reveal,
+.arc-card:focus-visible .arc-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.arc-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* touch screens have no hover: title + year are always on the card */
+@media (hover: none) {
+  .arc-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 1500px) {
+  .arc-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1180px) {
+  .arc-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .arc-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 820px) {
+  .arc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.8rem 0.7rem;
+  }
+
+  .arc-filters {
+    flex-wrap: nowrap;
+    gap: 0 1.15rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .arc-filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .arc-chip {
+    flex: 0 0 auto;
+    font-size: 0.62rem;
+  }
+
+  .arc-meta {
+    grid-template-columns: auto minmax(0, 1fr);
+    font-size: 0.52rem;
+    letter-spacing: 0.06rem;
+  }
+
+  /* number + Client/Personal/Student stay; the discipline drops to keep one line */
+  .arc-tag {
+    display: none;
+  }
+
+  .arc-kind {
+    justify-self: end;
+  }
+
+  .arc-title {
+    font-size: 1rem;
+  }
+}
+
+/* ---- footer on the archive ---- */
+.sub-footer {
+  display: grid;
+  justify-items: center;
+  gap: 0.9rem;
+  padding: clamp(2.6rem, 7vh, 4.5rem) 1rem clamp(2.2rem, 6vh, 3.6rem);
+  border-top: 1px solid rgba(232, 230, 225, 0.08);
+  text-align: center;
+}
+
+.sub-footer-email {
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--cop);
+  text-underline-offset: 0.16em;
+}
+
+.sub-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.3rem;
+  margin: 0;
+  color: var(--cop);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+}
+
+.sub-footer-links a:hover,
+.sub-footer-links a:focus-visible,
+.sub-footer-email:hover,
+.sub-footer-email:focus-visible {
+  color: var(--fg);
+}
+
+.sub-footer-sign {
+  margin: 0.4rem 0 0;
+  color: rgba(232, 230, 225, 0.55);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.14rem;
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   PROJECT PAGE — the Selected Work layout, one project, no pin
+   ============================================================ */
+body:has(.project-page) {
+  background: #f1ebe0;
+}
+
+.project-page .projects-eyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.3rem 1.4rem;
+}
+
+.pp-back {
+  color: var(--p-cop);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.4em;
+  transition: text-decoration-color 160ms ease;
+}
+
+.pp-back:hover,
+.pp-back:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.pp-where {
+  color: var(--p-dim);
+}
+
+/* Previous / Next sit where the thumbnail strip is on the home page */
+.pp-step {
+  position: absolute;
+  top: var(--pf-top);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  max-width: 15rem;
+  color: var(--p-fg);
+  transform: translateY(-50%);
+}
+
+.pp-step--prev {
+  right: calc(100% - var(--pf-cx, 50%) + clamp(17rem, 31vw, 40rem) / 2 + clamp(1.4rem, 3vw, 3.4rem));
+  text-align: right;
+}
+
+.pp-step--prev .pp-step-text {
+  order: 2;
+}
+
+.pp-step--next {
+  left: calc(var(--pf-cx, 50%) + clamp(17rem, 31vw, 40rem) / 2 + clamp(1.4rem, 3vw, 3.4rem));
+}
+
+.pp-step--prev {
+  flex-direction: row;
+}
+
+.pp-step-text {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.pp-step-label {
+  color: var(--p-cop);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.18rem;
+  text-transform: uppercase;
+}
+
+.pp-step-name {
+  font-family: var(--font-editorial);
+  font-size: clamp(1.05rem, 1.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.pp-step-arrow {
+  color: var(--p-cop);
+  font-size: 1.2rem;
+  transition: transform 220ms ease;
+}
+
+.pp-step--prev:hover .pp-step-arrow,
+.pp-step--prev:focus-visible .pp-step-arrow {
+  transform: translateX(-5px);
+}
+
+.pp-step--next:hover .pp-step-arrow,
+.pp-step--next:focus-visible .pp-step-arrow {
+  transform: translateX(5px);
+}
+
+.pp-step:hover .pp-step-name,
+.pp-step:focus-visible .pp-step-name {
+  color: var(--p-cop);
+}
+
+@media (max-width: 1180px) {
+  /* not enough room beside the frame for names: arrows only */
+  .pp-step-text {
+    display: none;
+  }
+
+  .pp-step-arrow {
+    font-size: 1.5rem;
+  }
+
+  .pp-step--prev {
+    right: calc(100% - var(--pf-cx, 50%) + clamp(17rem, 31vw, 40rem) / 2 + 0.9rem);
+  }
+
+  .pp-step--next {
+    left: calc(var(--pf-cx, 50%) + clamp(17rem, 31vw, 40rem) / 2 + 0.9rem);
+  }
+}
+
+@media (max-width: 820px) {
+  .pp-step--prev {
+    right: auto;
+    left: 0;
+  }
+
+  .pp-step--next {
+    right: 0;
+    left: auto;
+  }
+
+  .pp-step {
+    padding: 0.9rem 0.2rem;
+  }
+
+  .project-page .projects-eyebrow {
+    font-size: 0.56rem;
+    letter-spacing: 0.16rem;
+  }
+}

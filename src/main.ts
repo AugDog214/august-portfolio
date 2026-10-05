@@ -1,10 +1,12 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { astroSequence, portfolioContent, projectToolMap, siteMeta, type ProjectMedia, type ProjectToolKey } from './content'
+import { astroSequence, portfolioContent, siteMeta } from './content'
 import { renderSite } from './render'
 import Lenis from 'lenis'
 import 'lenis/dist/lenis.css'
 import { resolvePublicUrl } from './urls'
+import { fitStageAboveGlass, layoutProjectStage } from './project-stage'
+import { createCaseStudyViewer, renderProjectTools } from './viewer'
 import './styles.css'
 
 const app = document.querySelector<HTMLDivElement>('#app')
@@ -42,17 +44,6 @@ const syncNavTheme = () => {
   document.querySelector('[data-nav]')?.classList.toggle('nav--light', navTheme.reveal || navTheme.projects)
 }
 const pinDistance = (viewportHeights: number) => () => `+=${Math.max(1, Math.round(window.innerHeight * viewportHeights))}`
-const renderProjectTools = (tools: readonly ProjectToolKey[]) =>
-  tools
-    .map((toolKey) => {
-      const tool = projectToolMap[toolKey]
-
-      return `<li class="project-tool">
-        <img src="${resolvePublicUrl(tool.icon)}" alt="${tool.label}" title="${tool.label}" loading="lazy" decoding="async" />
-      </li>`
-    })
-    .join('')
-
 if ('scrollRestoration' in window.history) {
   window.history.scrollRestoration = 'manual'
 }
@@ -251,7 +242,13 @@ function initLoop() {
   })
 }
 
-window.addEventListener('load', () => ScrollTrigger.refresh())
+window.addEventListener('load', () => {
+  ScrollTrigger.refresh()
+  // arriving from another page (Archive, a project) with a section in the URL:
+  // the page starts at the top, so travel to that section once the pins are measured
+  const target = window.location.hash.length > 1 ? document.querySelector<HTMLElement>(window.location.hash) : null
+  if (target) window.requestAnimationFrame(() => scrollToY(target.getBoundingClientRect().top + window.scrollY))
+})
 document.fonts?.ready.then(() => ScrollTrigger.refresh()).catch(() => undefined)
 
 function setDocumentMeta() {
@@ -1066,37 +1063,12 @@ function initProjects() {
   const measure = () => {
     thumbW = thumbs[0].offsetWidth || 1
     spacing = thumbW * 1.18
-    const glassWidth = window.innerWidth > 820 ? glass.offsetWidth : 0
-    stageCenter = (stage.clientWidth - glassWidth) / 2
-    frame.style.left = `${stageCenter}px`
-    // the View Project pill sits under the frame, so it follows the same center
-    stage.style.setProperty('--pf-cx', `${stageCenter}px`)
-    fitAboveGlass()
-  }
-
-  // Phones in portrait: the brief panel sits over the bottom of the stage, so the
-  // card is sized to the space above it, leaving room for the View Project pill.
-  const fitAboveGlass = () => {
-    const pill = section.querySelector<HTMLElement>('[data-view-project]')
-    const narrow = window.innerWidth <= 820 && window.innerHeight > window.innerWidth
-    if (!narrow || !pill) {
-      stage.style.removeProperty('--pf-fit-h')
-      return
-    }
-    // layout offsets (not rects) so the entrance transforms don't skew the numbers
-    let stageTop = 0
-    for (let node: HTMLElement | null = stage; node && node !== section; node = node.offsetParent as HTMLElement | null) {
-      stageTop += node.offsetTop
-    }
-    // re-run (below) whenever the panel or the title changes height between projects
-    const style = getComputedStyle(glass)
-    const glassTop = section.offsetHeight - (parseFloat(style.bottom) || 0) - glass.offsetHeight
-    const room = glassTop - stageTop - pill.offsetHeight - 34
-    stage.style.setProperty('--pf-fit-h', `${Math.max(96, Math.round(room))}px`)
+    // shared with the archive's project pages (project-stage.ts)
+    stageCenter = layoutProjectStage(section, stage, frame, glass)
   }
 
   if ('ResizeObserver' in window) {
-    const refit = new ResizeObserver(() => fitAboveGlass())
+    const refit = new ResizeObserver(() => fitStageAboveGlass(section, stage, glass))
     refit.observe(glass)
     const heading = section.querySelector<HTMLElement>('.projects-head')
     if (heading) refit.observe(heading)
@@ -1407,226 +1379,55 @@ function initProjects() {
 }
 
 function initProjectViewer() {
-  const viewer = document.querySelector<HTMLElement>('[data-project-viewer]')
-  const scroll = document.querySelector<HTMLElement>('[data-viewer-scroll]')
-  const titleEl = document.querySelector<HTMLElement>('[data-viewer-title]')
   const openButton = document.querySelector<HTMLElement>('[data-view-project]')
-  const closeButton = document.querySelector<HTMLElement>('[data-viewer-close]')
   const glass = document.querySelector<HTMLElement>('[data-project-glass]')
   const frame = document.querySelector<HTMLElement>('[data-pf-frame]')
   const section = document.querySelector<HTMLElement>('[data-projects]')
 
-  if (!viewer || !scroll || !openButton || !closeButton || !glass) {
+  if (!openButton || !glass) {
     return
   }
 
-  const items = portfolioContent.projects.items
-  const countEl = document.querySelector<HTMLElement>('[data-viewer-count]')
-  let lastFocused: HTMLElement | null = null
-  let isOpen = false
-  let viewIndex = 0
-  let openedIndex = 0
-
-  const pad = (n: number) => String(n).padStart(2, '0')
-
-  const panelHtml = (media: ProjectMedia, name: string, eager = false) => {
-    const caption = media.caption ? `<figcaption class="viewer-caption">${media.caption}</figcaption>` : ''
-    const inner =
-      media.kind === 'video'
-        ? `<video src="${resolvePublicUrl(media.src)}"${media.poster ? ` poster="${resolvePublicUrl(media.poster)}"` : ''} controls playsinline preload="metadata"></video>`
-        : `<img src="${resolvePublicUrl(media.src)}" alt="${media.caption ?? name}" loading="${eager ? 'eager' : 'lazy'}" decoding="async" />`
-    const mod = media.kind === 'video' ? ' viewer-panel--video' : media.wide ? ' viewer-panel--wide' : media.pan ? ' viewer-panel--pan' : ''
-    // a wide banner is always shown whole; on phones a swipeable close-up sits under it
-    const zoom = media.wide
-      ? `<div class="viewer-zoom" data-lenis-prevent><img src="${resolvePublicUrl(media.src)}" alt="" loading="lazy" decoding="async" /></div>`
-      : ''
-    // a known shape is applied up front; otherwise it is measured once the video loads
-    const fit = media.kind === 'video' && media.aspect ? ` viewer-panel--fit${media.aspect < 1 ? ' viewer-panel--portrait' : ''}` : ''
-    const shape = media.kind === 'video' && media.aspect ? ` style="--ar: ${media.aspect.toFixed(4)}"` : ''
-    return `<figure class="viewer-figure${media.wide ? ' viewer-figure--wide' : ''}">
-      <div class="viewer-panel${mod}${fit}"${shape}>${inner}</div>
-      ${zoom}
-      ${caption}
-    </figure>`
-  }
-
-  const blockHtml = (label: string, body: string, n: number) => `
-    <section class="cs-block">
-      <h3 class="cs-label"><span class="cs-num">${pad(n)}</span>${label}</h3>
-      <p class="cs-body">${body}</p>
-    </section>`
-
-  const renderCaseStudy = (index: number) => {
-    const item = items[index]
-    const next = items[(index + 1) % items.length]
-    const sections = item.caseStudy
-    const gallery = item.gallery
-    const flow: string[] = [panelHtml(item.viewer ?? item.cover, item.name, true)]
-
-    // interleave: two copy blocks, then a gallery image — keeps the read editorial
-    let g = 0
-    sections.forEach((section, i) => {
-      flow.push(blockHtml(section.label, section.body, i + 1))
-      if (i % 2 === 1 && g < gallery.length) flow.push(panelHtml(gallery[g++], item.name))
-    })
-    while (g < gallery.length) flow.push(panelHtml(gallery[g++], item.name))
-
-    scroll.innerHTML = `
-      <article class="cs" style="--accent: ${item.accent}">
-        <header class="cs-intro">
-          <div class="cs-intro-main">
-            <p class="cs-tag">${item.tag}</p>
-            <h2 class="cs-title">${item.name}</h2>
-            <p class="cs-lede">${item.blurb}</p>
-          </div>
-          <dl class="cs-meta">
-            <div><dt>Client</dt><dd>${item.client}</dd></div>
-            <div><dt>My Role</dt><dd>${item.role}</dd></div>
-            <div><dt>Year</dt><dd>${item.year}</dd></div>
-            <div class="cs-meta-tools"><dt>Tools</dt><dd><ul class="project-tools" aria-label="Project tools">${renderProjectTools(item.tools)}</ul></dd></div>
-            ${item.aiTools ? `<div><dt>AI Tools</dt><dd class="cs-meta-ai">${item.aiTools.join(' · ')}</dd></div>` : ''}
-          </dl>
-        </header>
-        <div class="cs-flow">${flow.join('')}</div>
-        <footer class="cs-next" style="--next-accent: ${next.accent}">
-          <button class="cs-next-link" type="button" data-viewer-next aria-label="${portfolioContent.projects.nextLabel}: ${next.name}">
-            <span class="cs-next-label">${portfolioContent.projects.nextLabel} &mdash; ${pad(((index + 1) % items.length) + 1)} / ${pad(items.length)}</span>
-            <span class="cs-next-title"><span class="cs-next-name">${next.name}</span><span class="cs-next-arrow" aria-hidden="true">&rarr;</span></span>
-            <span class="cs-next-peek" aria-hidden="true">
-              <img src="${resolvePublicUrl(next.cover.kind === 'video' ? next.cover.poster ?? next.cover.src : next.cover.src)}" alt="" loading="lazy" decoding="async" />
-            </span>
-          </button>
-        </footer>
-      </article>`
-
-    // size every video panel to the video itself, so a portrait piece never sits
-    // inside black side bars
-    scroll.querySelectorAll<HTMLVideoElement>('.viewer-panel--video video').forEach((video) => {
-      const fit = () => {
-        if (!video.videoWidth || !video.videoHeight) return
-        const panel = video.parentElement as HTMLElement
-        panel.style.setProperty('--ar', String(video.videoWidth / video.videoHeight))
-        panel.classList.add('viewer-panel--fit')
-        panel.classList.toggle('viewer-panel--portrait', video.videoWidth < video.videoHeight)
+  // the viewer itself (rendering, video, open/close) lives in viewer.ts and is
+  // shared with the archive's project pages; this wires it to the carousel
+  const viewer = createCaseStudyViewer({
+    items: portfolioContent.projects.items,
+    nextLabel: portfolioContent.projects.nextLabel,
+    reducedMotion: prefersReducedMotion,
+    clipFrom: () => frame,
+    onOpen: () => {
+      lenis?.stop()
+      section?.dispatchEvent(new CustomEvent('pf:pause'))
+    },
+    onClose: (viewIndex, openedIndex) => {
+      lenis?.start()
+      section?.dispatchEvent(new CustomEvent('pf:resume'))
+      // if the visitor paged to another project inside the viewer, land the carousel on it
+      if (viewIndex !== openedIndex) {
+        section?.dispatchEvent(new CustomEvent('pf:goto', { detail: viewIndex }))
       }
-      if (video.readyState >= 1) fit()
-      else video.addEventListener('loadedmetadata', fit, { once: true })
-    })
+    },
+  })
 
-    if (titleEl) titleEl.textContent = item.name
-    if (countEl) countEl.textContent = `${pad(index + 1)} / ${pad(items.length)}`
-    scroll.scrollTop = 0
-    viewIndex = index
-
-    scroll.querySelector<HTMLElement>('[data-viewer-next]')?.addEventListener('click', () => {
-      scroll.querySelectorAll('video').forEach((video) => video.pause())
-      renderCaseStudy((viewIndex + 1) % items.length)
-      playLead()
-    })
+  if (!viewer) {
+    return
   }
 
-  // The lead video starts the instant the viewer opens. This runs inside the click
-  // that opened it, so the full ad is allowed to start with sound; short cover
-  // loops play muted and loop. If the browser refuses sound, fall back to muted.
-  const playLead = () => {
-    const video = scroll.querySelector<HTMLVideoElement>('.cs-flow .viewer-panel--video video')
-    if (!video) return
-    const withSound = Boolean(items[viewIndex].viewer)
-    video.preload = 'auto'
-    video.loop = !withSound
-    video.muted = !withSound
-    void video.play().catch(() => {
-      video.muted = true
-      void video.play().catch(() => undefined)
-    })
-  }
-
-  const open = () => {
-    if (isOpen) {
-      return
-    }
-
-    const index = Number(glass.dataset.activeIndex ?? '0')
-    openedIndex = index
-    renderCaseStudy(index)
-    playLead()
-
-    lastFocused = document.activeElement as HTMLElement | null
-    document.body.style.overflow = 'hidden'
-    document.body.dataset.viewerOpen = 'true'
-    lenis?.stop()
-    section?.dispatchEvent(new CustomEvent('pf:pause'))
-    viewer.setAttribute('aria-hidden', 'false')
-    viewer.classList.add('is-open')
-    isOpen = true
-
-    if (prefersReducedMotion || !frame) {
-      gsap.set(viewer, { clipPath: 'inset(0px round 0px)' })
-    } else {
-      const rect = frame.getBoundingClientRect()
-      const clip = {
-        t: Math.max(0, rect.top),
-        r: Math.max(0, window.innerWidth - rect.right),
-        b: Math.max(0, window.innerHeight - rect.bottom),
-        l: Math.max(0, rect.left),
-        radius: 14,
-      }
-      const setClip = () => {
-        gsap.set(viewer, {
-          clipPath: `inset(${clip.t}px ${clip.r}px ${clip.b}px ${clip.l}px round ${clip.radius}px)`,
-        })
-      }
-      setClip()
-      gsap
-        .timeline()
-        .to(clip, { t: 0, b: 0, radius: 6, duration: 0.4, ease: 'power3.inOut', onUpdate: setClip })
-        .to(clip, { l: 0, r: 0, radius: 0, duration: 0.46, ease: 'power3.inOut', onUpdate: setClip })
-    }
-
-    window.setTimeout(() => closeButton.focus(), 60)
-  }
-
-  const close = () => {
-    if (!isOpen) {
-      return
-    }
-    isOpen = false
-    viewer.classList.remove('is-open')
-    viewer.setAttribute('aria-hidden', 'true')
-    document.body.style.overflow = ''
-    lenis?.start()
-    delete document.body.dataset.viewerOpen
-    viewer.querySelectorAll('video').forEach((video) => video.pause())
-    gsap.set(viewer, { clearProps: 'clipPath' })
-    section?.dispatchEvent(new CustomEvent('pf:resume'))
-    // if the visitor paged to another project inside the viewer, land the carousel on it
-    if (viewIndex !== openedIndex) {
-      section?.dispatchEvent(new CustomEvent('pf:goto', { detail: viewIndex }))
-    }
-    lastFocused?.focus?.({ preventScroll: true })
-  }
-
-  openButton.addEventListener('click', open)
-  closeButton.addEventListener('click', close)
+  openButton.addEventListener('click', () => viewer.open(Number(glass.dataset.activeIndex ?? '0')))
 
   // header links inside the viewer: close it, then travel to that section
-  viewer.querySelectorAll<HTMLAnchorElement>('[data-viewer-link]').forEach((link) => {
+  viewer.root.querySelectorAll<HTMLAnchorElement>('[data-viewer-link]').forEach((link) => {
     link.addEventListener('click', (event) => {
       const href = link.getAttribute('href') ?? ''
-      if (!href.startsWith('#')) return // a separate page (Leveraging AI): let it navigate
+      if (!href.startsWith('#')) return // a separate page (Leveraging AI, Archive): let it navigate
       event.preventDefault()
       const stayOnProject = href === `#${portfolioContent.projects.id}`
-      if (!stayOnProject) viewIndex = openedIndex // don't re-seat the carousel on the way out
-      close()
+      // leaving for another section: don't re-seat the carousel on the way out
+      viewer.close(stayOnProject)
       if (stayOnProject) return
       const target = document.querySelector<HTMLElement>(href)
       if (target) window.requestAnimationFrame(() => scrollToY(target.getBoundingClientRect().top + window.scrollY))
     })
-  })
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && isOpen) {
-      close()
-    }
   })
 }
 

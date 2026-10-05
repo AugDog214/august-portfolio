@@ -11,6 +11,8 @@ export default defineConfig({
       input: {
         main: resolve(root, 'index.html'),
         leveragingAi: resolve(root, 'leveraging-ai.html'),
+        archive: resolve(root, 'archive.html'),
+        project: resolve(root, 'project.html'),
       },
     },
   },

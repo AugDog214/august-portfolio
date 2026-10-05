@@ -140,6 +140,8 @@ function renderAiPage() {
       <nav class="ai-nav-links" aria-label="Primary">
         <a href="./index.html">Portfolio</a>
         <span class="nav-separator" aria-hidden="true">|</span>
+        <a href="./archive.html">Archive</a>
+        <span class="nav-separator" aria-hidden="true">|</span>
         <a href="mailto:${siteMeta.email}">Contact</a>
       </nav>
     </header>
@@ -191,6 +193,7 @@ function renderAiPage() {
       <footer class="ai-footer">
         <p class="ai-footer-line">More in the full portfolio.</p>
         <a class="ai-back" href="./index.html">&larr; Back to Portfolio</a>
+        <a class="ai-back" href="./archive.html">See the full archive &rarr;</a>
         <a class="ai-email" href="mailto:${siteMeta.email}">${siteMeta.email}</a>
       </footer>
     </main>

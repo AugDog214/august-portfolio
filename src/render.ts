@@ -1,5 +1,6 @@
 import { astroSequence, portfolioContent, projectToolMap, siteMeta, type AiShowcaseItem, type AiShowcaseMedia, type ProjectToolKey } from './content'
 import { resolvePublicUrl } from './urls'
+import { viewerShellHtml } from './viewer'
 
 export function renderSite() {
   const { navigation, hero, reveal, projects, horizontalFlow, about, contact } = portfolioContent
@@ -247,8 +248,9 @@ export function renderSite() {
             ${siteMeta.socials.map((social) => `<a href="${social.href}" target="_blank" rel="noreferrer">${social.label}</a>`).join(' / ')}
           </p>
           <a class="resume-link" href="${resolvePublicUrl(siteMeta.resumeLink)}" target="_blank" rel="noreferrer">${contact.resumeLabel}</a>
+          <a class="archive-cta" href="${contact.archiveHref}">${contact.archiveLabel} <span class="archive-cta-arrow" aria-hidden="true">&rarr;</span></a>
         </div>
-        <p class="contact-signoff">${contact.signoff.map((part) => `<span>${part}</span>`).join('')}</p>
+        <p class="contact-signoff">${contact.signoff.map((part) => `<span>${part}</span>`).join('')}<span><a href="${contact.archiveHref}">Archive</a></span></p>
         <div class="horizon-glow" aria-hidden="true"></div>
       </footer>
 
@@ -257,20 +259,7 @@ export function renderSite() {
       </div>
     </main>
 
-    <div class="project-viewer" data-project-viewer role="dialog" aria-modal="true" aria-labelledby="viewer-title" aria-hidden="true">
-      <div class="project-viewer-bar">
-        <span class="project-viewer-count" data-viewer-count aria-hidden="true"></span>
-        <span class="project-viewer-title" id="viewer-title" data-viewer-title></span>
-        <nav class="project-viewer-links" aria-label="Site sections">
-          ${navigation.links.map((link) => `<a href="${link.href}" data-viewer-link>${link.label}</a>`).join('')}
-        </nav>
-        <button class="project-viewer-close" type="button" data-viewer-close>
-          <span>${projects.closeLabel}</span>
-          <span class="project-viewer-close-key" aria-hidden="true">Esc</span>
-        </button>
-      </div>
-      <div class="project-viewer-scroll" data-viewer-scroll data-lenis-prevent></div>
-    </div>
+    ${viewerShellHtml(navigation.links, projects.closeLabel)}
   `
 }
 

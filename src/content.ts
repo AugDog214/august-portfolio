@@ -95,7 +95,7 @@ export type Project = {
   caseStudy: CaseStudySection[]
 }
 
-const projectItems: Project[] = [
+export const projectItems: Project[] = [
   {
     name: 'Signage',
     tag: 'Environmental / Large Format',
@@ -165,6 +165,8 @@ const projectItems: Project[] = [
     },
     gallery: [
       { kind: 'image', src: 'media/projects/astro/can.webp', caption: 'Hero can render — the original jester-astronaut illustration on pack.' },
+      { kind: 'image', src: 'media/archive/astro-fools-hopper/illustration.webp', caption: 'The original packaging illustration: three jester astronauts at the brew pot.' },
+      { kind: 'image', src: 'media/archive/astro-fools-hopper/can-mockup.webp', caption: 'Can mockup, repeated on pack.' },
       { kind: 'image', src: 'media/projects/astro/storyboard-1.webp', caption: 'Storyboard: the four steps, character references, and shots 1 – 2.' },
       { kind: 'image', src: 'media/projects/astro/storyboard-2.webp', caption: 'Storyboard: shots 3 – 6. Thumbnail sketch on the left, reference frames on the right.' },
       { kind: 'image', src: 'media/projects/astro/storyboard-3.webp', caption: 'Storyboard: shots 7 – 10, from the brewery to the title card.' },
@@ -262,7 +264,18 @@ const projectItems: Project[] = [
       { kind: 'image', src: 'media/projects/kababz/menu-2.webp' },
       { kind: 'image', src: 'media/projects/kababz/cover.webp' },
     ],
-    gallery: [{ kind: 'image', src: 'media/projects/kababz/cover.webp', caption: 'Menu board — wraps, platters, vegetarian, soups and salads. Sized for mounted TV screens.' }],
+    gallery: [
+      { kind: 'image', src: 'media/projects/kababz/cover.webp', caption: 'Menu board — wraps, platters, vegetarian, soups and salads. Sized for mounted TV screens.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/trifold-mockup.webp', caption: 'Tri-fold menu, printed mockup.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/trifold-outside.webp', caption: 'Tri-fold, outside panels.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/trifold-inside.webp', caption: 'Tri-fold, inside panels.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/draft-1.webp', caption: 'Rough draft 1 of 6.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/draft-2.webp', caption: 'Rough draft 2 of 6.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/draft-3.webp', caption: 'Rough draft 3 of 6.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/draft-4.webp', caption: 'Rough draft 4 of 6.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/draft-5.webp', caption: 'Rough draft 5 of 6.' },
+      { kind: 'image', src: 'media/archive/kebabz-heaven/draft-6.webp', caption: 'Rough draft 6 of 6.' },
+    ],
     caseStudy: [
       {
         label: 'Context',
@@ -299,7 +312,11 @@ const projectItems: Project[] = [
       aspect: 960 / 1266,
       caption: 'Mission to Mars — motion poster.',
     },
-    gallery: [{ kind: 'image', src: 'media/projects/posters/antidesign.webp', caption: 'AntiDesign — collage poster.' }],
+    gallery: [
+      { kind: 'image', src: 'media/projects/posters/antidesign.webp', caption: 'AntiDesign — collage poster.' },
+      { kind: 'image', src: 'media/archive/art-posters/enlightenment.webp', caption: 'Enlightenment — collage poster.' },
+      { kind: 'image', src: 'media/archive/art-posters/rojxs-productions.webp', caption: 'Rojxs Productions — poster.' },
+    ],
     caseStudy: [
       {
         label: 'Mission to Mars',
@@ -326,7 +343,14 @@ const projectItems: Project[] = [
     tools: ['illustrator', 'photoshop', 'blender'],
     accent: '#6a4bd0',
     cover: { kind: 'image', src: 'media/projects/rage/cover.webp', caption: 'Electric Ice — zero-sugar lineup, 3D render.' },
-    gallery: [],
+    gallery: [
+      { kind: 'image', src: 'media/archive/rage-energy-drink/cans-2.webp', caption: '3D render, second angle.' },
+      { kind: 'image', src: 'media/archive/rage-energy-drink/label-1.webp', caption: 'Label flat, with the snowboarder character.' },
+      { kind: 'image', src: 'media/archive/rage-energy-drink/label-2.webp', caption: 'Label flat, light version.' },
+      { kind: 'image', src: 'media/archive/rage-energy-drink/label-3.webp', caption: 'Label flat, lightning version.' },
+      { kind: 'image', src: 'media/archive/rage-energy-drink/label-4.webp', caption: 'Label flat, light lightning version.' },
+      { kind: 'image', src: 'media/archive/rage-energy-drink/label-5.webp', caption: 'Label flat, wordmark only.' },
+    ],
     caseStudy: [
       {
         label: 'Brief',
@@ -478,7 +502,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
   },
 ]
 
-const brandIdentityItems: AiShowcaseItem[] = [
+export const brandIdentityItems: AiShowcaseItem[] = [
   {
     pillar: 'School · 2022',
     tag: 'Logo / Brand Layout',
@@ -573,6 +597,7 @@ export const portfolioContent = {
       { label: 'Leveraging AI', href: './leveraging-ai.html' },
       { label: 'About', href: '#about' },
       { label: 'Contact', href: '#contact' },
+      { label: 'Archive', href: './archive.html' },
     ],
   },
   hero: {
@@ -682,5 +707,7 @@ export const portfolioContent = {
     resumeLabel: 'August-Pirraglia-Resume.pdf',
     signoff: ['August Pirraglia', 'Fort Myers, Florida', '2026'],
     loopLabel: 'Back to the top',
+    archiveLabel: 'See the full archive',
+    archiveHref: './archive.html',
   },
 } as const

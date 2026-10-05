@@ -4676,3 +4676,73 @@ body::after {
   left: auto;
   right: 0;
 }
+
+/* ---- Archive: call to action in the contact section + a fifth nav link ---- */
+.archive-cta {
+  justify-self: center;
+  margin-top: clamp(0.9rem, 2.4vh, 1.6rem);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: underline;
+  text-decoration-color: var(--cop);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.22em;
+  transition: color 160ms ease;
+}
+
+.archive-cta:hover,
+.archive-cta:focus-visible {
+  color: var(--cop);
+}
+
+.archive-cta-arrow {
+  display: inline-block;
+  color: var(--cop);
+  transition: transform 220ms ease;
+}
+
+.archive-cta:hover .archive-cta-arrow,
+.archive-cta:focus-visible .archive-cta-arrow {
+  transform: translateX(5px);
+}
+
+.contact-signoff a {
+  color: var(--cop);
+}
+
+.contact-signoff a:hover,
+.contact-signoff a:focus-visible {
+  color: var(--fg);
+}
+
+/* phone nav with five links: tighter links and a slightly smaller section label */
+@media (max-width: 520px) {
+  .site-nav {
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+
+  .site-nav .nav-links {
+    gap: 0.5rem;
+    font-size: 0.52rem;
+    letter-spacing: -0.01em;
+  }
+
+  .site-nav .nav-brand {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .site-nav .nav-links {
+    gap: 0.42rem;
+    font-size: 0.5rem;
+  }
+
+  .site-nav .nav-brand {
+    font-size: 0.8rem;
+  }
+}

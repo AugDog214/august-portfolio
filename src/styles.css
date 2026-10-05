@@ -4613,3 +4613,25 @@ body::after {
   aspect-ratio: var(--ar);
   object-fit: cover;
 }
+
+/* ---- wide banners run edge to edge across the viewer ---- */
+.project-viewer-scroll {
+  container-type: inline-size;
+}
+
+.cs .viewer-figure--wide {
+  /* break out of the centred column to the full width of the viewer */
+  width: 100cqw;
+  margin-left: calc(50% - 50cqw);
+}
+
+.cs .viewer-figure--wide .viewer-panel--wide {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.cs .viewer-figure--wide .viewer-caption,
+.cs .viewer-figure--wide .viewer-zoom {
+  width: min(100% - clamp(2rem, 8vw, 8rem), 76rem);
+  margin-inline: auto;
+}

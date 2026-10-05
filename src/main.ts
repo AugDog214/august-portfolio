@@ -320,7 +320,6 @@ function initHero() {
     invalidateOnRefresh: true,
     onUpdate: (self) => {
       const fade = smoothstep(mapProgress(self.progress, 0.12, 0.76))
-      const imageProgress = smoothstep(self.progress)
       const portfolioSettle = smoothstep(mapProgress(self.progress, 0.02, 0.42))
       const portfolioLift = 1 - portfolioSettle
 
@@ -336,8 +335,20 @@ function initHero() {
         y: -34 * fade,
       })
 
-      frameController?.sync(imageProgress)
     },
+  })
+
+  // The frame sequence keeps playing after the pin lets go: it runs across the
+  // pinned scroll AND the viewport-height the hero takes to slide away, so the
+  // video is still moving as the next section arrives (it used to freeze on the
+  // last frame the moment the hero started to leave).
+  // (plain scroll positions: a trigger on the pinned hero itself would be pushed
+  // back by the pin's own spacing)
+  ScrollTrigger.create({
+    start: 0,
+    end: () => Math.round(window.innerHeight * 3),
+    invalidateOnRefresh: true,
+    onUpdate: (self) => frameController?.sync(self.progress),
   })
 }
 

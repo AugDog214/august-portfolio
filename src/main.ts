@@ -1071,6 +1071,35 @@ function initProjects() {
     frame.style.left = `${stageCenter}px`
     // the View Project pill sits under the frame, so it follows the same center
     stage.style.setProperty('--pf-cx', `${stageCenter}px`)
+    fitAboveGlass()
+  }
+
+  // Phones in portrait: the brief panel sits over the bottom of the stage, so the
+  // card is sized to the space above it, leaving room for the View Project pill.
+  const fitAboveGlass = () => {
+    const pill = section.querySelector<HTMLElement>('[data-view-project]')
+    const narrow = window.innerWidth <= 820 && window.innerHeight > window.innerWidth
+    if (!narrow || !pill) {
+      stage.style.removeProperty('--pf-fit-h')
+      return
+    }
+    // layout offsets (not rects) so the entrance transforms don't skew the numbers
+    let stageTop = 0
+    for (let node: HTMLElement | null = stage; node && node !== section; node = node.offsetParent as HTMLElement | null) {
+      stageTop += node.offsetTop
+    }
+    // re-run (below) whenever the panel or the title changes height between projects
+    const style = getComputedStyle(glass)
+    const glassTop = section.offsetHeight - (parseFloat(style.bottom) || 0) - glass.offsetHeight
+    const room = glassTop - stageTop - pill.offsetHeight - 34
+    stage.style.setProperty('--pf-fit-h', `${Math.max(96, Math.round(room))}px`)
+  }
+
+  if ('ResizeObserver' in window) {
+    const refit = new ResizeObserver(() => fitAboveGlass())
+    refit.observe(glass)
+    const heading = section.querySelector<HTMLElement>('.projects-head')
+    if (heading) refit.observe(heading)
   }
 
   const positionStrip = (pos: number) => {

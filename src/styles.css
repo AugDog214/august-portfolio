@@ -4665,3 +4665,14 @@ body::after {
     max-height: 37svh;
   }
 }
+
+/* ---- showcase label: back flush with the photo's edge (still above the bracket) ---- */
+.ai-show .ai-tags {
+  left: 0;
+  right: auto;
+}
+
+.ai-show.ai-show--mirror .ai-tags {
+  left: auto;
+  right: 0;
+}

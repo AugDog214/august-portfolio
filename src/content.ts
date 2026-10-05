@@ -480,7 +480,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
 
 const brandIdentityItems: AiShowcaseItem[] = [
   {
-    pillar: 'School · 2023',
+    pillar: 'School · 2022',
     tag: 'Logo / Brand Layout',
     name: 'Solar Home Kentucky',
     description: 'Identity for a Kentucky residential solar brand: a sun-and-roofline mark, responsive app-icon versions, reversed and alternate color variations, and a type system.',
@@ -536,7 +536,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/gap-city-sheet.webp', alt: 'Gap City Media logo system: proposed mark, reversed version, alternate designs, palette, and fonts' },
   },
   {
-    pillar: 'School · 2024',
+    pillar: 'School · 2023',
     tag: 'Logo / Brand Layout',
     name: "Pirraglia's",
     description: 'An Italian restaurant identity with a crest monogram and elegant wordmark, responsive versions, a reversed badge, and a type pairing.',

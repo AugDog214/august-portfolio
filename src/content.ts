@@ -215,7 +215,7 @@ const projectItems: Project[] = [
     blurb:
       'Live-action commercial content, channel branding, and short-form video for Gap City Media — directed from concept to final cut and built to perform on feed.',
     role: 'Filmmaker / Creative Director',
-    year: '2023 — 2025',
+    year: '2024 — 2026',
     client: 'Gap City Media',
     tools: ['illustrator', 'photoshop', 'premiere', 'afterEffects'],
     accent: '#e0398f',
@@ -252,7 +252,7 @@ const projectItems: Project[] = [
     blurb:
       'Digital menu boards and a tri-fold menu for a family-run Mediterranean grill — appetite-first hierarchy, with the family’s keffiyeh pattern woven into the brand.',
     role: 'Menu Designer / Print Production',
-    year: '2024',
+    year: '2025',
     client: 'Kebabz Heaven Mediterranean Grill',
     tools: ['indesign', 'photoshop'],
     accent: '#c08a3c',
@@ -288,7 +288,7 @@ const projectItems: Project[] = [
     blurb:
       'Personal poster work — a motion poster for Starship’s fifth flight and collage pieces that pull art history into experimental layouts.',
     role: 'Graphic Designer / Motion Designer',
-    year: '2024',
+    year: '2025',
     client: 'Personal work',
     tools: ['photoshop', 'afterEffects'],
     accent: '#c2354a',
@@ -321,7 +321,7 @@ const projectItems: Project[] = [
     blurb:
       'Packaging, logo, and character illustration for a snow-sport energy drink aimed at 16–30-year-old skiers and snowboarders — rendered in 3D.',
     role: 'Packaging Designer / Illustrator',
-    year: '2023',
+    year: '2024',
     client: 'Original brand concept',
     tools: ['illustrator', 'photoshop', 'blender'],
     accent: '#6a4bd0',
@@ -480,7 +480,7 @@ const aiShowcaseItems: AiShowcaseItem[] = [
 
 const brandIdentityItems: AiShowcaseItem[] = [
   {
-    pillar: 'School · 2022',
+    pillar: 'School · 2023',
     tag: 'Logo / Brand Layout',
     name: 'Solar Home Kentucky',
     description: 'Identity for a Kentucky residential solar brand: a sun-and-roofline mark, responsive app-icon versions, reversed and alternate color variations, and a type system.',
@@ -488,7 +488,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/solar-home-kentucky.webp', alt: 'Solar Home Kentucky logo system presentation' },
   },
   {
-    pillar: 'Client · 2023',
+    pillar: 'Client · 2024',
     tag: 'Logo / Brand Layout',
     name: "River's Edge Cottage",
     description: 'A watercolor mark for a riverside cottage, with reduced and responsive versions, a reversed lockup, and a palette pulled from the river and woods.',
@@ -496,7 +496,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/rivers-edge-cottage.webp', alt: "River's Edge Cottage logo presentation" },
   },
   {
-    pillar: 'Client · 2023',
+    pillar: 'Client · 2024',
     tag: 'Logo',
     name: 'Forage St.',
     description: 'A monoline script wordmark and mushroom icon for a food brand, shown on dark and light with its four-color palette.',
@@ -504,7 +504,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/forage.webp', alt: 'Forage St. logo final revision presentation' },
   },
   {
-    pillar: 'Client · 2023',
+    pillar: 'Client · 2024',
     tag: 'Logo / Brand Layout',
     name: 'Novi',
     description: 'A hand-lettered circular mark for a restaurant brand, built with reversed and alternate color versions and a matching font pairing.',
@@ -512,7 +512,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/novi.webp', alt: 'Novi logo presentation with food photography' },
   },
   {
-    pillar: 'Client · 2024',
+    pillar: 'Client · 2025',
     tag: 'Logo',
     name: 'Novare',
     description: 'A bold chrome-gradient wordmark with a sunburst accent for a Naples, Florida client, plus simplified one-color versions and palette.',
@@ -520,7 +520,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/novare.webp', alt: 'Novare logo proposal' },
   },
   {
-    pillar: 'Client · 2023',
+    pillar: 'Client · 2024',
     tag: 'Monogram Logo',
     name: 'NvR Nine',
     description: 'A sharp interlocking K monogram with a serif wordmark, delivered as a full black, white, and color file kit.',
@@ -528,7 +528,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/nvr-nine.webp', alt: 'NvR Nine monogram logo' },
   },
   {
-    pillar: 'Gap City Media · 2024',
+    pillar: 'Gap City Media · 2025',
     tag: 'Logo / Brand Layout',
     name: 'Gap City Media',
     description: 'The studio identity I made while leading creative there: an 80s synthwave sunset, palms, and neon type that set the look for reels and client work.',
@@ -536,7 +536,7 @@ const brandIdentityItems: AiShowcaseItem[] = [
     media: { kind: 'image', src: 'media/brand/gap-city-sheet.webp', alt: 'Gap City Media logo system: proposed mark, reversed version, alternate designs, palette, and fonts' },
   },
   {
-    pillar: 'School · 2023',
+    pillar: 'School · 2024',
     tag: 'Logo / Brand Layout',
     name: "Pirraglia's",
     description: 'An Italian restaurant identity with a crest monogram and elegant wordmark, responsive versions, a reversed badge, and a type pairing.',

@@ -544,9 +544,9 @@ const brandIdentityItems: AiShowcaseItem[] = [
     pillar: 'Client · 2026',
     tag: 'Label / Packaging',
     name: "Mango's Habanero Hot Sauce",
-    description: "A hot sauce label for Mango's Photo Booth, taken from notebook sketches to the finished wrap: a badge wordmark, a mango mascot in sunglasses holding a flame, and Home Made and Freshly Picked side panels.",
+    description: "A hot sauce bottle label for Mango's Photo Booth: a badge wordmark, a mango mascot in sunglasses holding a flame, and Home Made and Freshly Picked side panels.",
     built: 'Label, mascot, wordmark',
-    media: { kind: 'image', src: 'media/brand/mangos-hot-sauce.webp', alt: "Mango's Habanero Hot Sauce: two pages of notebook sketches beside the finished bottle label" },
+    media: { kind: 'image', src: 'media/brand/mangos-hot-sauce.webp', alt: "Mango's Habanero Hot Sauce bottle label" },
   },
 ]
 

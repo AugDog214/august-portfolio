@@ -60,6 +60,8 @@ export type ProjectMedia = {
   pan?: boolean
   /** very wide image (channel banner): always shown whole, never cropped or panned */
   wide?: boolean
+  /** width / height of a video, so its panel is the right shape before the file loads */
+  aspect?: number
   /** short caption shown under the panel in the viewer */
   caption?: string
 }
@@ -292,8 +294,9 @@ const projectItems: Project[] = [
     accent: '#c2354a',
     cover: {
       kind: 'video',
-      src: 'media/projects/posters/cover.mp4',
-      poster: 'media/projects/posters/poster.webp',
+      src: 'media/projects/posters/mars-poster.mp4',
+      poster: 'media/projects/posters/mars-poster.webp',
+      aspect: 960 / 1266,
       caption: 'Mission to Mars — motion poster.',
     },
     gallery: [{ kind: 'image', src: 'media/projects/posters/antidesign.webp', caption: 'AntiDesign — collage poster.' }],

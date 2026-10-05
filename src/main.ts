@@ -1411,8 +1411,11 @@ function initProjectViewer() {
     const zoom = media.wide
       ? `<div class="viewer-zoom" data-lenis-prevent><img src="${resolvePublicUrl(media.src)}" alt="" loading="lazy" decoding="async" /></div>`
       : ''
+    // a known shape is applied up front; otherwise it is measured once the video loads
+    const fit = media.kind === 'video' && media.aspect ? ` viewer-panel--fit${media.aspect < 1 ? ' viewer-panel--portrait' : ''}` : ''
+    const shape = media.kind === 'video' && media.aspect ? ` style="--ar: ${media.aspect.toFixed(4)}"` : ''
     return `<figure class="viewer-figure${media.wide ? ' viewer-figure--wide' : ''}">
-      <div class="viewer-panel${mod}">${inner}</div>
+      <div class="viewer-panel${mod}${fit}"${shape}>${inner}</div>
       ${zoom}
       ${caption}
     </figure>`
@@ -1475,6 +1478,7 @@ function initProjectViewer() {
         const panel = video.parentElement as HTMLElement
         panel.style.setProperty('--ar', String(video.videoWidth / video.videoHeight))
         panel.classList.add('viewer-panel--fit')
+        panel.classList.toggle('viewer-panel--portrait', video.videoWidth < video.videoHeight)
       }
       if (video.readyState >= 1) fit()
       else video.addEventListener('loadedmetadata', fit, { once: true })

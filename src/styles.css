@@ -4571,7 +4571,7 @@ body::after {
 }
 
 /* ---- viewer video: the panel takes the video's own shape (no black bars) ---- */
-.cs .viewer-panel--fit {
+.cs .viewer-figure .viewer-panel.viewer-panel--fit {
   width: min(100%, calc(82svh * var(--ar, 1.7778)));
   margin-inline: auto;
 }
@@ -4601,4 +4601,15 @@ body::after {
   .contact-signoff span + span::before {
     margin-right: 0.6rem;
   }
+}
+
+/* portrait pieces (posters, vertical video) are shown at a size the file holds
+   sharply, instead of being stretched up to fill the column */
+.cs .viewer-figure .viewer-panel.viewer-panel--portrait {
+  width: min(100%, calc(74svh * var(--ar, 0.75)), 30rem);
+}
+
+.cs .viewer-panel--fit video {
+  aspect-ratio: var(--ar);
+  object-fit: cover;
 }

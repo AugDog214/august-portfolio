@@ -61,6 +61,11 @@ export function renderSite() {
           <span class="copper-rule"></span>
           <p class="hero-role">${hero.role}</p>
           <p class="hero-range">${hero.range}</p>
+          <a class="hero-ai-cta" href="${hero.aiCta.href}" data-hero-ai-cta>
+            <span class="hero-ai-cta-spark" aria-hidden="true"></span>
+            <span class="hero-ai-cta-label">${hero.aiCta.label}</span>
+            <span class="hero-ai-cta-arrow" aria-hidden="true">&rarr;</span>
+          </a>
         </div>
 
         <div class="hero-progress" aria-hidden="true">

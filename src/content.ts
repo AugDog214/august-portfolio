@@ -607,6 +607,7 @@ export const portfolioContent = {
     tagline: 'Building Brands through Designing Identity & AI Film Advertising',
     role: siteMeta.role,
     range: 'Brand / Film / Build',
+    aiCta: { label: 'How I use AI', href: '#ai' },
   },
   reveal: {
     ariaLabel: 'Brand impact',

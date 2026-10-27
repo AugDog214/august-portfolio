@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://augdog214.github.io/august-portfolio/sitemap.xml

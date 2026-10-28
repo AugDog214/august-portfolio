@@ -141,6 +141,39 @@ export const projectItems: Project[] = [
     ],
   },
   {
+    name: 'Complete Pool · Spa · Patio',
+    tag: 'Social Video / Pool Sales',
+    blurb:
+      'A vertical, Instagram-ready sales ad for the pool and spa division I sell for — on camera and cut by me to turn a scroll into a free-estimate call.',
+    role: 'Pool Sales Consultant / Marketing Specialist / Video Editor',
+    year: '2026',
+    client: 'Complete Renovation and Construction — Pool & Spa',
+    tools: ['premiere'],
+    accent: '#2a9fc9',
+    cover: {
+      kind: 'video',
+      src: 'media/projects/pools/cover.mp4',
+      poster: 'media/projects/pools/poster.webp',
+      aspect: 0.5625,
+      caption: 'Final 9:16 cut for Instagram and Facebook, 40 seconds, with sound.',
+    },
+    gallery: [],
+    caseStudy: [
+      {
+        label: 'Context',
+        body: 'Alongside selling pools for Complete Renovation and Construction’s pool and spa division, I run the division’s Facebook and Instagram and make its ads.',
+      },
+      {
+        label: 'Approach',
+        body: 'I’m the one on camera, talking straight to the homeowner, cut against footage of real builds, finished pools, and equipment — with bold kinetic captions so it works with the sound off.',
+      },
+      {
+        label: 'Close',
+        body: 'A map of the service area grounds it locally, and the spot ends on one clear ask: a free estimate.',
+      },
+    ],
+  },
+  {
     name: "Astro Fool's Hopper",
     tag: 'AI Film / Packaging Illustration',
     blurb:

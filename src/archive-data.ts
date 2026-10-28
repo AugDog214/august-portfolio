@@ -3,7 +3,7 @@ import { brandIdentityItems, projectItems, type Project } from './content'
 /**
  * The Archive: every project, client work first.
  *
- * The six Selected Work projects come straight from `projectItems` and the logo
+ * The Selected Work projects come straight from `projectItems` and the logo
  * projects reuse the copy and images in `brandIdentityItems`, so nothing is
  * written twice. Everything else was tightened from August's own write-ups on
  * his old portfolio (riff-graphics.myportfolio.com). No facts or numbers were
@@ -59,6 +59,7 @@ export const archiveIntro = {
 export const archiveProjects: ArchiveProject[] = [
   // ---------------------------------------------------------------- Client
   { ...selected('Signage'), slug: 'signage', kind: 'Client', discipline: ['Print + signage'], card: card('signage'), wide: true },
+  { ...selected('Complete Pool · Spa · Patio'), slug: 'complete-pool-video', kind: 'Client', discipline: ['Film + photo'], card: card('complete-pool-video') },
   { ...selected('Gap City Media'), slug: 'gap-city-media', kind: 'Client', discipline: ['Film + photo', 'Brand identity'], card: card('gap-city-media'), wide: true },
   { ...selected('Kebabz Heaven: Menu'), slug: 'kebabz-heaven', kind: 'Client', discipline: ['Print + signage'], card: card('kebabz-heaven') },
   {
